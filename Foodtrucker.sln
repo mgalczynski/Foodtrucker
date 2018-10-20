@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication", "WebApplication\WebApplication.csproj", "{ECDB8D85-C13B-4F92-A195-2D465ADBF172}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistency", "Persistency\Persistency.csproj", "{DE544BE9-5191-4A50-A408-A1644DB95421}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{ECDB8D85-C13B-4F92-A195-2D465ADBF172}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECDB8D85-C13B-4F92-A195-2D465ADBF172}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECDB8D85-C13B-4F92-A195-2D465ADBF172}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE544BE9-5191-4A50-A408-A1644DB95421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE544BE9-5191-4A50-A408-A1644DB95421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE544BE9-5191-4A50-A408-A1644DB95421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE544BE9-5191-4A50-A408-A1644DB95421}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
