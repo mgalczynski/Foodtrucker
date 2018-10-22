@@ -35,6 +35,13 @@ namespace WebApplication
         {
             if (env.IsDevelopment())
             {
+#if DEBUG
+                using (var dbContext = serviceProvider.GetService<PersistencyContext>())
+                {
+                    dbContext.Database.EnsureDeleted();
+                    dbContext.Database.EnsureCreated();
+                }
+#endif
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -63,10 +70,6 @@ namespace WebApplication
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-            using (var dbContext = serviceProvider.GetService<PersistencyContext>())
-            {
-                dbContext.Database.EnsureCreated();
-            }
         }
     }
 }
