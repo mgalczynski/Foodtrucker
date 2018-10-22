@@ -6,6 +6,6 @@ namespace Persistency.Services
 {
     internal interface IPresenceService : IBaseService<Presence>
     {
-        Task<List<Presence>> FindFoodTrucksWithin(Coordinate coordinate, decimal radius);
+        Task<List<Presence>> FindPresencesWithin(Coordinate coordinate, double radius);
     }
 }

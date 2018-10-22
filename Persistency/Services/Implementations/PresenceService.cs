@@ -18,11 +18,11 @@ namespace Persistency.Services.Implementations
         {
         }
 
-        public async Task<List<Presence>> FindFoodTrucksWithin(Coordinate coordinate, decimal radius)
+        public async Task<List<Presence>> FindPresencesWithin(Coordinate coordinate, double radius)
         {
             var dbGeography = Mapper.Map<Point>(coordinate);
             return await (from f in PersistencyContext.Presences
-                where f.Location.Distance(dbGeography) < (double) radius
+                where f.Location.IsWithinDistance(dbGeography, radius)
                 select f).Take(300).ProjectToListAsync<Presence>();
         }
     }
