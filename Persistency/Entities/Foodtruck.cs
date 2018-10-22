@@ -1,6 +1,5 @@
-using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
 namespace Persistency.Entities
@@ -10,6 +9,6 @@ namespace Persistency.Entities
         [Required] public string Name { get; set; }
         [Required] public string DisplayName { get; set; }
         public Point DefaultLocation { get; set; }
-        public DbSet<Presence> Presences { get; set; }
+        public IList<Presence> Presences { get; set; }
     }
 }

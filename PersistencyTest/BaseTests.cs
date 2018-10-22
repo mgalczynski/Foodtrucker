@@ -1,24 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Moq;
+using Xunit;
 
 namespace Persistency.Test
 {
+    [Collection("DB Tests")]
     public class BaseTests : IDisposable
     {
         protected AbstractPersistencyContext Context { get; } = new TestDbContext();
+        private static object monitor = new object();
+        private static bool _mapperWasInitialized = false;
 
         protected BaseTests()
         {
-            Mapper.Initialize(Persistency.InitializeMapper);
+            lock (monitor)
+            {
+                if (!_mapperWasInitialized)
+                {
+                    Mapper.Initialize(Persistency.InitializeMapper);
+                    _mapperWasInitialized = true;
+                }
+            }
+
+            Context.Database.EnsureCreated();
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
+            Context.Database.EnsureDeleted();
         }
     }
 }

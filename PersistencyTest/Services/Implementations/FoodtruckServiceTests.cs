@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NetTopologySuite.Geometries;
 using Persistency.Dtos;
@@ -20,7 +21,19 @@ namespace Persistency.Test.Services.Implementations
             new Entities.Foodtruck
             {
                 DefaultLocation = CreatePoint(51.125975, 16.978056),
-                Name = "Food truck within location"
+                Name = "Foodtruck within location",
+                DisplayName = "Foodtruck within location"
+            },
+            new Entities.Foodtruck
+            {
+                DefaultLocation = CreatePoint(51.107261, 17.059999),
+                Name = "Foodtruck outside location",
+                DisplayName = "Foodtruck outside location"
+            },
+            new Entities.Foodtruck
+            {
+                Name = "Foodtruck without location",
+                DisplayName = "Foodtruck without location"
             }
         };
 
@@ -40,7 +53,8 @@ namespace Persistency.Test.Services.Implementations
             const double distance = 2d;
             var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
             var result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
-            Assert.Contains("Food truck within location", result.Select(foodtruck => foodtruck.Name));
+            Assert.Equal(new HashSet<string> {"Foodtruck within location"},
+                result.Select(foodtruck => foodtruck.Name).ToHashSet());
         }
     }
 }
