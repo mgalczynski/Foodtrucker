@@ -20,7 +20,7 @@ namespace Persistency.Services.Implementations
         {
             var dbGeography = Mapper.Map<Point>(coordinate);
             return await (from f in PersistencyContext.Foodtrucks
-                where f.DefaultLocation != null && f.DefaultLocation.Distance(dbGeography) < radius
+                where f.DefaultLocation != null && f.DefaultLocation.IsWithinDistance(dbGeography, radius)
                 select f).Take(300).ProjectToListAsync<Foodtruck>();
         }
     }

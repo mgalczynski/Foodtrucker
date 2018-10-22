@@ -10,18 +10,14 @@ namespace Persistency.Test
 {
     public class BaseTests : IDisposable
     {
-        protected PersistencyContext Context { get; }
+        protected AbstractPersistencyContext Context { get; } = new TestDbContext();
 
-        public BaseTests()
+        protected BaseTests()
         {
             Mapper.Initialize(Persistency.InitializeMapper);
-            var options = new DbContextOptionsBuilder<PersistencyContext>()
-                .UseInMemoryDatabase(nameof(Test))
-                .Options;
-            Context = new PersistencyContext(options);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Moq;
 using NetTopologySuite.Geometries;
+using Persistency.Dtos;
 using Persistency.Services.Implementations;
 using Xunit;
 
@@ -27,15 +28,17 @@ namespace Persistency.Test.Services.Implementations
 
         public FoodtruckServiceTests()
         {
-            //_context.Setup(context => context.Foodtrucks).Returns(MockDbSet(_list.AsQueryable()).Object);
+            Context.Foodtrucks.AddRange(_list);
+            Context.SaveChanges();
+            _context.Setup(context => context.Foodtrucks).Returns(Context.Foodtrucks);
             _foodtruckService = new FoodtruckService(_context.Object);
         }
 
         [Fact]
         public async void Test()
         {
-            var coordinate = new Dtos.Coordinate {Latitude = 51.125975, Longitude = 16.978056};
             const double distance = 2d;
+            var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
             var result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Assert.Contains("Food truck within location", result.Select(foodtruck => foodtruck.Name));
         }

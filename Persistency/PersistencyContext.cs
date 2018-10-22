@@ -4,7 +4,7 @@ using Persistency.Entities;
 
 namespace Persistency
 {
-    internal abstract class AbstractPersistencyContext : DbContext, IInternalPersistencyContext
+    public abstract class AbstractPersistencyContext : DbContext, IInternalPersistencyContext
     {
         public virtual DbSet<Foodtruck> Foodtrucks { get; set; }
         public virtual DbSet<Presence> Presences { get; set; }
