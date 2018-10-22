@@ -26,6 +26,9 @@ namespace WebApplication.Controllers
         public async Task<IEnumerable<WeatherForecast>> WeatherForecasts(int startDateIndex)
         {
             var foodTruck = await _foodtruckService.FindById(Guid.Parse("{030B4A82-1B7C-11CF-9D53-00AA003C9CB6}"));
+            const double distance = 2d;
+            var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
+            var result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Console.WriteLine(await _foodtruckService.FindFoodTrucksWithin(new Coordinate(), 0));
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

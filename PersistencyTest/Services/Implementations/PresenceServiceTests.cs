@@ -19,24 +19,22 @@ namespace Persistency.Test.Services.Implementations
 
         public PresenceServiceTests()
         {
-            var foodtruck = Context.Foodtrucks.Add(new Entities.Foodtruck
+            Context.Foodtrucks.Add(new Entities.Foodtruck
             {
-                Name = "Foodtruck without location"
-            }).Entity;
-
-            Context.Presences.AddRange(new List<Entities.Presence>
-            {
-                new Entities.Presence
+                Name = "Foodtruck without location",
+                DisplayName = "Foodtruck without location",
+                Presences = new List<Entities.Presence>
                 {
-                    FoodTruckId = foodtruck.Id,
-                    Location = CreatePoint(51.125975, 16.978056),
-                    Title = "Presence within location"
-                },
-                new Entities.Presence
-                {
-                    FoodTruckId = foodtruck.Id,
-                    Location = CreatePoint(51.107261, 17.059999),
-                    Title = "Presence outside location"
+                    new Entities.Presence
+                    {
+                        Location = CreatePoint(51.125975, 16.978056),
+                        Title = "Presence within location"
+                    },
+                    new Entities.Presence
+                    {
+                        Location = CreatePoint(51.107261, 17.059999),
+                        Title = "Presence outside location"
+                    }
                 }
             });
             Context.SaveChanges();

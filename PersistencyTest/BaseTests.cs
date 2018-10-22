@@ -22,12 +22,13 @@ namespace Persistency.Test
                 }
             }
 
+            Context.Database.EnsureDeleted();
             Context.Database.EnsureCreated();
         }
 
         public void Dispose()
         {
-            Context.Database.EnsureDeleted();
+//            Context.Database.EnsureDeleted();
         }
     }
 }

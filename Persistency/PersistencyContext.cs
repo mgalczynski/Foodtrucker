@@ -8,8 +8,14 @@ namespace Persistency
     {
         public virtual DbSet<Foodtruck> Foodtrucks { get; set; }
         public virtual DbSet<Presence> Presences { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.HasPostgresExtension("postgis");
+        }
     }
-    internal sealed class PersistencyContext :AbstractPersistencyContext
+
+    internal sealed class PersistencyContext : AbstractPersistencyContext
     {
         private readonly IConfiguration _config;
 
@@ -23,7 +29,7 @@ namespace Persistency
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_config.GetValue<string>("FoodtruckerDatabase"),
+            optionsBuilder.UseNpgsql(_config.GetValue<string>("FoodtruckerDatabase"),
                 builder => builder.UseNetTopologySuite());
         }
     }

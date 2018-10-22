@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
 using NetTopologySuite.Geometries;
 
 namespace Persistency.Entities
@@ -14,6 +13,9 @@ namespace Persistency.Entities
         public DateTime EndTime { get; set; }
         [Required] public string Title { get; set; }
         public string Description { get; set; }
-        [Required] public Point Location { get; set; }
+
+        [Required]
+        [Column(TypeName = "geography(Point,4326)")]
+        public Point Location { get; set; }
     }
 }

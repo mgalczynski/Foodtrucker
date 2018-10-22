@@ -5,6 +5,6 @@ services:
     restart: always
     environment:
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: FoodtruckerTest
+      POSTGRES_DB: Foodtrucker
     ports:
-    - 127.0.0.1:15432:5432
+    - 127.0.0.1:5432:5432

@@ -6,6 +6,6 @@ namespace Persistency.Services
 {
     public interface IFoodtruckService : IBaseService<Foodtruck>
     {
-        Task<List<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double radius);
+        Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance);
     }
 }
