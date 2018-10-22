@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Persistency.Dtos
 {
-    public class Coordinate
+    public sealed class Coordinate
     {
         public double Latitude { get; set; }
         public double Longitude { get; set; }

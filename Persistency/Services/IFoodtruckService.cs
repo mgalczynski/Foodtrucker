@@ -4,7 +4,7 @@ using Persistency.Dtos;
 
 namespace Persistency.Services
 {
-    public interface IFoodtruckService
+    public interface IFoodtruckService : IBaseService<Foodtruck>
     {
         Task<List<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, decimal radius);
     }

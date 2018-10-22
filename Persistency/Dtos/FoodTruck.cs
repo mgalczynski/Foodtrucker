@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Persistency.Dtos
 {
-    public class Foodtruck
+    public sealed class Foodtruck
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

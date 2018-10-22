@@ -4,11 +4,12 @@ using Persistency.Entities;
 
 namespace Persistency
 {
-    public class PersistencyContext : DbContext
+    public sealed class PersistencyContext : DbContext
     {
         private readonly IConfiguration _config;
 
         internal DbSet<Foodtruck> Foodtrucks { get; set; }
+        internal DbSet<Presence> Presences { get; set; }
 
         public PersistencyContext(IConfiguration config)
         {
