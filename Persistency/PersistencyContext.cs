@@ -1,16 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Persistency.Entities;
 
 namespace Persistency
 {
-    public abstract class AbstractPersistencyContext : DbContext, IInternalPersistencyContext
+    public abstract class AbstractPersistencyContext : IdentityDbContext<IdentityUser>, IInternalPersistencyContext
     {
         public virtual DbSet<Foodtruck> Foodtrucks { get; set; }
         public virtual DbSet<Presence> Presences { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            base.OnModelCreating(builder);
             builder.HasPostgresExtension("postgis");
         }
     }
@@ -29,6 +32,7 @@ namespace Persistency
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseNpgsql(_config.GetValue<string>("FoodtruckerDatabase"),
                 builder => builder.UseNetTopologySuite());
         }
