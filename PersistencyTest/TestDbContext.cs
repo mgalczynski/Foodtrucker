@@ -15,8 +15,9 @@ namespace Persistency.Test
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-//            optionsBuilder.UseInMemoryDatabase(nameof(Test));
-            optionsBuilder.UseSqlServer(@"Server=localhost,11433;Database=Foodtrucker;User=sa;Password=yourStrong(!)Password;", builder => builder.UseNetTopologySuite());
+            //            optionsBuilder.UseInMemoryDatabase(nameof(Test));
+            //optionsBuilder.UseSqlServer(@"Server=localhost,11433;Database=Foodtrucker;User=sa;Password=yourStrong(!)Password;", builder => builder.UseNetTopologySuite());
+            optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=FoodtruckerTest;Trusted_Connection=True;", builder => builder.UseNetTopologySuite());
         }
     }
 }
