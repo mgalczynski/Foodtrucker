@@ -14,7 +14,7 @@ namespace Persistency.Services.Implementations
     {
         protected override DbSet<Entities.Presence> DbSet => PersistencyContext.Presences;
 
-        public PresenceService(PersistencyContext persistencyContext) : base(persistencyContext)
+        public PresenceService(IInternalPersistencyContext persistencyContext) : base(persistencyContext)
         {
         }
 

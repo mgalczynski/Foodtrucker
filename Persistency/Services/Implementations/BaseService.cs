@@ -9,7 +9,7 @@ namespace Persistency.Services.Implementations
 {
     internal abstract class BaseService<TEntity, TDto> : IBaseService<TDto> where TEntity : BaseEntity where TDto : class
     {
-        protected PersistencyContext PersistencyContext { get; }
+        protected IInternalPersistencyContext PersistencyContext { get; }
         protected abstract DbSet<TEntity> DbSet { get; }
 
         public async Task<IEnumerable<TDto>> FindById(IEnumerable<Guid> ids) =>
@@ -22,7 +22,7 @@ namespace Persistency.Services.Implementations
                 where e.Id == id
                 select e).SingleAsync().MapAsync<TDto, TEntity>();
 
-        protected BaseService(PersistencyContext persistencyContext)
+        protected BaseService(IInternalPersistencyContext persistencyContext)
         {
             PersistencyContext = persistencyContext;
         }

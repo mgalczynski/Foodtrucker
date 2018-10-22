@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication", "WebApplic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistency", "Persistency\Persistency.csproj", "{DE544BE9-5191-4A50-A408-A1644DB95421}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersistencyTest", "PersistencyTest\PersistencyTest.csproj", "{E76902ED-B786-41D0-9E61-B4E4D13CE929}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistency.Test", "PersistencyTest\Persistency.Test.csproj", "{E76902ED-B786-41D0-9E61-B4E4D13CE929}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

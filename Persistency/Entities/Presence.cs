@@ -6,7 +6,7 @@ using NetTopologySuite.Geometries;
 
 namespace Persistency.Entities
 {
-    internal class Presence : BaseEntity
+    public class Presence : BaseEntity
     {
         [Required] public Guid FoodTruckId { get; set; }
         public Foodtruck Foodtruck { get; set; }

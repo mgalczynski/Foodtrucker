@@ -5,7 +5,7 @@ using NetTopologySuite.Geometries;
 
 namespace Persistency.Entities
 {
-    internal class Foodtruck : BaseEntity
+    public class Foodtruck : BaseEntity
     {
         [Required] public string Name { get; set; }
         [Required] public string DisplayName { get; set; }

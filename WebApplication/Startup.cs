@@ -36,7 +36,7 @@ namespace WebApplication
             if (env.IsDevelopment())
             {
 #if DEBUG
-                using (var dbContext = serviceProvider.GetService<PersistencyContext>())
+                using (var dbContext = serviceProvider.GetService<IPersistencyContext>())
                 {
                     dbContext.Database.EnsureDeleted();
                     dbContext.Database.EnsureCreated();

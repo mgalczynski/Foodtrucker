@@ -25,6 +25,7 @@ namespace WebApplication.Controllers
         [HttpGet("[action]")]
         public async Task<IEnumerable<WeatherForecast>> WeatherForecasts(int startDateIndex)
         {
+            var foodTruck = await _foodtruckService.FindById(Guid.Parse("{030B4A82-1B7C-11CF-9D53-00AA003C9CB6}"));
             Console.WriteLine(await _foodtruckService.FindFoodTrucksWithin(new Coordinate(), 0));
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast

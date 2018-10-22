@@ -10,13 +10,14 @@ namespace Persistency
     {
         public static void RegisterPersistency(IServiceCollection collection)
         {
-            collection.AddDbContext<PersistencyContext>();
+            collection.AddDbContext<IInternalPersistencyContext, PersistencyContext>();
+            collection.AddDbContext<IPersistencyContext, PersistencyContext>();
             collection.AddScoped<IFoodtruckService, FoodtruckService>();
             collection.AddScoped<IPresenceService, PresenceService>();
             Mapper.Initialize(InitializeMapper);
         }
 
-        private static void InitializeMapper(IMapperConfigurationExpression mapper)
+        internal static void InitializeMapper(IMapperConfigurationExpression mapper)
         {
             mapper.CreateMap<Dtos.Foodtruck, Entities.Foodtruck>().ReverseMap();
             mapper.CreateMap<Dtos.Presence, Entities.Presence>().ReverseMap();

@@ -4,12 +4,17 @@ using Persistency.Entities;
 
 namespace Persistency
 {
-    public sealed class PersistencyContext : DbContext
+    internal abstract class AbstractPersistencyContext : DbContext, IInternalPersistencyContext
+    {
+        public virtual DbSet<Foodtruck> Foodtrucks { get; set; }
+        public virtual DbSet<Presence> Presences { get; set; }
+    }
+    internal sealed class PersistencyContext :AbstractPersistencyContext
     {
         private readonly IConfiguration _config;
 
-        internal DbSet<Foodtruck> Foodtrucks { get; set; }
-        internal DbSet<Presence> Presences { get; set; }
+        public override DbSet<Foodtruck> Foodtrucks { get; set; }
+        public override DbSet<Presence> Presences { get; set; }
 
         public PersistencyContext(IConfiguration config)
         {

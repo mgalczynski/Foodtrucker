@@ -20,8 +20,8 @@ namespace Persistency
         internal static Point CreatePointWithSrid(double latitude, double longitude) =>
             new Point(latitude, longitude) {SRID = 4326};
 
-        internal static async Task<List<TDestination>> ProjectToListAsync<TDestination>(this IQueryable iQueryable) =>
-            await iQueryable.ProjectTo<TDestination>().ToListAsync();
+        internal static async Task<List<TDestination>> ProjectToListAsync<TDestination>(this IQueryable queryable) =>
+            await queryable.ProjectTo<TDestination>().ToListAsync();
 
         internal static async Task<TDestination> MapAsync<TDestination, TSource>(this Task<TSource> task)
             where TDestination : class
