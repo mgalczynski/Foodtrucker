@@ -4,8 +4,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Persistency;
 using Persistency.Entities;
 using WebApplication.Dtos;
 
@@ -16,11 +18,47 @@ namespace WebApplication.Controllers
     {
         private readonly UserManager<FoodtruckerUser> _userManager;
         private readonly SignInManager<FoodtruckerUser> _signInManager;
+        private readonly RoleManager<FoodtruckerRole> _roleManager;
+        private readonly IPersistencyContext _persistencyContext;
 
-        public AuthController(UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager)
+        public AuthController(UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager,
+            RoleManager<FoodtruckerRole> roleManager, IPersistencyContext persistencyContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
+            _persistencyContext = persistencyContext;
+        }
+
+        private async Task<ActionResult<RegisterResult>> Register(FoodtruckerUser user, string password,
+            string role)
+        {
+            if (string.IsNullOrEmpty(user.Email) || password == null ||
+                string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
+                return BadRequest();
+            user.Active = role != FoodtruckerRole.ServiceStaff;
+            using (var transaction = _persistencyContext.Database.BeginTransaction())
+            {
+                var result = await _userManager.CreateAsync(user, password);
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
+                if (!addToRoleResult.Succeeded)
+                {
+                    transaction.Rollback();
+                    return StatusCode(StatusCodes.Status500InternalServerError);
+                }
+
+                if (result.Succeeded)
+                {
+                    if (role != FoodtruckerRole.ServiceStaff)
+                        await _signInManager.SignInAsync(user, isPersistent: true);
+                    return new RegisterResult {Successful = true};
+                }
+                else
+                {
+                    return new RegisterResult
+                        {Successful = false, Errors = result.Errors.Select(error => error.Description).ToList()};
+                }
+            }
         }
 
         [AllowAnonymous]
@@ -34,20 +72,21 @@ namespace WebApplication.Controllers
                 LastName = registerUser?.LastName?.Trim(),
                 FirstName = registerUser?.FirstName?.Trim()
             };
-            if (string.IsNullOrEmpty(user.Email) || registerUser?.Password == null ||
-                string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
-                return BadRequest();
-            var result = await _userManager.CreateAsync(user, registerUser.Password);
-            if (result.Succeeded)
+            return await Register(user, registerUser?.Password, FoodtruckerRole.Customer);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public async Task<ActionResult<RegisterResult>> RegisterFoodTruckUser([FromBody] RegisterUser registerUser)
+        {
+            var user = new FoodtruckerUser
             {
-                await _signInManager.SignInAsync(user, isPersistent: true);
-                return new RegisterResult {Successful = true};
-            }
-            else
-            {
-                return new RegisterResult
-                    {Successful = false, Errors = result.Errors.Select(error => error.Description).ToList()};
-            }
+                UserName = registerUser?.Email?.Trim(),
+                Email = registerUser?.Email?.Trim(),
+                LastName = registerUser?.LastName?.Trim(),
+                FirstName = registerUser?.FirstName?.Trim()
+            };
+            return await Register(user, registerUser?.Password, FoodtruckerRole.FoodtruckStaff);
         }
 
         [AllowAnonymous]

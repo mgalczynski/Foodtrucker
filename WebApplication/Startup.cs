@@ -1,11 +1,13 @@
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistency;
+using Persistency.Entities;
 
 namespace WebApplication
 {
@@ -30,16 +32,15 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider,
+            RoleManager<FoodtruckerRole> roleManager)
         {
             if (env.IsDevelopment())
             {
 #if DEBUG
-                using (var dbContext = serviceProvider.GetService<IPersistencyContext>())
-                {
-                    dbContext.Database.EnsureDeleted();
-                    dbContext.Database.EnsureCreated();
-                }
+                var dbContext = serviceProvider.GetService<IPersistencyContext>();
+                dbContext.Database.EnsureDeleted();
+                dbContext.Database.EnsureCreated();
 #endif
                 app.UseDeveloperExceptionPage();
             }
@@ -49,6 +50,7 @@ namespace WebApplication
                 app.UseHsts();
             }
 
+            Persistency.Persistency.OnStart(roleManager);
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

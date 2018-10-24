@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,7 +8,8 @@ using Persistency.Entities;
 
 namespace Persistency
 {
-    public abstract class AbstractPersistencyContext : IdentityDbContext<FoodtruckerUser>, IInternalPersistencyContext
+    public abstract class AbstractPersistencyContext : IdentityDbContext<FoodtruckerUser, FoodtruckerRole, Guid>,
+        IInternalPersistencyContext
     {
         public virtual DbSet<Foodtruck> Foodtrucks { get; set; }
         public virtual DbSet<Presence> Presences { get; set; }

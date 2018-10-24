@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,7 @@ namespace Persistency
             services.AddDbContext<AbstractPersistencyContext, PersistencyContext>();
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
-            services.AddIdentity<FoodtruckerUser, IdentityRole>()
+            services.AddIdentity<FoodtruckerUser, FoodtruckerRole>()
                 .AddEntityFrameworkStores<AbstractPersistencyContext>().AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
             {
@@ -60,6 +61,15 @@ namespace Persistency
             mapper.CreateMap<Dtos.Presence, Entities.Presence>().ReverseMap();
             mapper.CreateMap<Dtos.Coordinate, Point>().ConvertUsing(ExtensionMethods.ToDbPoint);
             mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(ExtensionMethods.ToCoordinate);
+        }
+
+        public static void OnStart(RoleManager<FoodtruckerRole> roleManager)
+        {
+            foreach (var task in FoodtruckerRole.Roles
+                .Where(name => !roleManager.RoleExistsAsync(name).Result)
+                .Select(name => roleManager.CreateAsync(new FoodtruckerRole {Name = name})))
+                if(!task.Result.Succeeded)
+                    throw new SystemException(string.Join(", ", task.Result.Errors.Select(error=>error.Description)));
         }
     }
 }
