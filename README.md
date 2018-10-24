@@ -1,6 +1,8 @@
 # Foodtrucker
+---
 ### System interakcji między obsługą foodtrucków a klientami
 ### Mirosław Gałczyński
+---
 
 ## 1. Model bazy danych
 
