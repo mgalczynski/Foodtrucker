@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Persistency.Entities;
 using WebApplication.Dtos;
 
 namespace WebApplication.Controllers
@@ -13,10 +14,10 @@ namespace WebApplication.Controllers
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<FoodtruckerUser> _userManager;
+        private readonly SignInManager<FoodtruckerUser> _signInManager;
 
-        public AuthController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AuthController(UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -26,9 +27,16 @@ namespace WebApplication.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult<RegisterResult>> Register([FromBody] RegisterUser registerUser)
         {
-            if (registerUser?.Email == null || registerUser?.Password == null)
+            var user = new FoodtruckerUser
+            {
+                UserName = registerUser?.Email?.Trim(),
+                Email = registerUser?.Email?.Trim(),
+                LastName = registerUser?.LastName?.Trim(),
+                FirstName = registerUser?.FirstName?.Trim()
+            };
+            if (string.IsNullOrEmpty(user.Email) || registerUser?.Password == null ||
+                string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
                 return BadRequest();
-            var user = new IdentityUser {UserName = registerUser.Email, Email = registerUser.Email};
             var result = await _userManager.CreateAsync(user, registerUser.Password);
             if (result.Succeeded)
             {

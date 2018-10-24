@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using NetTopologySuite.Geometries;
+using Persistency.Entities;
 using Persistency.Services;
 using Persistency.Services.Implementations;
 
@@ -17,7 +18,7 @@ namespace Persistency
             services.AddDbContext<AbstractPersistencyContext, PersistencyContext>();
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<FoodtruckerUser, IdentityRole>()
                 .AddEntityFrameworkStores<AbstractPersistencyContext>().AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
             {
