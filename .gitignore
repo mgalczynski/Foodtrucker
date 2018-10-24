@@ -1,3 +1,6 @@
 .idea
 **/*.user
 .vs
+.vscode
+Diagrams/*.bak_*
+Diagrams/*.lck
