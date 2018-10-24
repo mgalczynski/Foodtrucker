@@ -32,23 +32,31 @@ namespace WebApplication
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider,
-            RoleManager<FoodtruckerRole> roleManager)
+        public void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+#if DEBUG
+            IServiceProvider serviceProvider,
+#endif
+            RoleManager<FoodtruckerRole> roleManager
+        )
         {
+#if DEBUG
             if (env.IsDevelopment())
             {
-#if DEBUG
                 var dbContext = serviceProvider.GetService<IPersistencyContext>();
                 dbContext.Database.EnsureDeleted();
                 dbContext.Database.EnsureCreated();
-#endif
                 app.UseDeveloperExceptionPage();
             }
             else
             {
+#endif
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
+#if DEBUG
             }
+#endif
 
             Persistency.Persistency.OnStart(roleManager);
             app.UseHttpsRedirection();
