@@ -11,7 +11,7 @@
 ### 1.2 Opis tabel
 
 Tabela Users
-Tabela użytkowników będzie zawierała informacje na ich temat, będzie rozszerzeniem tabeli wymaganej przez framework ASP</span>.NET Core ([Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<TKey\>](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.entityframeworkcore.identityuser-1)).
+Tabela użytkowników będzie zawierała informacje na ich temat, będzie rozszerzeniem tabeli wymaganej przez framework ASP.NET Core ([Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUser<TKey\>](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.entityframeworkcore.identityuser-1)).
 Będą trzy typy użytkowników:
 
 1. FoodtruckStaff – pracownicy foodtrucków
@@ -36,4 +36,4 @@ Tabela ta będzie zawierała informacje na temat posiadania (różne klasy upraw
 Tabela będzie przechowywała informacje które Foodtrucki użytkownik typu Customer zapisał jako ulubione. Kluczem głównym będzie klucz złożony z kluczy obcych (Users i Foodtruck).
 
 ## Wybrane technologie i narzędzia
-Jako główną technologię został wybrany ASP<span>.NET Core oraz Entity Framework Core z Ngpsql (determinowany przez wybór PostgreSQL jako bazy danych) do persystencji danych oraz React z Reduxem w warstwie prezentacji. Jako edytor został wybrany JetBrains Rider. Do hostowania repozytorium został wybrany BitBucket.
+Jako główną technologię został wybrany ASP.NET Core oraz Entity Framework Core z Ngpsql (determinowany przez wybór PostgreSQL jako bazy danych) do persystencji danych oraz React z Reduxem w warstwie prezentacji. Jako edytor został wybrany JetBrains Rider. Do hostowania repozytorium został wybrany BitBucket.
