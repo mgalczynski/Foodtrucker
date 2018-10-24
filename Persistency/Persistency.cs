@@ -19,7 +19,7 @@ namespace Persistency
             services.AddDbContext<AbstractPersistencyContext, PersistencyContext>();
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
-            services.AddIdentity<FoodtruckerUser, FoodtruckerRole>()
+            services.AddIdentity<Entities.FoodtruckerUser, Entities.FoodtruckerRole>()
                 .AddEntityFrameworkStores<AbstractPersistencyContext>().AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
             {
