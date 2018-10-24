@@ -93,14 +93,18 @@ namespace WebApplication.Controllers
         {
             if (loginUser?.Email == null || loginUser?.Password == null)
                 return BadRequest();
-            return
-                Mapper.Map<LoginResult>(
-                    await _signInManager.PasswordSignInAsync(
-                        loginUser.Email,
-                        loginUser.Password,
-                        loginUser.RememberMe,
-                        false
-                    ));
+            var user = await _userManager.FindByEmailAsync(loginUser.Email);
+            return !user.Active
+                ? new LoginResult
+                {
+                    IsNotAllowed = true,
+                }
+                : Mapper.Map<LoginResult>(await _signInManager.PasswordSignInAsync(
+                    user.UserName,
+                    loginUser.Password,
+                    loginUser.RememberMe,
+                    false
+                ));
         }
 
         [HttpGet("[action]")]
