@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using NetTopologySuite.Geometries;
 using Persistency.Dtos;
@@ -12,8 +13,6 @@ namespace Persistency.Test.Services.Implementations
     public class FoodtruckServiceTests : BaseTests
     {
         private static readonly Func<double, double, Point> CreatePoint = ExtensionMethods.CreatePointWithSrid;
-
-        private readonly Mock<AbstractPersistencyContext> _context = new Mock<AbstractPersistencyContext>();
 
         private readonly FoodtruckService _foodtruckService;
 
@@ -40,18 +39,27 @@ namespace Persistency.Test.Services.Implementations
                 }
             });
             Context.SaveChanges();
-            _context.Setup(context => context.Foodtrucks).Returns(Context.Foodtrucks);
-            _foodtruckService = new FoodtruckService(_context.Object);
+            _foodtruckService = new FoodtruckService(Context);
         }
 
         [Fact]
-        public async void Test()
+        public async void FindFoodtrucksTest()
         {
             const double distance = 2d;
             var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
             var result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Assert.Equal(new HashSet<string> {"Foodtruck within location"},
                 result.Select(foodtruck => foodtruck.Name).ToHashSet());
+        }
+
+        [Fact]
+        public async void CreateFoodTruckTest()
+        {
+            var result = await _foodtruckService.CreateNewFoodtruck(new CreateNewFoodtruck
+                {Name = "New foodtruck", DisplayName = "New foodtruck"});
+            Assert.Equal(true, result.Successful);
+            Assert.Equal("New foodtruck",
+                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Id == result.Id)?.Name);
         }
     }
 }

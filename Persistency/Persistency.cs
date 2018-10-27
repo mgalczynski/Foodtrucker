@@ -4,7 +4,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using NetTopologySuite.Geometries;
-using Persistency.Entities;
 using Persistency.Services;
 using Persistency.Services.Implementations;
 
@@ -57,17 +56,18 @@ namespace Persistency
 
         internal static void InitializeMapper(IMapperConfigurationExpression mapper)
         {
+            mapper.CreateMap<Dtos.CreateNewFoodtruck, Entities.Foodtruck>();
             mapper.CreateMap<Dtos.Foodtruck, Entities.Foodtruck>().ReverseMap();
             mapper.CreateMap<Dtos.Presence, Entities.Presence>().ReverseMap();
             mapper.CreateMap<Dtos.Coordinate, Point>().ConvertUsing(ExtensionMethods.ToDbPoint);
             mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(ExtensionMethods.ToCoordinate);
         }
 
-        public static void OnStart(RoleManager<FoodtruckerRole> roleManager)
+        public static void OnStart(RoleManager<Entities.FoodtruckerRole> roleManager)
         {
-            foreach (var task in FoodtruckerRole.Roles
+            foreach (var task in Entities.FoodtruckerRole.Roles
                 .Where(name => !roleManager.RoleExistsAsync(name).Result)
-                .Select(name => roleManager.CreateAsync(new FoodtruckerRole {Name = name})))
+                .Select(name => roleManager.CreateAsync(new Entities.FoodtruckerRole {Name = name})))
                 if(!task.Result.Succeeded)
                     throw new SystemException(string.Join(", ", task.Result.Errors.Select(error=>error.Description)));
         }

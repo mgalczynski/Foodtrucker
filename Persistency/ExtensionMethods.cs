@@ -12,17 +12,17 @@ namespace Persistency
     internal static class ExtensionMethods
     {
         internal static Point ToDbPoint(this Coordinate coordinate) =>
-            CreatePointWithSrid(coordinate.Latitude, coordinate.Longitude);
+            coordinate == null ? null : CreatePointWithSrid(coordinate.Latitude, coordinate.Longitude);
 
         internal static Coordinate ToCoordinate(this Point point) =>
-            new Coordinate {Latitude = point.X, Longitude = point.Y};
+            point == null ? null : new Coordinate {Latitude = point.X, Longitude = point.Y};
 
         internal static Point CreatePointWithSrid(double latitude, double longitude) =>
             new Point(longitude, latitude) {SRID = 4326};
 
         internal static async Task<IList<TDestination>> ProjectToListAsync<TDestination>(this IQueryable queryable) =>
             await queryable.ProjectTo<TDestination>().ToListAsync();
-        
+
 
         internal static async Task<TDestination> MapAsync<TDestination, TSource>(this Task<TSource> task)
             where TDestination : class

@@ -6,6 +6,6 @@ namespace Persistency.Entities
     public abstract class BaseEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
     }
 }
