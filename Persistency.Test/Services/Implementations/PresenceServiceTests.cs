@@ -13,8 +13,6 @@ namespace Persistency.Test.Services.Implementations
     {
         private static readonly Func<double, double, Point> CreatePoint = ExtensionMethods.CreatePointWithSrid;
 
-        private readonly Mock<AbstractPersistencyContext> _context = new Mock<AbstractPersistencyContext>();
-
         private readonly PresenceService _presenceService;
 
         public PresenceServiceTests()
@@ -38,8 +36,7 @@ namespace Persistency.Test.Services.Implementations
                 }
             });
             Context.SaveChanges();
-            _context.Setup(context => context.Presences).Returns(Context.Presences);
-            _presenceService = new PresenceService(_context.Object);
+            _presenceService = new PresenceService(Context);
         }
 
         [Fact]
