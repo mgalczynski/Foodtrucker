@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using NetTopologySuite.Geometries;
 using Persistency.Dtos;
 using Persistency.Services.Implementations;
@@ -57,9 +56,16 @@ namespace Persistency.Test.Services.Implementations
         {
             var result = await _foodtruckService.CreateNewFoodtruck(new CreateNewFoodtruck
                 {Name = "New foodtruck", DisplayName = "New foodtruck"});
-            Assert.Equal(true, result.Successful);
             Assert.Equal("New foodtruck",
-                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Id == result.Id)?.Name);
+                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Id == result)?.Name);
+        }
+
+        [Fact]
+        public async void CreateFoodTruckTestShouldReturnNotSuccessful()
+        {
+            await Assert.ThrowsAsync<DbUpdateException>(async () =>
+                await _foodtruckService.CreateNewFoodtruck(new CreateNewFoodtruck {Name = "New foodtruck"}));
+            Assert.DoesNotContain("New foodtruck", Context.Foodtrucks.Select(foodtruck => foodtruck.Name));
         }
     }
 }

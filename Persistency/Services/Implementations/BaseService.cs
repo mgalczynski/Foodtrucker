@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Persistency.Dtos;
 using Persistency.Entities;
 
 namespace Persistency.Services.Implementations
@@ -27,12 +26,12 @@ namespace Persistency.Services.Implementations
         public async Task<TDto> FindById(Guid id) =>
             await DbSet.Where(e => e.Id == id).SingleOrDefaultAsync().MapAsync<TDto, TEntity>();
 
-        protected async Task<InsertStatus<Guid>> CreateNewEntity<TCreateEntityDto>(TCreateEntityDto createEntity)
+        protected async Task<Guid> CreateNewEntity<TCreateEntityDto>(TCreateEntityDto createEntity)
         {
             var entityEntry = await DbSet.AddAsync(Mapper.Map<TEntity>(createEntity));
             PersistencyContext.SaveChanges();
             Debug.Assert(entityEntry.Entity.Id != null, "entityEntry.Entity.Id != null");
-            return new InsertStatus<Guid> {Id = (Guid) entityEntry.Entity.Id, Successful = true};
+            return (Guid) entityEntry.Entity.Id;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Persistency.Dtos;
 using Entity = Persistency.Entities.Foodtruck;
@@ -26,7 +25,7 @@ namespace Persistency.Services.Implementations
                 )
                 .ProjectToListAsync<Foodtruck>();
 
-        public async Task<InsertStatus<Guid>> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck) =>
+        public async Task<Guid> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck) =>
             await CreateNewEntity(createNewFoodtruck);
     }
 }
