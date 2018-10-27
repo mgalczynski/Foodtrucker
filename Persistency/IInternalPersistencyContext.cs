@@ -9,6 +9,7 @@ namespace Persistency
     {
         DbSet<Foodtruck> Foodtrucks { get; set; }
         DbSet<Presence> Presences { get; set; }
+        DbSet<FoodtruckOwnership> FoodtruckOwnerships { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
     }

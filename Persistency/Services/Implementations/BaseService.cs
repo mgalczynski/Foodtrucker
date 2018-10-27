@@ -29,7 +29,7 @@ namespace Persistency.Services.Implementations
         protected async Task<Guid> CreateNewEntity<TCreateEntityDto>(TCreateEntityDto createEntity)
         {
             var entityEntry = await DbSet.AddAsync(Mapper.Map<TEntity>(createEntity));
-            PersistencyContext.SaveChanges();
+            await PersistencyContext.SaveChangesAsync();
             Debug.Assert(entityEntry.Entity.Id != null, "entityEntry.Entity.Id != null");
             return (Guid) entityEntry.Entity.Id;
         }
