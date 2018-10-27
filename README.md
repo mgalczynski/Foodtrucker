@@ -38,4 +38,11 @@ Tabela ta będzie zawierała informacje na temat posiadania (różne klasy upraw
 Tabela będzie przechowywała informacje które Foodtrucki użytkownik typu Customer zapisał jako ulubione. Kluczem głównym będzie klucz złożony z kluczy obcych (Users i Foodtruck).
 
 ## Wybrane technologie i narzędzia
-Jako główną technologię został wybrany ASP.NET Core oraz Entity Framework Core z Ngpsql (determinowany przez wybór PostgreSQL jako bazy danych) do persystencji danych oraz React z Reduxem w warstwie prezentacji. Jako edytor został wybrany JetBrains Rider. Do hostowania repozytorium został wybrany BitBucket.
+Klasa narzędzia| Wybrane narzędzie
+---|---
+Framwork webowy | ASP.NET Core
+ORM | Entity Framework Core z Npgsql i NetTopologySuite (obsługa Spatial)
+Framework JS | React z Redux
+IDE | JetBreins Rider
+VCS | GIT
+Hosting repozytorium git | BitBucket
