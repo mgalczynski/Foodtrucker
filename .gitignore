@@ -4,3 +4,4 @@
 .vscode
 Diagrams/*.bak_*
 Diagrams/*.lck
+**/*.pdf
