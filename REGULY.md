@@ -1,0 +1,1 @@
+# Reguły biznesowe aplikacji Foodtrucker
