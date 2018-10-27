@@ -5,3 +5,4 @@
 Diagrams/*.bak_*
 Diagrams/*.lck
 **/*.pdf
+**/tex2pdf*
