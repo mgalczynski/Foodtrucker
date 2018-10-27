@@ -37,6 +37,11 @@ Tabela ta będzie zawierała informacje na temat posiadania (różne klasy upraw
 #### Tabela FavoriteFoodtrucks
 Tabela będzie przechowywała informacje które Foodtrucki użytkownik typu Customer zapisał jako ulubione. Kluczem głównym będzie klucz złożony z kluczy obcych (Users i Foodtruck).
 
+## Diagram przejść
+
+![Diagram](Diagrams/Diagram_przejsc_klienci.jpg?raw=true "Diagram przejść dla klientów foodtrucków")
+![Diagram](Diagrams/Diagram_przejsc_pracownicy_foodtruckow.jpg?raw=true "Diagram przejść dla pracowników foodtrucków foodtrucków")
+
 ## Wybrane technologie i narzędzia
 Klasa narzędzia| Wybrane narzędzie
 ---|---
@@ -46,3 +51,6 @@ Framework JS | React z Redux
 IDE | JetBreins Rider
 VCS | GIT
 Hosting repozytorium git | BitBucket
+
+## Opis architektury aplikacji dla warstwy serverside
+W przypadku wszystkich domen działania aplikacji z wyjątkiem uwierzytelniania aplikacja będzie dwuwarstowa Gdzie jedną warstwą będą serwisy dające warstwę abstrakcji bazie danych i operujące wystawiające interejsy z obiektami `Dto`. Drugą warstwą będą kontrolery wystawiające rest api. W przypadku uwierzytelniania biblioteka udostępnia już interfejs który używa objektów encji.
