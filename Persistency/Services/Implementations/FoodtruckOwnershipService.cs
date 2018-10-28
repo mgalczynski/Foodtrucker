@@ -4,7 +4,8 @@ using Persistency.Entities;
 
 namespace Persistency.Services.Implementations
 {
-    internal class FoodtruckOwnershipService
+
+    internal class FoodtruckOwnershipService : IFoodtruckOwnershipService
     {
         private readonly IInternalPersistencyContext _persistencyContext;
 

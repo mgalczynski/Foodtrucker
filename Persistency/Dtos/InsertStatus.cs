@@ -4,6 +4,6 @@ namespace Persistency.Dtos
     {
         public TId Id { get; set; }
         public bool Successful { get; set; }
-        public bool Description { get; set; }
+        public string Description { get; set; }
     }
 }

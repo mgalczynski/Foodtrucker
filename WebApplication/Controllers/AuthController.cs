@@ -35,7 +35,7 @@ namespace WebApplication.Controllers
                 string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
                 return BadRequest();
             user.Active = role != FoodtruckerRole.ServiceStaff;
-            using (var transaction = _persistencyContext.Database.BeginTransaction())
+            using (var transaction = await _persistencyContext.Database.BeginTransactionAsync())
             {
                 var result = await _userManager.CreateAsync(user, password);
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
