@@ -9,17 +9,17 @@ namespace WebApplication.Controllers
 {
     public class BaseController : Controller
     {
-        private readonly UserManager<FoodtruckerUser> _userManager;
+        protected UserManager<FoodtruckerUser> UserManager { get; }
         private readonly IPersistencyContext _persistencyContext;
 
         protected BaseController(UserManager<FoodtruckerUser> userManager, IPersistencyContext persistencyContext)
         {
-            _userManager = userManager;
+            UserManager = userManager;
             _persistencyContext = persistencyContext;
         }
 
         protected async Task<FoodtruckerUser> CurrentUser() =>
-            await _userManager.FindByNameAsync(User.Identity.Name);
+            await UserManager.FindByNameAsync(User.Identity.Name);
 
         protected async Task<IDbContextTransaction> Transaction() =>
             await _persistencyContext.Database.BeginTransactionAsync();

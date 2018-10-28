@@ -56,5 +56,44 @@ namespace WebApplication.Controllers
             }
             return Ok();
         }
+
+        [HttpPost("{foodtruckId}/[action]")]
+        public async Task<ActionResult> CreateNewOwnership([FromRoute] Guid foodtruckId,
+            [FromBody] CreateNewOwnership createNewOwnership)
+        {
+            if (createNewOwnership?.Email == null)
+                return BadRequest();
+            using (var transaction = await Transaction())
+            {
+                var taskUser = UserManager.FindByEmailAsync(createNewOwnership.Email);
+                if (!await _foodtruckOwnershipService.CanManipulate((await CurrentUser()).Id, foodtruckId,
+                    createNewOwnership.Type))
+                    return Forbid();
+                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruckId, createNewOwnership.Type);
+                transaction.Commit();
+            }
+
+            return Ok();
+        }
+        [HttpPost("{foodtruckId}/[action]")]
+        public async Task<ActionResult> DeleteOwnership([FromRoute] Guid foodtruckId,
+            [FromBody] DeleteOwnership deleteOwnership)
+        {
+            if (deleteOwnership?.Email == null)
+                return BadRequest();
+            using (var transaction = await Transaction())
+            {
+                var taskCurrentUser = CurrentUser();
+                var ownership =
+                    await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(deleteOwnership.Email, foodtruckId);
+                if (!await _foodtruckOwnershipService.CanManipulate((await taskCurrentUser).Id, foodtruckId,
+                    ownership.Type))
+                    return Forbid();
+                await _foodtruckOwnershipService.DeleteOwnership(deleteOwnership.Email, foodtruckId);
+                transaction.Commit();
+            }
+
+            return Ok();
+        }
     }
 }

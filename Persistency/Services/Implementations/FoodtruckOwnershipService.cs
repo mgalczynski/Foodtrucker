@@ -1,12 +1,47 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Persistency.Entities;
+using Persistency.Dtos;
+using OwnershipType = Persistency.Entities.OwnershipType;
+using Entity = Persistency.Entities.FoodtruckOwnership;
 
 namespace Persistency.Services.Implementations
 {
     internal class FoodtruckOwnershipService : IFoodtruckOwnershipService
     {
+        private static readonly IDictionary<OwnershipType, IList<OwnershipType>> _accessDict =
+            new Dictionary<OwnershipType, IList<OwnershipType>>
+            {
+                {
+                    OwnershipType.OWNER,
+                    new List<OwnershipType> {OwnershipType.OWNER, OwnershipType.ADMIN, OwnershipType.REPORTER}
+                },
+                {OwnershipType.ADMIN, new List<OwnershipType> {OwnershipType.REPORTER}},
+                {OwnershipType.REPORTER, new List<OwnershipType>()}
+            };
+
+        private static readonly IDictionary<OwnershipType, IList<OwnershipType>> _revesedAccessDict =
+            _accessDict.Aggregate(new Dictionary<OwnershipType, IList<OwnershipType>>(),
+                (acc, pair) =>
+                {
+                    foreach (var ownershipType in pair.Value)
+                    {
+                        IList<OwnershipType> list = null;
+                        if (!acc.TryGetValue(ownershipType, out list))
+                        {
+                            // Create if not exists in dictionary
+                            list = acc[ownershipType] = new List<OwnershipType>();
+                        }
+
+                        list.Add(pair.Key);
+                    }
+
+                    return acc;
+                });
+
         private readonly IInternalPersistencyContext _persistencyContext;
 
         public FoodtruckOwnershipService(IInternalPersistencyContext persistencyContext)
@@ -16,16 +51,33 @@ namespace Persistency.Services.Implementations
 
         public async Task CreateOwnership(Guid userId, Guid foodtruckId, Entities.OwnershipType type)
         {
-            await _persistencyContext.FoodtruckOwnerships.AddAsync(new FoodtruckOwnership
+            await _persistencyContext.FoodtruckOwnerships.AddAsync(new Entity
                 {UserId = userId, FoodtruckId = foodtruckId, Type = type});
             await _persistencyContext.SaveChangesAsync();
         }
 
-        private async Task<FoodtruckOwnership> FindByUserAndFoodtruck(Guid userId, Guid foodtruckId) =>
+        public async Task<FoodtruckOwnership> FindByUserEmailAndFoodtruck(string email, Guid foodtruckId) =>
+            Mapper.Map<FoodtruckOwnership>(await FindEntityByUserEmailAndFoodtruck(email, foodtruckId));
+
+        private async Task<Entity> FindEntityByUserAndFoodtruck(Guid userId, Guid foodtruckId) =>
             await _persistencyContext.FoodtruckOwnerships
                 .FirstOrDefaultAsync(e => e.UserId == userId && e.FoodtruckId == foodtruckId);
 
+        private async Task<Entity> FindEntityByUserEmailAndFoodtruck(string email, Guid foodtruckId) =>
+            await _persistencyContext.FoodtruckOwnerships.FirstOrDefaultAsync(e =>
+                e.User.Email == email && e.FoodtruckId == foodtruckId);
+
+
         public async Task<OwnershipType?> FindTypeByUserAndFoodtruck(Guid userId, Guid foodtruckId) =>
-            (await FindByUserAndFoodtruck(userId, foodtruckId))?.Type;
+            (await FindEntityByUserAndFoodtruck(userId, foodtruckId))?.Type;
+
+        public async Task<bool> CanManipulate(Guid userId, Guid foodtruckId, OwnershipType type) =>
+            _revesedAccessDict[type].Contains((await FindEntityByUserAndFoodtruck(userId, foodtruckId)).Type);
+
+        public async Task DeleteOwnership(string userEmail, Guid foodtruckId)
+        {
+            _persistencyContext.FoodtruckOwnerships.Remove(await FindEntityByUserEmailAndFoodtruck(userEmail, foodtruckId));
+            await _persistencyContext.SaveChangesAsync();
+        }
     }
 }
