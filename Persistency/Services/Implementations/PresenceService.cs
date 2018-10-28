@@ -16,9 +16,16 @@ namespace Persistency.Services.Implementations
 
         public async Task<IList<Presence>> FindPresencesWithin(Coordinate coordinate, double distance) =>
             await PersistencyContext.Presences.FromSql(
-                    $@"SELECT *
-                       FROM ""{nameof(PersistencyContext.Presences)}""
-                       WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)"
+                    $@"SELECT p.*
+                       FROM ""{nameof(PersistencyContext.Foodtrucks)}"" f
+                       INNER JOIN
+                       (
+                           SELECT *
+                           FROM ""{nameof(PersistencyContext.Presences)}""
+                           WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)
+                       ) AS p ON f.""{nameof(Entities.Foodtruck.Id)}"" = p.""{nameof(Presence.FoodTruckId)}""
+                       WHERE NOT f.""{nameof(Entities.Foodtruck.Deleted)}""
+"
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
                 .ProjectToListAsync<Presence>();

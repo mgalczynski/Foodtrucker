@@ -19,7 +19,7 @@ namespace Persistency.Services.Implementations
             await PersistencyContext.Foodtrucks.FromSql(
                     $@"SELECT *
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}""
-                       WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Removed)}""
+                       WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
                          AND ST_DWithin(""{nameof(Entity.DefaultLocation)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)"
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
@@ -33,7 +33,7 @@ namespace Persistency.Services.Implementations
             var foodtruck = await DbSet.FirstOrDefaultAsync(e => e.Id == id);
             if (foodtruck == null)
                 throw new ArgumentException();
-            foodtruck.Removed = true;
+            foodtruck.Deleted = true;
             await PersistencyContext.SaveChangesAsync();
         }
     }

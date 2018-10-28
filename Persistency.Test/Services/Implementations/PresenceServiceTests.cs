@@ -5,6 +5,7 @@ using NetTopologySuite.Geometries;
 using Persistency.Dtos;
 using Persistency.Services.Implementations;
 using Xunit;
+using Foodtruck = Persistency.Entities.Foodtruck;
 
 namespace Persistency.Test.Services.Implementations
 {
@@ -16,22 +17,39 @@ namespace Persistency.Test.Services.Implementations
 
         public PresenceServiceTests()
         {
-            Context.Foodtrucks.Add(new Entities.Foodtruck
+            Context.Foodtrucks.AddRange(new List<Foodtruck>
             {
-                Name = "Foodtruck without location",
-                DisplayName = "Foodtruck without location",
-                Presences = new List<Entities.Presence>
+                new Foodtruck
                 {
-                    new Entities.Presence
+                    Name = "Foodtruck without location",
+                    DisplayName = "Foodtruck without location",
+                    Presences = new List<Entities.Presence>
                     {
-                        Location = CreatePoint(51.125975, 16.978056),
-                        Title = "Presence within location"
-                    },
-                    new Entities.Presence
-                    {
-                        Location = CreatePoint(51.107261, 17.059999),
-                        Title = "Presence outside location"
+                        new Entities.Presence
+                        {
+                            Location = CreatePoint(51.125975, 16.978056),
+                            Title = "Presence within location"
+                        },
+                        new Entities.Presence
+                        {
+                            Location = CreatePoint(51.107261, 17.059999),
+                            Title = "Presence outside location"
+                        }
                     }
+                },
+                new Foodtruck
+                {
+                    Name = "Deleted Foodtruck",
+                    DisplayName = "Deleted Foodtruck",
+                    Presences = new List<Entities.Presence>
+                    {
+                        new Entities.Presence
+                        {
+                            Location = CreatePoint(51.125975, 16.978056),
+                            Title = "Presence within location"
+                        }
+                    },
+                    Deleted = true
                 }
             });
             Context.SaveChanges();
