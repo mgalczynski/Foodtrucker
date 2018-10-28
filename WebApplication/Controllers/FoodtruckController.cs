@@ -42,5 +42,19 @@ namespace WebApplication.Controllers
 
             return new InsertStatus<Guid> {Id = foodtruckId, Successful = true};
         }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteFoodtruck([FromRoute] Guid id)
+        {
+            using (var transaction = await Transaction())
+            {
+                var user = await CurrentUser();
+                if (await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, id) != OwnershipType.OWNER)
+                    return Forbid();
+                await _foodtruckService.MarkAsDeleted(id);
+                transaction.Commit();
+            }
+            return Ok();
+        }
     }
 }

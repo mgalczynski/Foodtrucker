@@ -14,5 +14,6 @@ namespace Persistency.Entities
         public Point DefaultLocation { get; set; }
 
         public IList<Presence> Presences { get; set; }
+        public bool Removed { get; set; }
     }
 }

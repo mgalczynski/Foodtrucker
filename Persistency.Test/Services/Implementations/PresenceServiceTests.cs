@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Moq;
 using NetTopologySuite.Geometries;
 using Persistency.Dtos;
 using Persistency.Services.Implementations;

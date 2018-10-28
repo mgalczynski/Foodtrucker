@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -44,9 +45,19 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void FindFoodtrucksTest()
         {
-            const double distance = 2d;
+            double distance = 2;
             var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
             var result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
+            Assert.Equal(new HashSet<string> {"Foodtruck within location"},
+                result.Select(foodtruck => foodtruck.Name).ToHashSet());
+            distance = 10000;
+            result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
+            Assert.Equal(new HashSet<string> {"Foodtruck within location", "Foodtruck outside location"},
+                result.Select(foodtruck => foodtruck.Name).ToHashSet());
+            var id = (await Context.Foodtrucks.FirstAsync(e => e.Name == "Foodtruck outside location")).Id;
+            Debug.Assert(id != null, nameof(id) + " != null");
+            await _foodtruckService.MarkAsDeleted((Guid) id);
+            result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Assert.Equal(new HashSet<string> {"Foodtruck within location"},
                 result.Select(foodtruck => foodtruck.Name).ToHashSet());
         }
