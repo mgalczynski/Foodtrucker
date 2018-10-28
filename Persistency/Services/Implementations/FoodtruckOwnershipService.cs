@@ -74,9 +74,20 @@ namespace Persistency.Services.Implementations
         public async Task<bool> CanManipulate(Guid userId, Guid foodtruckId, OwnershipType type) =>
             _revesedAccessDict[type].Contains((await FindEntityByUserAndFoodtruck(userId, foodtruckId)).Type);
 
+        public async Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(Guid foodtruckId) =>
+            await _persistencyContext.FoodtruckOwnerships
+                .Where(e => e.FoodtruckId == foodtruckId)
+                .ProjectToListAsync<FoodtruckOwnership>();
+
+        public async Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByUser(Guid userId) =>
+            await _persistencyContext.FoodtruckOwnerships
+                .Where(e => e.UserId == userId)
+                .ProjectToListAsync<FoodtruckOwnership>();
+
         public async Task DeleteOwnership(string userEmail, Guid foodtruckId)
         {
-            _persistencyContext.FoodtruckOwnerships.Remove(await FindEntityByUserEmailAndFoodtruck(userEmail, foodtruckId));
+            _persistencyContext.FoodtruckOwnerships.Remove(
+                await FindEntityByUserEmailAndFoodtruck(userEmail, foodtruckId));
             await _persistencyContext.SaveChangesAsync();
         }
     }

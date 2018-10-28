@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Persistency.Dtos;
@@ -18,16 +20,20 @@ namespace Persistency.Services.Implementations
             await PersistencyContext.Presences.FromSql(
                     $@"SELECT p.*
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}"" f
-                       INNER JOIN
-                       (
-                           SELECT *
-                           FROM ""{nameof(PersistencyContext.Presences)}""
-                           WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)
-                       ) AS p ON f.""{nameof(Entities.Foodtruck.Id)}"" = p.""{nameof(Presence.FoodTruckId)}""
+                           INNER JOIN
+                           (
+                               SELECT *
+                               FROM ""{nameof(PersistencyContext.Presences)}""
+                               WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)
+                           ) AS p ON f.""{nameof(Entities.Foodtruck.Id)}"" = p.""{nameof(Presence.FoodTruckId)}""
                        WHERE NOT f.""{nameof(Entities.Foodtruck.Deleted)}""
 "
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
+                .ProjectToListAsync<Presence>();
+
+        public async Task<IList<Presence>> FindPresences(ICollection<Guid> foodtruckIds) =>
+            await DbSet.Where(e => foodtruckIds.Contains(e.FoodTruckId))
                 .ProjectToListAsync<Presence>();
     }
 }
