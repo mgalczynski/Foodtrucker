@@ -1,0 +1,15 @@
+**/obj
+**/bin
+**/node_modules
+**/.idea
+**/.vscode
+**/.gitignore
+**/*.Development.json
+*.Test
+test.yml
+dev.yml
+PU
+Diagrams
+md_to_pdf.sh
+README.md
+SLOWNIK.md
