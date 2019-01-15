@@ -31,17 +31,21 @@ namespace Persistency
 
     internal sealed class PersistencyContext : AbstractPersistencyContext
     {
-        private readonly IConfiguration _config;
+        private readonly string _connectionString;
 
-        public PersistencyContext(IConfiguration config)
+        internal PersistencyContext(string connectionString)
         {
-            _config = config;
+            _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        }
+
+        public PersistencyContext(IConfiguration config) : this(config.GetValue<string>("FoodtruckerDatabase"))
+        {
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseNpgsql(_config.GetValue<string>("FoodtruckerDatabase"),
+            optionsBuilder.UseNpgsql(_connectionString,
                 builder => builder.UseNetTopologySuite());
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistency;
@@ -35,23 +36,24 @@ namespace WebApplication
         public void Configure(
             IApplicationBuilder app,
             IHostingEnvironment env,
-#if DEBUG
             IServiceProvider serviceProvider,
-#endif
             RoleManager<FoodtruckerRole> roleManager
         )
         {
+            var dbContext = serviceProvider.GetService<IPersistencyContext>();
+
 #if DEBUG
             if (env.IsDevelopment())
             {
-                var dbContext = serviceProvider.GetService<IPersistencyContext>();
                 dbContext.Database.EnsureDeleted();
                 dbContext.Database.EnsureCreated();
                 app.UseDeveloperExceptionPage();
+                app.UseHttpsRedirection();
             }
             else
             {
 #endif
+                dbContext.Database.Migrate();
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
 #if DEBUG
@@ -59,7 +61,6 @@ namespace WebApplication
 #endif
 
             Persistency.Persistency.OnStart(roleManager);
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseAuthentication();
