@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -57,11 +58,12 @@ namespace Persistency
 
         internal static void InitializeMapper(IMapperConfigurationExpression mapper)
         {
+            Func<Dtos.Coordinate, Point> func = ExtensionMethods.ToDbPoint;
             mapper.CreateMap<Dtos.CreateNewFoodtruck, Entities.Foodtruck>();
             mapper.CreateMap<Dtos.Foodtruck, Entities.Foodtruck>().ReverseMap();
             mapper.CreateMap<Dtos.Presence, Entities.Presence>().ReverseMap();
-            mapper.CreateMap<Dtos.Coordinate, Point>().ConvertUsing(ExtensionMethods.ToDbPoint);
-            mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(ExtensionMethods.ToCoordinate);
+            mapper.CreateMap<Dtos.Coordinate, Point>().ConvertUsing(c => c.ToDbPoint());
+            mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(p => p.ToCoordinate());
         }
 
         public static void OnStart(RoleManager<Entities.FoodtruckerRole> roleManager)
@@ -69,8 +71,8 @@ namespace Persistency
             foreach (var task in Entities.FoodtruckerRole.Roles
                 .Where(name => !roleManager.RoleExistsAsync(name).Result)
                 .Select(name => roleManager.CreateAsync(new Entities.FoodtruckerRole {Name = name})))
-                if(!task.Result.Succeeded)
-                    throw new SystemException(string.Join(", ", task.Result.Errors.Select(error=>error.Description)));
+                if (!task.Result.Succeeded)
+                    throw new SystemException(string.Join(", ", task.Result.Errors.Select(error => error.Description)));
         }
     }
 }

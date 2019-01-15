@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {Redirect} from 'react-router-dom';
 import {bindActionCreators} from "redux";
-import {actionCreators} from "../../store/UserStore";
+import {actionCreators} from "../store/UserStore";
 
 class Home extends Component {
     componentWillMount() {
@@ -56,6 +56,6 @@ class Home extends Component {
 }
 
 export default connect(
-    state => state.weatherForecasts,
+    state => state.userStore,
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(Home);
