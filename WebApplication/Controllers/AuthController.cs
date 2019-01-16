@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -28,8 +29,7 @@ namespace WebApplication.Controllers
             _persistencyContext = persistencyContext;
         }
 
-        private async Task<ActionResult<RegisterResult>> Register(FoodtruckerUser user, string password,
-            string role)
+        private async Task<ActionResult<RegisterResult>> Register(FoodtruckerUser user, string password, string role)
         {
             if (string.IsNullOrEmpty(user.Email) || password == null ||
                 string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
@@ -38,6 +38,10 @@ namespace WebApplication.Controllers
             using (var transaction = await _persistencyContext.Database.BeginTransactionAsync())
             {
                 var result = await _userManager.CreateAsync(user, password);
+                if (!result.Succeeded)
+                    return new RegisterResult
+                        {Successful = false, Errors = result.Errors.Select(error => error.Description).ToList()};
+
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
                 if (!addToRoleResult.Succeeded)
                 {
@@ -45,17 +49,9 @@ namespace WebApplication.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError);
                 }
 
-                if (result.Succeeded)
-                {
-                    if (role != FoodtruckerRole.ServiceStaff)
-                        await _signInManager.SignInAsync(user, isPersistent: true);
-                    return new RegisterResult {Successful = true};
-                }
-                else
-                {
-                    return new RegisterResult
-                        {Successful = false, Errors = result.Errors.Select(error => error.Description).ToList()};
-                }
+                if (role != FoodtruckerRole.ServiceStaff)
+                    await _signInManager.SignInAsync(user, isPersistent: true);
+                return new RegisterResult {Successful = true};
             }
         }
 
@@ -68,7 +64,8 @@ namespace WebApplication.Controllers
                 UserName = registerUser?.Email?.Trim(),
                 Email = registerUser?.Email?.Trim(),
                 LastName = registerUser?.LastName?.Trim(),
-                FirstName = registerUser?.FirstName?.Trim()
+                FirstName = registerUser?.FirstName?.Trim(),
+                SecurityStamp = Guid.NewGuid().ToString()
             };
             return await Register(user, registerUser?.Password, FoodtruckerRole.Customer);
         }
@@ -82,7 +79,8 @@ namespace WebApplication.Controllers
                 UserName = registerUser?.Email?.Trim(),
                 Email = registerUser?.Email?.Trim(),
                 LastName = registerUser?.LastName?.Trim(),
-                FirstName = registerUser?.FirstName?.Trim()
+                FirstName = registerUser?.FirstName?.Trim(),
+                SecurityStamp = Guid.NewGuid().ToString()
             };
             return await Register(user, registerUser?.Password, FoodtruckerRole.FoodtruckStaff);
         }
