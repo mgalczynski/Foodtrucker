@@ -16,6 +16,7 @@
     .navbar {
         height: 100%;
         width: calc(25% - 20px);
+        max-width: 20em;
     }
     .navbar {
         border-radius: 0;
