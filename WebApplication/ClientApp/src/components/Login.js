@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
 import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
 import {actionCreators} from '../store/Login';
 
@@ -15,7 +14,7 @@ class Login extends Component {
         return (
             <div>
                 <form onSubmit={this.submit}>
-                    {this.props.failed &&  <Alert bsStyle="danger">Wrong user or password</Alert>}
+                    {this.props.failed && <Alert bsStyle="danger">Wrong user or password</Alert>}
                     <FormGroup
                         controlId="formBasicText"
                     >
@@ -45,7 +44,8 @@ class Login extends Component {
                         <FormControl.Feedback/>
                     </FormGroup>
                     <Button type="submit">Sign up</Button>
-                    <Checkbox value={this.props.rememberMe} onChange={e=>this.props.rememberMeChanged(e.target.value)}>
+                    <Checkbox value={this.props.rememberMe}
+                              onChange={e => this.props.rememberMeChanged(e.target.value)}>
                         Remember me
                     </Checkbox>
                 </form>

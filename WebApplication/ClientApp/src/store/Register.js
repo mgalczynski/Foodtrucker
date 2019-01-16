@@ -1,4 +1,5 @@
-﻿import {userChanged} from './App';
+﻿import {push} from 'react-router-redux';
+import {userChanged} from './App';
 
 const emailChanged = 'register/EMAIL_CHANGED';
 const firstNameChanged = 'register/FIRSTNAME_CHANGED';
@@ -41,9 +42,10 @@ export const actionCreators = {
                 }),
             });
         const result = await response.json();
-        if (result.successful)
+        if (result.successful) {
             dispatch({type: userChanged, user: result.user});
-        else
+            dispatch(push('/'));
+        } else
             dispatch({type: failedAttempt, cause: result.errors});
     }
 };

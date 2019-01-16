@@ -1,4 +1,5 @@
-﻿import {userChanged} from './App';
+﻿import {push} from 'react-router-redux';
+import {userChanged} from './App';
 
 const emailChanged = 'login/EMAIL_CHANGED';
 const passwordChanged = 'login/PASSWORD_CHANGED';
@@ -36,9 +37,10 @@ export const actionCreators = {
                 }),
             });
         const result = await response.json();
-        if (result.successful)
+        if (result.successful) {
             dispatch({type: userChanged, user: result.user});
-        else
+            dispatch(push('/'));
+        } else
             dispatch({type: failedAttempt});
     }
 };
