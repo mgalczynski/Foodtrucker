@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {FormGroup, ControlLabel, FormControl, HelpBlock, Button, Alert} from 'react-bootstrap';
-import {actionCreators} from '../store/Register';
+import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
+import {actionCreators} from '../store/Login';
 
-class Register extends Component {
+class Login extends Component {
     submit = event => {
         event.preventDefault();
         this.props.submit();
@@ -15,34 +15,7 @@ class Register extends Component {
         return (
             <div>
                 <form onSubmit={this.submit}>
-                    <FormGroup
-                        controlId="formBasicText"
-                    >
-                        <ControlLabel>First name</ControlLabel>
-                        <FormControl
-                            disabled={this.props.ongoingRequest}
-                            autoComplete="given-name"
-                            type="text"
-                            value={this.props.firstName}
-                            placeholder="First name"
-                            onChange={e => this.props.firstNameChanged(e.target.value)}
-                        />
-                        <FormControl.Feedback/>
-                    </FormGroup>
-                    <FormGroup
-                        controlId="formBasicText"
-                    >
-                        <ControlLabel>Last name</ControlLabel>
-                        <FormControl
-                            disabled={this.props.ongoingRequest}
-                            autoComplete="family-name"
-                            type="text"
-                            value={this.props.lastName}
-                            placeholder="Last name"
-                            onChange={e => this.props.lastNameChanged(e.target.value)}
-                        />
-                        <FormControl.Feedback/>
-                    </FormGroup>
+                    {this.props.failed &&  <Alert bsStyle="danger">Wrong user or password</Alert>}
                     <FormGroup
                         controlId="formBasicText"
                     >
@@ -71,9 +44,10 @@ class Register extends Component {
                         />
                         <FormControl.Feedback/>
                     </FormGroup>
-                    {this.props.cause &&
-                    this.props.cause.map(cause => <Alert bsStyle="danger" key={cause}>{cause}</Alert>)}
                     <Button type="submit">Sign up</Button>
+                    <Checkbox value={this.props.rememberMe} onChange={e=>this.props.rememberMeChanged(e.target.value)}>
+                        Remember me
+                    </Checkbox>
                 </form>
             </div>
         );
@@ -81,6 +55,6 @@ class Register extends Component {
 }
 
 export default connect(
-    state => state.register,
+    state => state.login,
     dispatch => bindActionCreators(actionCreators, dispatch)
-)(Register);
+)(Login);

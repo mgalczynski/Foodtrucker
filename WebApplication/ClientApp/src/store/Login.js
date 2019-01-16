@@ -1,31 +1,28 @@
 ﻿import {userChanged} from './App';
-const emailChanged = 'register/EMAIL_CHANGED';
-const firstNameChanged = 'register/FIRSTNAME_CHANGED';
-const lastNameChanged = 'register/LASTNAME_CHANGED';
-const passwordChanged = 'register/PASSWORD_CHANGED';
-const failedAttempt = 'register/FAILED_ATTEMPT';
-const requestStarted = 'register/REQUEST_STARTED';
-const initialState = {cause: null, email: '', firstName: '', lastName: '', password: '', ongoingRequest: false};
+
+const emailChanged = 'login/EMAIL_CHANGED';
+const passwordChanged = 'login/PASSWORD_CHANGED';
+const rememberMeChanged = 'login/REMEMBER_ME_CHANGED';
+const failedAttempt = 'login/FAILED_ATTEMPT';
+const requestStarted = 'login/REQUEST_STARTED';
+const initialState = {failed: false, email: '', password: '', rememberMe: false, ongoingRequest: false};
 
 export const actionCreators = {
     emailChanged: value => async (dispatch) => {
         dispatch({type: emailChanged, value});
     },
-    lastNameChanged: value => async (dispatch) => {
-        dispatch({type: lastNameChanged, value});
-    },
-    firstNameChanged: value => async (dispatch) => {
-        dispatch({type: firstNameChanged, value});
-    },
     passwordChanged: value => async (dispatch) => {
         dispatch({type: passwordChanged, value});
     },
+    rememberMeChanged: value => async (dispatch) => {
+        dispatch({type: rememberMeChanged, value});
+    },
     submit: () => async (dispatch, getState) => {
-        const state = getState().register;
-        if (!state.email.trim() || !state.firstName.trim() || !state.lastName.trim() || !state.password.trim())
+        const state = getState().login;
+        if (!state.email.trim() || !state.password.trim())
             return;
         dispatch({type: requestStarted});
-        const response = await fetch('api/auth/register',
+        const response = await fetch('api/auth/login',
             {
                 credentials: 'same-origin',
                 method: 'POST',
@@ -34,16 +31,15 @@ export const actionCreators = {
                 },
                 body: JSON.stringify({
                     email: state.email,
-                    firstName: state.firstName,
-                    lastName: state.lastName,
-                    password: state.password
+                    password: state.password,
+                    rememberMe: state.rememberMe
                 }),
             });
         const result = await response.json();
         if (result.successful) {
             dispatch({type: userChanged, user: result.user});
         } else {
-            dispatch({type: failedAttempt, cause: result.errors})
+            dispatch({type: failedAttempt})
         }
     }
 };
@@ -52,18 +48,16 @@ export const reducer = (state, action) => {
     state = state || initialState;
 
     switch (action.type) {
+        case rememberMeChanged:
+            return {...state, rememberMe: action.value};
         case emailChanged:
             return {...state, email: action.value};
-        case firstNameChanged:
-            return {...state, firstName: action.value};
-        case lastNameChanged:
-            return {...state, lastName: action.value};
         case passwordChanged:
             return {...state, password: action.value};
         case requestStarted:
             return {...state, ongoingRequest: true, password: ''};
         case failedAttempt:
-            return {...state, ongoingRequest: false, cause: action.cause};
+            return {...state, ongoingRequest: false, failed: true};
         case userChanged:
             return initialState;
         default:

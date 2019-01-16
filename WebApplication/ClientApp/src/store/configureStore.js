@@ -3,6 +3,7 @@ import thunk from 'redux-thunk';
 import {routerReducer, routerMiddleware} from 'react-router-redux';
 import * as Counter from './Counter';
 import * as WeatherForecasts from './WeatherForecasts';
+import * as Login from './Login';
 import * as Register from './Register';
 import * as App from './App';
 
@@ -11,7 +12,8 @@ export default function configureStore(history, initialState) {
         counter: Counter.reducer,
         weatherForecasts: WeatherForecasts.reducer,
         register: Register.reducer,
-        app: App.reducers
+        login: Login.reducer,
+        app: App.reducer
     };
 
     const middleware = [

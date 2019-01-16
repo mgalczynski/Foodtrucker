@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Persistency;
 using Persistency.Entities;
-using WebApplication.Dtos;
+using Persistency.Dtos;
 
 namespace WebApplication.Controllers
 {
@@ -51,7 +51,7 @@ namespace WebApplication.Controllers
 
                 if (role != FoodtruckerRole.ServiceStaff)
                     await _signInManager.SignInAsync(user, isPersistent: true);
-                return new RegisterResult {Successful = true};
+                return new RegisterResult {Successful = true, User = Mapper.Map<User>(user)};
             }
         }
 
@@ -92,17 +92,34 @@ namespace WebApplication.Controllers
             if (loginUser?.Email == null || loginUser?.Password == null)
                 return BadRequest();
             var user = await _userManager.FindByEmailAsync(loginUser.Email);
-            return !user.Active
-                ? new LoginResult
+            if (user == null)
+                return new LoginResult
+                {
+                    IsNotAllowed = false,
+                    Successful = false,
+                    IsLockedOut = false
+                };
+            if (!user.Active)
+                return new LoginResult
                 {
                     IsNotAllowed = true,
-                }
-                : Mapper.Map<LoginResult>(await _signInManager.PasswordSignInAsync(
-                    user.UserName,
-                    loginUser.Password,
-                    loginUser.RememberMe,
-                    false
-                ));
+                    Successful = false,
+                    IsLockedOut = false
+                };
+
+            var signInResult = await _signInManager.PasswordSignInAsync(
+                user,
+                loginUser.Password,
+                loginUser.RememberMe,
+                false
+            );
+            return new LoginResult
+            {
+                User = signInResult.Succeeded ? Mapper.Map<User>(user) : null,
+                Successful = signInResult.Succeeded,
+                IsLockedOut = signInResult.IsLockedOut,
+                IsNotAllowed = signInResult.IsNotAllowed
+            };
         }
 
         [HttpGet("[action]")]
