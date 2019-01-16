@@ -12,6 +12,14 @@ export const actionCreators = {
         const result = await response.json();
         if (result.isSignedIn)
             dispatch({type: userChanged, user: result.user});
+    },
+    logOut: () => async (dispatch) => {
+        await fetch('api/auth/logout',
+            {
+                credentials: 'same-origin',
+                method: 'GET'
+            });
+        dispatch({type: userChanged, user: null});
     }
 };
 

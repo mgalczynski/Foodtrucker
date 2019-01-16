@@ -12,7 +12,7 @@
 }
 
 @media (min-width: 768px) {
-    /* On large screens, convert the nav menu to a vertical sidebar */
+     On large screens, convert the nav menu to a vertical sidebar 
     .navbar {
         height: 100%;
         width: calc(25% - 20px);
@@ -54,5 +54,15 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+    .navbar .pull-down {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+    
+    .navbar .nav-item * {
+        color: red;
     }
 }
