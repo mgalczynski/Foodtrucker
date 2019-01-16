@@ -1,7 +1,7 @@
 ﻿version: "3"
 services:
   app:
-    image: foodtrucker
+    image: docker.miroslawgalczynski.com/foodtrucker
     restart: always
     ports:
       - 127.0.0.1:$PORT:80
