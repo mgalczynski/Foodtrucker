@@ -76,10 +76,12 @@ namespace WebApplication
             {
                 spa.Options.SourcePath = "ClientApp";
 
+#if DEBUG
                 if (env.IsDevelopment())
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
+#endif
             });
         }
     }
