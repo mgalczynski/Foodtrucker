@@ -36,11 +36,10 @@ export const actionCreators = {
                 }),
             });
         const result = await response.json();
-        if (result.successful) {
+        if (result.successful)
             dispatch({type: userChanged, user: result.user});
-        } else {
-            dispatch({type: failedAttempt})
-        }
+        else
+            dispatch({type: failedAttempt});
     }
 };
 

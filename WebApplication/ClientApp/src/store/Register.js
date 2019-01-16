@@ -1,4 +1,5 @@
 ﻿import {userChanged} from './App';
+
 const emailChanged = 'register/EMAIL_CHANGED';
 const firstNameChanged = 'register/FIRSTNAME_CHANGED';
 const lastNameChanged = 'register/LASTNAME_CHANGED';
@@ -40,11 +41,10 @@ export const actionCreators = {
                 }),
             });
         const result = await response.json();
-        if (result.successful) {
+        if (result.successful)
             dispatch({type: userChanged, user: result.user});
-        } else {
-            dispatch({type: failedAttempt, cause: result.errors})
-        }
+        else
+            dispatch({type: failedAttempt, cause: result.errors});
     }
 };
 

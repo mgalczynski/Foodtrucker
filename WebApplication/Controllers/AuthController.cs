@@ -123,6 +123,16 @@ namespace WebApplication.Controllers
         }
 
         [HttpGet("[action]")]
+        public async Task<CheckResult> Check()
+        {
+            var username = User.Identity.Name;
+            if (username == null)
+                return new CheckResult {IsSignedIn = false};
+            var user = await _userManager.FindByNameAsync(username);
+            return new CheckResult {IsSignedIn = true, User = Mapper.Map<User>(user)};
+        }
+
+        [HttpGet("[action]")]
         public async Task<ActionResult> LogOut()
         {
             await _signInManager.SignOutAsync();

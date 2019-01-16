@@ -45,7 +45,6 @@ namespace WebApplication
 #if DEBUG
             if (env.IsDevelopment())
             {
-                dbContext.Database.EnsureDeleted();
                 dbContext.Database.EnsureCreated();
                 app.UseDeveloperExceptionPage();
                 app.UseHttpsRedirection();
