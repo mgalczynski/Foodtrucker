@@ -7,6 +7,16 @@ pipeline {
     agent any
 
     stages {
+        stage('Build and publish base image') {
+            steps{
+                script {
+                     docker.withRegistry('https://' + registry, registryCredential) {
+                         image = docker.build(registry + '/dotnet:2.2-sdk-node', '-f Dockerfile-dotnet-sdk-node .')
+                         image.push()
+                     }
+                }
+            }
+        }
         stage('Tests') {
             steps{
                 script {
