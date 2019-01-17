@@ -18,7 +18,7 @@ namespace Persistency.Test
             optionsBuilder.UseLoggerFactory(_myLoggerFactory);
             //            optionsBuilder.UseInMemoryDatabase(nameof(Test));
             optionsBuilder.UseNpgsql(
-                @"Server=localhost;Port=15432;Database=FoodtruckerTest;Username=postgres;Password=postgres;",
+                @"Server=db;Database=FoodtruckerTest;Username=postgres;Password=postgres;",
                 builder => builder.UseNetTopologySuite());
 //            optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=FoodtruckerTest;Trusted_Connection=True;", builder => builder.UseNetTopologySuite());
         }

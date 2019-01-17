@@ -7,10 +7,28 @@ pipeline {
     agent any
 
     stages {
+        stage('Tests') {
+            steps{
+                script {
+                    docker.image('mdillon/postgis:11').withRun('-e "POSTGRES_PASSWORD=postgres" -e "POSTGRES_DB=FoodtruckerTest"') { c ->
+                        docker.image('mdillon/postgis:11').inside("--link ${c.id}:db") {
+                            sh 'for ty in {1..10} ; do [ -n $(pg_isready -d FoodtruckerTest -h db -U postgres -q) ] && break; sleep 1; done'
+                        }
+                        docker.withRegistry('https://' + registry, registryCredential) {
+                            docker.image('docker.miroslawgalczynski.com/dotnet:2.2-sdk-node').inside("--link ${c.id}:db -e \"DOTNET_CLI_TELEMETRY_OPTOUT=1\"") {
+                                sh 'dotnet test'
+                            }
+                        }
+                    }
+                }
+            }
+        }
         stage('Building image') {
             steps{
                 script {
-                     image = docker.build registry + '/foodtrucker'
+                     docker.withRegistry('https://' + registry, registryCredential) {
+                         image = docker.build registry + '/foodtrucker'
+                     }
                 }
             }
         }
