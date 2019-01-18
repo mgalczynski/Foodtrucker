@@ -1,13 +1,25 @@
-﻿
-.map-container {
-    width: 500px;
-    height: 500px;
+﻿.col-main,
+.col-nav-menu {
+    padding: 0;
 }
 
-.map-container .leaflet-container{
+.map-container .leaflet-container {
     height: 100%;
 }
 
 @media (min-width: 768px) {
+    .map-container {
+        /*position: absolute;*/
+        width: calc(100% + 20px);
+        height: 100vh;
+        margin: 0 0 0 -20px;
+    }
+}
 
+@media (max-width: 768px) {
+    .map-container {
+        width: 100%;
+        margin: 0;
+        height: calc(100vh - 51px);
+    }
 }

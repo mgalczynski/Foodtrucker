@@ -13,12 +13,15 @@ class MapComponent extends Component {
         this.map = React.createRef();
     }
     containerSizeChanged = () => {
+        this.map.current.leafletElement.invalidateSize(false);
     };
     componentDidMount = () => {
-        this.map.current.leafletElement.invalidateSize(false);
         this.props.moveToCurrentPosition();
+        window.addEventListener('resize', this.containerSizeChanged);
+        this.containerSizeChanged();
     };
     componentWillUnmount = () => {
+        window.addEventListener('resize', this.containerSizeChanged);
     };
 
     render() {
@@ -26,8 +29,8 @@ class MapComponent extends Component {
             <div className='map-container'>
                 <Map ref={this.map} center={[this.props.latitude, this.props.longitude]} zoom={this.props.zoom}>
                     <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+                        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                        attribution='&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
                     />
                 </Map>
             </div>
