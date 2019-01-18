@@ -1,0 +1,13 @@
+﻿
+.map-container {
+    width: 500px;
+    height: 500px;
+}
+
+.map-container .leaflet-container{
+    height: 100%;
+}
+
+@media (min-width: 768px) {
+
+}

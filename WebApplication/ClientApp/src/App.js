@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import {Route} from 'react-router';
 import Layout from './components/Layout';
-import Home from './components/Home';
+import Map from './components/Map';
 import Counter from './components/Counter';
 import Login from './components/Login';
 import Register from './components/Register';
@@ -10,7 +10,7 @@ import FoodtruckStaff from './foodtruckStaff/App';
 
 export default () => (
     <Layout>
-        <Route exact path='/' component={Home}/>
+        <Route exact path='/' component={Map}/>
         <Route path='/counter' component={Counter}/>
         <Route path='/login' component={Login}/>
         <Route path='/register' component={Register}/>
