@@ -13,6 +13,10 @@
 
 @media (min-width: 768px) {
      /*On large screens, convert the nav menu to a vertical sidebar */
+    .col-nav-menu, 
+    .navbar{
+        max-width: calc(20em + 20px);
+    }
     .navbar {
         height: 100%;
         width: calc(25% - 20px);

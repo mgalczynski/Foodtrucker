@@ -11,6 +11,7 @@
     .map-container {
         /*position: absolute;*/
         width: calc(100% + 20px);
+        min-width: calc(100vw - 20em);
         height: 100vh;
         margin: 0 0 0 -20px;
     }
