@@ -1,0 +1,17 @@
+FROM microsoft/dotnet:2.2-sdk AS build
+WORKDIR /app
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+
+COPY Foodtrucker.sln ./
+COPY Persistency/ ./Persistency
+COPY Loader/ ./Loader
+WORKDIR /app/Loader
+RUN dotnet publish -c Release -o out
+
+
+FROM microsoft/dotnet:2.2-runtime
+WORKDIR /app
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+COPY --from=build /app/Loader/out  ./
+ENTRYPOINT ["dotnet", "Loader.dll"]

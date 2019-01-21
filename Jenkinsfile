@@ -2,7 +2,7 @@ pipeline {
     environment {
         registry = 'docker.miroslawgalczynski.com'
         registryCredential = 'nexus'
-        tag = "${(GIT_BRANCH == 'origin/master')? 'latest' : GIT_BRANCH}"
+        tag = "${(GIT_BRANCH == 'origin/master') ? 'latest' : GIT_BRANCH - 'origin/'}"
         image = null
     }
     agent any
@@ -35,23 +35,41 @@ pipeline {
             }
         }
         stage('Building image') {
-             steps{
-                 script {
-                      docker.withRegistry('https://' + registry, registryCredential) {
-                          image = docker.build registry + '/foodtrucker:' + tag
-                      }
-                 }
-             }
-         }
-         stage('Publishing image') {
-             steps{
-                 script {
-                     docker.withRegistry('https://' + registry, registryCredential) {
-                         image.push()
-                     }
-                 }
-             }
-         }
+            steps {
+                script {
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image = docker.build registry + '/foodtrucker:' + tag
+                    }
+                }
+            }
+        }
+        stage('Publishing image') {
+            steps {
+                script {
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image.push()
+                    }
+                }
+            }
+        }
+        stage('Building loader image') {
+            steps {
+                script {
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image = docker.build(registry + '/foodtrucker-loader:' + tag, '-f Dockerfile-loader .')
+                    }
+                }
+            }
+        }
+        stage('Publishing loader  image') {
+            steps {
+                script {
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image.push()
+                    }
+                }
+            }
+        }
         stage('Deploying image') {
             agent {
                 docker { image 'kroniak/ssh-client' }
