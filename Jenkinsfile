@@ -2,23 +2,24 @@ pipeline {
     environment {
         registry = 'docker.miroslawgalczynski.com'
         registryCredential = 'nexus'
+        tag = "${(GIT_BRANCH == 'origin/master') ? 'latest' : GIT_BRANCH - 'origin/'}"
         image = null
     }
     agent any
 
     stages {
         stage('Build and publish base image') {
-            steps{
+            steps {
                 script {
-                     docker.withRegistry('https://' + registry, registryCredential) {
-                         image = docker.build(registry + '/dotnet:2.2-sdk-node', '-f Dockerfile-dotnet-sdk-node .')
-                         image.push()
-                     }
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image = docker.build(registry + '/dotnet:2.2-sdk-node', '-f Dockerfile-dotnet-sdk-node .')
+                        image.push()
+                    }
                 }
             }
         }
         stage('Tests') {
-            steps{
+            steps {
                 script {
                     docker.image('mdillon/postgis:11').withRun('-e "POSTGRES_PASSWORD=postgres" -e "POSTGRES_DB=FoodtruckerTest"') { c ->
                         docker.image('mdillon/postgis:11').inside("--link ${c.id}:db") {
@@ -34,16 +35,16 @@ pipeline {
             }
         }
         stage('Building image') {
-            steps{
+            steps {
                 script {
-                     docker.withRegistry('https://' + registry, registryCredential) {
-                         image = docker.build registry + '/foodtrucker'
-                     }
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image = docker.build registry + '/foodtrucker:' + tag
+                    }
                 }
             }
         }
         stage('Publishing image') {
-            steps{
+            steps {
                 script {
                     docker.withRegistry('https://' + registry, registryCredential) {
                         image.push()
@@ -55,6 +56,7 @@ pipeline {
             agent {
                 docker { image 'kroniak/ssh-client' }
             }
+            when { expression { tag == 'latest' } }
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: 'ssh', keyFileVariable: 'keyFile', usernameVariable: 'userName'),
                                  usernamePassword(credentialsId: 'nexus', usernameVariable: 'dockerUserName', passwordVariable: 'dockerPassword')]) {
@@ -74,3 +76,4 @@ pipeline {
         }
     }
 }
+
