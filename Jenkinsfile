@@ -52,6 +52,24 @@ pipeline {
                 }
             }
         }
+        stage('Building loader image') {
+            steps {
+                script {
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image = docker.build(registry + '/foodtrucker-loader:' + tag, '-f Dockerfile-loader .')
+                    }
+                }
+            }
+        }
+        stage('Publishing loader  image') {
+            steps {
+                script {
+                    docker.withRegistry('https://' + registry, registryCredential) {
+                        image.push()
+                    }
+                }
+            }
+        }
         stage('Deploying image') {
             agent {
                 docker { image 'kroniak/ssh-client' }

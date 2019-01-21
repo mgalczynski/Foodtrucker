@@ -3,7 +3,9 @@ WORKDIR /app
 ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 
-COPY ./ ./
+COPY Foodtrucker.sln ./
+COPY Persistency/ ./Persistency
+COPY WebApplication/ ./WebApplication
 WORKDIR /app/WebApplication
 RUN dotnet publish -c Release -o out
 

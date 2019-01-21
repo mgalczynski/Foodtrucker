@@ -59,7 +59,7 @@ namespace WebApplication
             }
 #endif
 
-            Persistency.Persistency.OnStart(roleManager);
+            Persistency.Persistency.OnStart(serviceProvider);
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseAuthentication();
