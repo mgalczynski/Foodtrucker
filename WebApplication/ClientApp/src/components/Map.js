@@ -4,24 +4,39 @@ import {connect} from 'react-redux';
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
-import {Map, TileLayer} from 'react-leaflet';
+import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
 import {actionCreators} from '../store/Map';
+import L from 'leaflet';
+import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
+import iconUrl from 'leaflet/dist/images/marker-icon.png';
+import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: iconRetinaUrl,
+    iconUrl: iconUrl,
+    shadowUrl: shadowUrl
+});
 
 class MapComponent extends Component {
     constructor(props) {
         super(props);
         this.map = React.createRef();
     }
+
     containerSizeChanged = () => {
         this.map.current.leafletElement.invalidateSize(false);
     };
     componentDidMount = () => {
-        this.props.moveToCurrentPosition();
+        this.props.watchPosition();
         window.addEventListener('resize', this.containerSizeChanged);
         this.containerSizeChanged();
     };
     componentWillUnmount = () => {
-        window.addEventListener('resize', this.containerSizeChanged);
+        window.removeEventListener('resize', this.containerSizeChanged);
+        this.props.clearWatch();
     };
 
     render() {
@@ -32,6 +47,10 @@ class MapComponent extends Component {
                         url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                         attribution='&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
                     />
+                    {this.props.position &&
+                    <Marker position={[this.props.position.latitude, this.props.position.longitude]}>
+                        <Popup>Your position</Popup>
+                    </Marker>}
                 </Map>
             </div>
         );
