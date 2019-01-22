@@ -90,6 +90,8 @@ class MapComponent extends Component {
                     }
                 );
                 this.map.addLayer(this.userMarker);
+            } else {
+                this.userMarker.setLatLng([this.props.position.latitude, this.props.position.longitude]);
             }
         }
 
