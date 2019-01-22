@@ -1,15 +1,21 @@
 {
-  "short_name": "WebApplication",
-  "name": "WebApplication",
+  "short_name": "Foodtrucker",
+  "name": "Foodtrucker",
+  "description": "App that helps you to find a good meal",
   "icons": [
     {
       "src": "favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
+    },
+    {
+      "src": "favicon.png",
+      "sizes": "192x192",
+      "type": "image/png"
     }
   ],
   "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#9d9d9d",
+  "background_color": "#222"
 }
