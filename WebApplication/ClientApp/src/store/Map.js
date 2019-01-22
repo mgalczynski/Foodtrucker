@@ -4,6 +4,7 @@ const locationChanged = 'map/LOCATION_CHANGED';
 const zoomChanged = 'map/ZOOM_CHANGED';
 const boundsChanged = 'map/BOUNDS_CHANGED';
 const positionChanged = 'map/POSITION_CHANGED';
+const locationZoomChanged = 'map/LOCATION_ZOOM_CHANGED';
 const positionRemoved = 'map/POSITION_REMOVED';
 const foodtrucksUpdate = 'map/FOODTRUCKS_UPDATE';
 const locationWatchCreated = 'map/LOCATION_WATCH_CREATED';
@@ -31,12 +32,18 @@ export const actionCreators = {
         dispatch({type: zoomChanged, zoom, bounds});
         actionCreators.loadPoi(dispatch, getState);
     },
+    goToLocation: () => async (dispatch, getState) => {
+        const state = getState();
+        dispatch({type: locationZoomChanged, ...state.map.position, zoom: 16});
+    },
     watchPosition: () => async (dispatch, getState) => {
         if ("geolocation" in navigator) {
             const watchId = navigator.geolocation.watchPosition((e) => {
-                    if (getState().position === null)
-                        dispatch({type: locationChanged, longitude: e.coords.longitude, latitude: e.coords.latitude});
+                const goToLocationDecision = getState().map.position === null;
                     dispatch({type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude});
+                    if (goToLocationDecision) {
+                        actionCreators.goToLocation()(dispatch, getState);
+                    }
                 },
                 null,
                 {enableHighAccurency: true});
@@ -81,6 +88,8 @@ export const reducer = (state, action) => {
     switch (action.type) {
         case boundsChanged:
             return {...state, bounds: action.bounds};
+        case locationZoomChanged:
+            return {...state, longitude: action.longitude, latitude: action.latitude, zoom: action.zoom};
         case locationChanged:
             return {
                 ...state,

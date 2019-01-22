@@ -25,6 +25,7 @@ class MapComponent extends Component {
     constructor(props) {
         super(props);
         this.foodtruckMarkers = new Map();
+        this.userMarker = null;
     }
 
     containerSizeChanged = () => {
@@ -34,28 +35,28 @@ class MapComponent extends Component {
         this.mapZoom = 0;
     };
     componentDidMount = () => {
-        this.props.watchPosition();
         this.map = L.map('map', {
             center: [this.props.latitude, this.props.longitude],
             zoom: 13,
             layers: [
                 L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="//osm.org/copyright">OpenStreetMap</a> contributors'
+                    attribution: '&copy; <a href="//osm.org/copyright">OpenStreetMap</a> contributors',
+                    detectRetina: true
                 })
             ]
         });
         window.addEventListener('resize', this.containerSizeChanged);
+        this.handleLoad(this.map);
+        this.props.watchPosition();
         this.markers = L.markerClusterGroup({
-            spiderfyOnMaxZoom: false,
             showCoverageOnHover: false,
-            zoomToBoundsOnClick: false
+            removeOutsideVisibleBounds: false
         });
         this.map.addLayer(this.markers);
         const center = this.map.getCenter();
         this.mapLongitude = center.lng;
         this.mapLatitidue = center.lat;
         this.mapZoom = this.map.getZoom();
-        this.handleLoad(this.map);
         this.props.boundsChanged(this.map.getBounds());
     };
     componentDidUpdate = (prevProps, prevState, snapshot) => {
@@ -72,17 +73,34 @@ class MapComponent extends Component {
         if (changed)
             this.map.flyTo([this.mapLatitidue, this.mapLongitude], this.mapZoom);
 
+        if (this.props.position !== null) {
+            if (this.userMarker == null) {
+                this.userMarker = L.marker(
+                    [this.props.position.latitude, this.props.position.longitude],
+                    {
+                        icon: L.icon({
+                            iconUrl: 'location.svg',
+
+                            iconSize: [24, 24], // size of the icon
+                            iconAnchor: [12, 12] // point of the icon which will correspond to marker's location
+                        })
+                    }
+                );
+                this.map.addLayer(this.userMarker);
+            }
+        }
+
         const allNewIds = new Set(this.props.foodtrucks.map(f => f.id));
         const newMarkers = new Map(this.props.foodtrucks
             .filter(f => !this.foodtruckMarkers.has(f.id) && f.defaultLocation)
-            .map(f => [f.id, L.marker([f.defaultLocation.latitude, f.defaultLocation.longitude])]));
+            .map(f => [f.id, L.marker([f.defaultLocation.latitude, f.defaultLocation.longitude]).bindPopup(f.displayName)]));
         this.markers.addLayers(Array.from(newMarkers.values()));
         const markersToRemove = [];
         this.foodtruckMarkers.forEach((marker, id) => {
             if (allNewIds.has(id))
                 newMarkers.set(id, marker);
             else
-                markersToRemove.push(marker)
+                markersToRemove.push(marker);
         });
         this.markers.removeLayers(markersToRemove);
         this.foodtruckMarkers = newMarkers;
