@@ -15,7 +15,7 @@ namespace Persistency
             coordinate == null ? null : CreatePointWithSrid(coordinate.Latitude, coordinate.Longitude);
 
         internal static Coordinate ToCoordinate(this Point point) =>
-            point == null ? null : new Coordinate {Latitude = point.X, Longitude = point.Y};
+            point == null ? null : new Coordinate {Latitude = point.Y, Longitude = point.X};
 
         internal static Point CreatePointWithSrid(double latitude, double longitude) =>
             new Point(longitude, latitude) {SRID = 4326};

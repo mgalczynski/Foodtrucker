@@ -3,9 +3,11 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
 import {actionCreators} from '../store/Map';
 import L from 'leaflet';
+import MarkerClusterGroup from 'leaflet.markercluster';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
@@ -20,6 +22,10 @@ L.Icon.Default.mergeOptions({
 });
 
 class MapComponent extends Component {
+    constructor(props) {
+        super(props);
+        this.foodtruckMarkers = new Map();
+    }
 
     containerSizeChanged = () => {
         this.map.invalidateSize(false);
@@ -39,6 +45,12 @@ class MapComponent extends Component {
             ]
         });
         window.addEventListener('resize', this.containerSizeChanged);
+        this.markers = L.markerClusterGroup({
+            spiderfyOnMaxZoom: false,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: false
+        });
+        this.map.addLayer(this.markers);
         const center = this.map.getCenter();
         this.mapLongitude = center.lng;
         this.mapLatitidue = center.lat;
@@ -59,6 +71,21 @@ class MapComponent extends Component {
         }
         if (changed)
             this.map.flyTo([this.mapLatitidue, this.mapLongitude], this.mapZoom);
+
+        const allNewIds = new Set(this.props.foodtrucks.map(f => f.id));
+        const newMarkers = new Map(this.props.foodtrucks
+            .filter(f => !this.foodtruckMarkers.has(f.id) && f.defaultLocation)
+            .map(f => [f.id, L.marker([f.defaultLocation.latitude, f.defaultLocation.longitude])]));
+        this.markers.addLayers(Array.from(newMarkers.values()));
+        const markersToRemove = [];
+        this.foodtruckMarkers.forEach((marker, id) => {
+            if (allNewIds.has(id))
+                newMarkers.set(id, marker);
+            else
+                markersToRemove.push(marker)
+        });
+        this.markers.removeLayers(markersToRemove);
+        this.foodtruckMarkers = newMarkers;
     };
 
     componentWillUnmount = () => {

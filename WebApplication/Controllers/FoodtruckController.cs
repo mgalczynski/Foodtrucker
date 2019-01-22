@@ -27,7 +27,7 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<Foodtruck>> Find([FromBody] FoodtruckQuery foodtruckQuery)
+        public async Task<ActionResult<GenericListResult<Foodtruck>>> Find([FromBody] FoodtruckQuery foodtruckQuery)
         {
             if (foodtruckQuery?.TopLeft == null || foodtruckQuery?.BottomRight == null)
                 return BadRequest();
@@ -35,7 +35,7 @@ namespace WebApplication.Controllers
             {
                 var foodTrucksResult = await _foodtruckService.FindFoodTrucksWithin(foodtruckQuery.TopLeft, foodtruckQuery.BottomRight);
                 var presencesResult = await _presenceService.FindPresencesWithin(foodtruckQuery.TopLeft, foodtruckQuery.BottomRight);
-                return Ok(foodTrucksResult.Concat(await _foodtruckService.FindById(presencesResult.Select(p => p.FoodTruckId))));
+                return foodTrucksResult.Concat(await _foodtruckService.FindById(presencesResult.Select(p => p.FoodTruckId))).ToResult();
             }
         }
     }

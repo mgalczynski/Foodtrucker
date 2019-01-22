@@ -5,9 +5,18 @@ const zoomChanged = 'map/ZOOM_CHANGED';
 const boundsChanged = 'map/BOUNDS_CHANGED';
 const positionChanged = 'map/POSITION_CHANGED';
 const positionRemoved = 'map/POSITION_REMOVED';
+const foodtrucksUpdate = 'map/FOODTRUCKS_UPDATE';
 const locationWatchCreated = 'map/LOCATION_WATCH_CREATED';
 const locationWatchDeleted = 'map/LOCATION_WATCH_DELETED';
-const initialState = {latitude: 51.110254, longitude: 17.031626, zoom: 13, bounds: null, watchId: null, position: null};
+const initialState = {
+    latitude: 51.110254,
+    longitude: 17.031626,
+    zoom: 13,
+    bounds: null,
+    watchId: null,
+    position: null,
+    foodtrucks: []
+};
 
 export const actionCreators = {
     locationChanged: (longitude, latitude, bounds) => async (dispatch, getState) => {
@@ -36,7 +45,7 @@ export const actionCreators = {
     },
     loadPoi: async (dispatch, getState) => {
         const state = getState().map;
-        await fetch('api/foodtruck/find',
+        const response = await fetch('api/foodtruck/find',
             {
                 method: 'POST',
                 headers: {
@@ -53,6 +62,8 @@ export const actionCreators = {
                     }
                 }),
             });
+        const content = await response.json();
+        dispatch({type: foodtrucksUpdate, foodtrucks: content.result});
     },
     clearWatch: () => async (dispatch, getState) => {
         const watchId = getState().map.watchId;
@@ -87,6 +98,8 @@ export const reducer = (state, action) => {
             return {...state, watchId: action.watchId};
         case locationWatchDeleted:
             return {...state, watchId: null, position: null};
+        case foodtrucksUpdate:
+            return {...state, foodtrucks: action.foodtrucks};
         default:
             return state;
     }
