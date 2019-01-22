@@ -5,6 +5,7 @@
   "dependencies": {
     "bootstrap": "^3.4.0",
     "leaflet": "^1.4.0",
+    "leaflet-easybutton": "^2.4.0",
     "leaflet.markercluster": "^1.4.1",
     "react": "^16.7.0",
     "react-bootstrap": "^0.31.5",

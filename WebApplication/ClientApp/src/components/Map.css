@@ -7,6 +7,14 @@
     height: 100%;
 }
 
+.easy-button-button {
+    padding: 0;
+}
+
+.map-location-icon {
+    font-size: 300%;
+}
+
 @media (min-width: 768px) {
     .map-container {
         /*position: absolute;*/

@@ -4,10 +4,12 @@ import {connect} from 'react-redux';
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+import 'leaflet-easybutton/src/easy-button.css'
 import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
 import {actionCreators} from '../store/Map';
 import L from 'leaflet';
 import MarkerClusterGroup from 'leaflet.markercluster';
+import EasyButton from 'leaflet-easybutton';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
@@ -52,6 +54,7 @@ class MapComponent extends Component {
             showCoverageOnHover: false,
             removeOutsideVisibleBounds: false
         });
+        L.easyButton('<span class="target map-location-icon">&target;</span>', this.props.goToLocationExtended).addTo(this.map);
         this.map.addLayer(this.markers);
         const center = this.map.getCenter();
         this.mapLongitude = center.lng;

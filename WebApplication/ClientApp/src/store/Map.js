@@ -32,20 +32,27 @@ export const actionCreators = {
         dispatch({type: zoomChanged, zoom, bounds});
         actionCreators.loadPoi(dispatch, getState);
     },
-    goToLocation: () => async (dispatch, getState) => {
+    goToLocation: async (dispatch, getState) => {
         const state = getState();
-        dispatch({type: locationZoomChanged, ...state.map.position, zoom: 16});
+        if (state.map.position !== null)
+            dispatch({type: locationZoomChanged, ...state.map.position, zoom: 16});
+    },
+    goToLocationExtended: () => async (dispatch, getState) => {
+        if (getState().map.watchId === null)
+            actionCreators.watchPosition()(dispatch, getState);
+        else
+            actionCreators.goToLocation(dispatch, getState);
     },
     watchPosition: () => async (dispatch, getState) => {
         if ("geolocation" in navigator) {
             const watchId = navigator.geolocation.watchPosition((e) => {
-                const goToLocationDecision = getState().map.position === null;
+                    const goToLocationDecision = getState().map.position === null;
                     dispatch({type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude});
                     if (goToLocationDecision) {
-                        actionCreators.goToLocation()(dispatch, getState);
+                        actionCreators.goToLocation(dispatch, getState);
                     }
                 },
-                null,
+                ()=>dispatch({type: locationWatchDeleted}),
                 {enableHighAccurency: true});
             dispatch({type: locationWatchCreated, watchId});
         }
@@ -106,7 +113,7 @@ export const reducer = (state, action) => {
         case locationWatchCreated:
             return {...state, watchId: action.watchId};
         case locationWatchDeleted:
-            return {...state, watchId: null, position: null};
+            return {...state, watchId: null};
         case foodtrucksUpdate:
             return {...state, foodtrucks: action.foodtrucks};
         default:
