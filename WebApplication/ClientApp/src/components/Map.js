@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
-import {Map, TileLayer, Marker, Popup} from 'react-leaflet';
 import {actionCreators} from '../store/Map';
 import L from 'leaflet';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
@@ -21,37 +20,75 @@ L.Icon.Default.mergeOptions({
 });
 
 class MapComponent extends Component {
-    constructor(props) {
-        super(props);
-        this.map = React.createRef();
-    }
 
     containerSizeChanged = () => {
-        this.map.current.leafletElement.invalidateSize(false);
+        this.map.invalidateSize(false);
+        this.mapLongitude = 0;
+        this.mapLatitidue = 0;
+        this.mapZoom = 0;
     };
     componentDidMount = () => {
         this.props.watchPosition();
+        this.map = L.map('map', {
+            center: [this.props.latitude, this.props.longitude],
+            zoom: 13,
+            layers: [
+                L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="//osm.org/copyright">OpenStreetMap</a> contributors'
+                })
+            ]
+        });
         window.addEventListener('resize', this.containerSizeChanged);
-        this.containerSizeChanged();
+        const center = this.map.getCenter();
+        this.mapLongitude = center.lng;
+        this.mapLatitidue = center.lat;
+        this.mapZoom = this.map.getZoom();
+        this.handleLoad(this.map);
+        this.props.boundsChanged(this.map.getBounds());
     };
+    componentDidUpdate = (prevProps, prevState, snapshot) => {
+        var changed = false;
+        if (this.props.latitude !== this.mapLatitidue || this.props.longitude !== this.mapLongitude) {
+            this.mapLongitude = this.props.longitude;
+            this.mapLatitidue = this.props.latitude;
+            changed = true;
+        }
+        if (this.props.zoom !== this.mapZoom) {
+            this.mapZoom = this.props.zoom;
+            changed = true;
+        }
+        if (changed)
+            this.map.flyTo([this.mapLatitidue, this.mapLongitude], this.mapZoom);
+    };
+
     componentWillUnmount = () => {
         window.removeEventListener('resize', this.containerSizeChanged);
+        this.map.remove();
+        this.map = null;
         this.props.clearWatch();
+    };
+    handleLoad = (map) => {
+        map.on('zoomend', e => this.handleZoomChanged(e.target.getZoom()));
+        map.on('dragend', e => this.handleLocationChanged(e.target.getCenter()));
+    };
+
+    handleZoomChanged = (zoom) => {
+        this.mapZoom = zoom;
+        const bounds = this.map.getBounds();
+        this.props.zoomChanged(zoom, bounds);
+    };
+
+    handleLocationChanged = (latLng) => {
+        this.mapLongitude = latLng.lng;
+        this.mapLatitidue = latLng.lat;
+        const bounds = this.map.getBounds();
+        this.props.locationChanged(latLng.lng, latLng.lat, bounds);
     };
 
     render() {
         return (
             <div className='map-container'>
-                <Map ref={this.map} center={[this.props.latitude, this.props.longitude]} zoom={this.props.zoom}>
-                    <TileLayer
-                        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                        attribution='&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors'
-                    />
-                    {this.props.position &&
-                    <Marker position={[this.props.position.latitude, this.props.position.longitude]}>
-                        <Popup>Your position</Popup>
-                    </Marker>}
-                </Map>
+                <div id='map'/>
             </div>
         );
     }
