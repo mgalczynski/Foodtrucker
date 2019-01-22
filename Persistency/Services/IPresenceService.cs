@@ -5,9 +5,10 @@ using Persistency.Dtos;
 
 namespace Persistency.Services
 {
-    internal interface IPresenceService : IBaseService<Presence>
+    public interface IPresenceService : IBaseService<Presence>
     {
         Task<IList<Presence>> FindPresencesWithin(Coordinate coordinate, double distance);
         Task<IList<Presence>> FindPresences(ICollection<Guid> foodtruckIds);
+        Task<IList<Presence>> FindPresencesWithin(Coordinate topLeft, Coordinate bottomRight);
     }
 }

@@ -47,7 +47,7 @@ class MapComponent extends Component {
         this.props.boundsChanged(this.map.getBounds());
     };
     componentDidUpdate = (prevProps, prevState, snapshot) => {
-        var changed = false;
+        let changed = false;
         if (this.props.latitude !== this.mapLatitidue || this.props.longitude !== this.mapLongitude) {
             this.mapLongitude = this.props.longitude;
             this.mapLatitidue = this.props.latitude;

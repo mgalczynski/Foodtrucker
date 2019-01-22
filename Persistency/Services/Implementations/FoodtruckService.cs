@@ -25,6 +25,16 @@ namespace Persistency.Services.Implementations
                 )
                 .ProjectToListAsync<Foodtruck>();
 
+        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight) =>
+            await PersistencyContext.Foodtrucks.FromSql(
+                    $@"SELECT *
+                       FROM ""{nameof(PersistencyContext.Foodtrucks)}""
+                       WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
+                         AND ""{nameof(Entity.DefaultLocation)}"" && ST_MakeEnvelope(@p0, @p1, @p2, @p3, 4326)"
+                    , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
+                )
+                .ProjectToListAsync<Foodtruck>();
+
         public async Task<Guid> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck) =>
             await CreateNewEntity(createNewFoodtruck);
 
