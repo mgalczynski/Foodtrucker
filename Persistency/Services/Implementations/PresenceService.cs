@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Persistency.Dtos;
 using Entity = Persistency.Entities.Presence;
@@ -48,8 +49,24 @@ namespace Persistency.Services.Implementations
                 )
                 .ProjectToListAsync<Presence>();
 
-        public async Task<IList<Presence>> FindPresences(ICollection<Guid> foodtruckIds) =>
-            await DbSet.Where(e => foodtruckIds.Contains(e.FoodTruckId))
+        public async Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<Guid> foodtruckIds) =>
+             (await DbSet.Where(e => foodtruckIds.Contains(e.FoodTruckId))
+                .OrderBy(p => p.FoodTruckId).ThenBy(p => p.StartTime)
+                .ToListAsync())
+                .Aggregate(new SortedDictionary<Guid, IList<Presence>>(), (acc, pres) =>
+                {
+                    IList<Presence> list;
+                    if (acc.TryGetValue(pres.Id.Value, out list))
+                    {
+                        list = new List<Presence>();
+                        acc[pres.Id.Value] = list;
+                    }
+                    list.Add(Mapper.Map<Presence>(pres));
+                    return acc;
+                });
+        public async Task<IList<Presence>> FindPresences(Guid id) =>
+            await DbSet.Where(e => id == e.FoodTruckId)
+                .OrderBy(p => p.StartTime)
                 .ProjectToListAsync<Presence>();
     }
 }

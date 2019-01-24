@@ -20,6 +20,9 @@ namespace Persistency
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
             services.AddScoped<IFoodtruckOwnershipService, FoodtruckOwnershipService>();
+#if DEBUG
+            services.AddScoped<DevelopmentPresencesFactory>();
+#endif
             services.AddIdentity<Entities.FoodtruckerUser, Entities.FoodtruckerRole>()
                 .AddEntityFrameworkStores<AbstractPersistencyContext>().AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
@@ -66,13 +69,29 @@ namespace Persistency
             mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(p => p.ToCoordinate());
         }
 
-        public static void OnStart(RoleManager<Entities.FoodtruckerRole> roleManager)
+        public static void OnStart(
+#if DEBUG
+            bool isDevelopment,
+#endif
+            IServiceProvider serviceProvider
+            )
         {
+            var roleManager = serviceProvider.GetService<RoleManager<Entities.FoodtruckerRole>>();
+
             foreach (var task in Entities.FoodtruckerRole.Roles
                 .Where(name => !roleManager.RoleExistsAsync(name).Result)
-                .Select(name => roleManager.CreateAsync(new Entities.FoodtruckerRole {Name = name})))
+                .Select(name => roleManager.CreateAsync(new Entities.FoodtruckerRole { Name = name })))
                 if (!task.Result.Succeeded)
                     throw new SystemException(string.Join(", ", task.Result.Errors.Select(error => error.Description)));
+#if DEBUG
+            if (isDevelopment)
+                serviceProvider
+                // .CreateScope()
+                // .ServiceProvider
+                .GetService<DevelopmentPresencesFactory>()
+                .GenerateDevelopmentPresences()
+                 .Wait();
+#endif
         }
     }
 }

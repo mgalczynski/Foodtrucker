@@ -1,4 +1,4 @@
-﻿import {push} from 'react-router-redux';
+﻿import { push } from 'react-router-redux';
 
 const locationChanged = 'map/LOCATION_CHANGED';
 const zoomChanged = 'map/ZOOM_CHANGED';
@@ -21,21 +21,21 @@ const initialState = {
 
 export const actionCreators = {
     locationChanged: (longitude, latitude, bounds) => async (dispatch, getState) => {
-        dispatch({type: locationChanged, longitude, latitude, bounds});
+        dispatch({ type: locationChanged, longitude, latitude, bounds });
         actionCreators.loadPoi(dispatch, getState);
     },
     boundsChanged: (bounds) => async (dispatch, getState) => {
-        dispatch({type: boundsChanged, bounds});
+        dispatch({ type: boundsChanged, bounds });
         actionCreators.loadPoi(dispatch, getState);
     },
     zoomChanged: (zoom, bounds) => async (dispatch, getState) => {
-        dispatch({type: zoomChanged, zoom, bounds});
+        dispatch({ type: zoomChanged, zoom, bounds });
         actionCreators.loadPoi(dispatch, getState);
     },
     goToLocation: async (dispatch, getState) => {
         const state = getState();
         if (state.map.position !== null)
-            dispatch({type: locationZoomChanged, ...state.map.position, zoom: 16});
+            dispatch({ type: locationZoomChanged, ...state.map.position, zoom: 16 });
     },
     goToLocationExtended: () => async (dispatch, getState) => {
         if (getState().map.watchId === null)
@@ -46,15 +46,15 @@ export const actionCreators = {
     watchPosition: () => async (dispatch, getState) => {
         if ("geolocation" in navigator) {
             const watchId = navigator.geolocation.watchPosition((e) => {
-                    const goToLocationDecision = getState().map.position === null;
-                    dispatch({type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude});
-                    if (goToLocationDecision) {
-                        actionCreators.goToLocation(dispatch, getState);
-                    }
-                },
-                ()=>dispatch({type: locationWatchDeleted}),
-                {enableHighAccurency: true});
-            dispatch({type: locationWatchCreated, watchId});
+                const goToLocationDecision = getState().map.position === null;
+                dispatch({ type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude });
+                if (goToLocationDecision) {
+                    actionCreators.goToLocation(dispatch, getState);
+                }
+            },
+                () => dispatch({ type: locationWatchDeleted }),
+                { enableHighAccurency: true });
+            dispatch({ type: locationWatchCreated, watchId });
         }
     },
     loadPoi: async (dispatch, getState) => {
@@ -77,14 +77,14 @@ export const actionCreators = {
                 }),
             });
         const content = await response.json();
-        dispatch({type: foodtrucksUpdate, foodtrucks: content.result});
+        dispatch({ type: foodtrucksUpdate, foodtrucks: content.foodtrucks });
     },
     clearWatch: () => async (dispatch, getState) => {
         const watchId = getState().map.watchId;
         if (watchId !== null) {
             navigator.geolocation.clearWatch(watchId);
-            dispatch({type: locationWatchDeleted});
-            dispatch({type: positionRemoved});
+            dispatch({ type: locationWatchDeleted });
+            dispatch({ type: positionRemoved });
         }
     }
 };
@@ -94,9 +94,9 @@ export const reducer = (state, action) => {
 
     switch (action.type) {
         case boundsChanged:
-            return {...state, bounds: action.bounds};
+            return { ...state, bounds: action.bounds };
         case locationZoomChanged:
-            return {...state, longitude: action.longitude, latitude: action.latitude, zoom: action.zoom};
+            return { ...state, longitude: action.longitude, latitude: action.latitude, zoom: action.zoom };
         case locationChanged:
             return {
                 ...state,
@@ -105,17 +105,17 @@ export const reducer = (state, action) => {
                 bounds: action.bounds || state.bounds
             };
         case zoomChanged:
-            return {...state, zoom: action.zoom, bounds: action.bounds};
+            return { ...state, zoom: action.zoom, bounds: action.bounds };
         case positionChanged:
-            return {...state, position: {longitude: action.longitude, latitude: action.latitude}};
+            return { ...state, position: { longitude: action.longitude, latitude: action.latitude } };
         case positionRemoved:
-            return {...state, position: null};
+            return { ...state, position: null };
         case locationWatchCreated:
-            return {...state, watchId: action.watchId};
+            return { ...state, watchId: action.watchId };
         case locationWatchDeleted:
-            return {...state, watchId: null};
+            return { ...state, watchId: null };
         case foodtrucksUpdate:
-            return {...state, foodtrucks: action.foodtrucks};
+            return { ...state, foodtrucks: action.foodtrucks };
         default:
             return state;
     }

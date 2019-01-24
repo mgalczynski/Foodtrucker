@@ -35,7 +35,9 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(
             IApplicationBuilder app,
+#if DEBUG
             IHostingEnvironment env,
+#endif
             IServiceProvider serviceProvider,
             RoleManager<FoodtruckerRole> roleManager
         )
@@ -52,14 +54,19 @@ namespace WebApplication
             else
             {
 #endif
-                dbContext.Database.Migrate();
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
 #if DEBUG
             }
 #endif
+            dbContext.Database.Migrate();
 
-            Persistency.Persistency.OnStart(roleManager);
+            Persistency.Persistency.OnStart(
+#if DEBUG
+                env.IsDevelopment(),
+#endif
+                serviceProvider
+                );
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseAuthentication();
