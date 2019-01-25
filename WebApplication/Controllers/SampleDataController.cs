@@ -20,6 +20,7 @@ namespace WebApplication.Controllers
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
+
         private readonly IFoodtruckService _foodtruckService;
 
         [HttpGet("[action]")]

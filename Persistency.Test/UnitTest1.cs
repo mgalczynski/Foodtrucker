@@ -7,7 +7,6 @@ namespace Persistency.Test
         [Fact]
         public void Test1()
         {
-
         }
     }
 }

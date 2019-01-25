@@ -9,6 +9,7 @@ namespace Persistency.Entities
         ADMIN,
         REPORTER
     }
+
     public class FoodtruckOwnership
     {
         public OwnershipType Type { get; set; }

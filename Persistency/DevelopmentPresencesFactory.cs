@@ -54,10 +54,11 @@ namespace Persistency
                             Latitude = minLat + _random.NextDouble() * (maxLat - minLat),
                             Longitude = minLon + _random.NextDouble() * (maxLon - minLon)
                         }.ToDbPoint(),
-                        StartTime = new DateTime(dayBeforeYesterday.Ticks + (long)_random.NextDouble() * (yesterday.Ticks - dayBeforeYesterday.Ticks)),
-                        EndTime = _random.Next(2) == 1 ? new DateTime(dayBeforeYesterday.Ticks + (long)_random.NextDouble() * (yesterday.Ticks - dayBeforeYesterday.Ticks)) : (DateTime?)null,
+                        StartTime = new DateTime(dayBeforeYesterday.Ticks + (long) _random.NextDouble() * (yesterday.Ticks - dayBeforeYesterday.Ticks)),
+                        EndTime = _random.Next(2) == 1 ? new DateTime(dayBeforeYesterday.Ticks + (long) _random.NextDouble() * (yesterday.Ticks - dayBeforeYesterday.Ticks)) : (DateTime?) null,
                     });
                 }
+
                 await _context.SaveChangesAsync();
                 transaction.Commit();
             }

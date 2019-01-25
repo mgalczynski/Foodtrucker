@@ -66,7 +66,7 @@ namespace WebApplication
                 env.IsDevelopment(),
 #endif
                 serviceProvider
-                );
+            );
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
             app.UseAuthentication();

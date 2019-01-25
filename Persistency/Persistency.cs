@@ -74,23 +74,23 @@ namespace Persistency
             bool isDevelopment,
 #endif
             IServiceProvider serviceProvider
-            )
+        )
         {
             var roleManager = serviceProvider.GetService<RoleManager<Entities.FoodtruckerRole>>();
 
             foreach (var task in Entities.FoodtruckerRole.Roles
                 .Where(name => !roleManager.RoleExistsAsync(name).Result)
-                .Select(name => roleManager.CreateAsync(new Entities.FoodtruckerRole { Name = name })))
+                .Select(name => roleManager.CreateAsync(new Entities.FoodtruckerRole {Name = name})))
                 if (!task.Result.Succeeded)
                     throw new SystemException(string.Join(", ", task.Result.Errors.Select(error => error.Description)));
 #if DEBUG
             if (isDevelopment)
                 serviceProvider
-                // .CreateScope()
-                // .ServiceProvider
-                .GetService<DevelopmentPresencesFactory>()
-                .GenerateDevelopmentPresences()
-                 .Wait();
+                    // .CreateScope()
+                    // .ServiceProvider
+                    .GetService<DevelopmentPresencesFactory>()
+                    .GenerateDevelopmentPresences()
+                    .Wait();
 #endif
         }
     }

@@ -50,20 +50,22 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<Presence>();
 
         public async Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<Guid> foodtruckIds) =>
-             (await DbSet.Where(e => foodtruckIds.Contains(e.FoodtruckId))
+            (await DbSet.Where(e => foodtruckIds.Contains(e.FoodtruckId))
                 .OrderBy(p => p.FoodtruckId).ThenBy(p => p.StartTime)
                 .ToListAsync())
-                .Aggregate(new SortedDictionary<Guid, IList<Presence>>(), (acc, pres) =>
+            .Aggregate(new SortedDictionary<Guid, IList<Presence>>(), (acc, pres) =>
+            {
+                IList<Presence> list;
+                if (acc.TryGetValue(pres.Id.Value, out list))
                 {
-                    IList<Presence> list;
-                    if (acc.TryGetValue(pres.Id.Value, out list))
-                    {
-                        list = new List<Presence>();
-                        acc[pres.Id.Value] = list;
-                    }
-                    list.Add(Mapper.Map<Presence>(pres));
-                    return acc;
-                });
+                    list = new List<Presence>();
+                    acc[pres.Id.Value] = list;
+                }
+
+                list.Add(Mapper.Map<Presence>(pres));
+                return acc;
+            });
+
         public async Task<IList<Presence>> FindPresences(Guid id) =>
             await DbSet.Where(e => id == e.FoodtruckId)
                 .OrderBy(p => p.StartTime)
