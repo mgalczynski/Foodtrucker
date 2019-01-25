@@ -1,6 +1,4 @@
-﻿import { push } from 'react-router-redux';
-
-const locationChanged = 'map/LOCATION_CHANGED';
+﻿const locationChanged = 'map/LOCATION_CHANGED';
 const zoomChanged = 'map/ZOOM_CHANGED';
 const boundsChanged = 'map/BOUNDS_CHANGED';
 const positionChanged = 'map/POSITION_CHANGED';

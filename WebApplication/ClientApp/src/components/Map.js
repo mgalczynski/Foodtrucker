@@ -48,6 +48,8 @@ class MapComponent extends Component {
                 })
             ]
         });
+        if (this.props.disabled)
+            this.disableMap();
         window.addEventListener('resize', this.containerSizeChanged);
         this.handleLoad(this.map);
         this.props.watchPosition();
@@ -63,7 +65,32 @@ class MapComponent extends Component {
         this.mapZoom = this.map.getZoom();
         this.props.boundsChanged(this.map.getBounds());
     };
+    disableMap = () => {
+        this.map.dragging.disable();
+        this.map.touchZoom.disable();
+        this.map.doubleClickZoom.disable();
+        this.map.scrollWheelZoom.disable();
+        this.map.boxZoom.disable();
+        this.map.keyboard.disable();
+        if (this.map.tap)
+            this.map.tap.disable();
+        document.getElementById('map').style.cursor = 'default';
+    };
+    enableMap = () => {
+        this.map.dragging.enable();
+        this.map.touchZoom.enable();
+        this.map.doubleClickZoom.enable();
+        this.map.scrollWheelZoom.enable();
+        this.map.boxZoom.enable();
+        this.map.keyboard.enable();
+        if (this.map.tap)
+            this.map.tap.enable();
+    };
     componentDidUpdate = (prevProps, prevState, snapshot) => {
+        if (prevProps.disabled && !this.props.disabled)
+            this.enableMap();
+        else if (this.props.disabled && !prevProps.disabled)
+            this.disableMap();
         let changed = false;
         if (this.props.latitude !== this.mapLatitidue || this.props.longitude !== this.mapLongitude) {
             this.mapLongitude = this.props.longitude;
@@ -160,7 +187,7 @@ class MapComponent extends Component {
 
     render() {
         return (
-            <div className='map-container'>
+            <div className={`map-container${this.props.disabled ? ' disabled' : ''}`}>
                 <div id='map' />
             </div>
         );
@@ -168,6 +195,6 @@ class MapComponent extends Component {
 }
 
 export default connect(
-    state => state.map,
+    state => ({ ...state.map, disabled: false }),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(MapComponent);

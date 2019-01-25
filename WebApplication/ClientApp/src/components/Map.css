@@ -15,6 +15,10 @@
     font-size: 300%;
 }
 
+.disabled > #map {
+    cursor: grab;
+}
+
 @media (min-width: 768px) {
     .map-container {
         /*position: absolute;*/
