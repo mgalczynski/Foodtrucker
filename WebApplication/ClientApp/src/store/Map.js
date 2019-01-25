@@ -6,7 +6,8 @@ const boundsChanged = 'map/BOUNDS_CHANGED';
 const positionChanged = 'map/POSITION_CHANGED';
 const locationZoomChanged = 'map/LOCATION_ZOOM_CHANGED';
 const positionRemoved = 'map/POSITION_REMOVED';
-const foodtrucksUpdate = 'map/FOODTRUCKS_UPDATE';
+const foodtrucksPresencesUpdate = 'map/FOODTRUCKS_AND PRESENCES_UPDATE';
+const infoFoodtrucksUpdate = 'map/INFO_FOODTRUCKS_UPDATE';
 const locationWatchCreated = 'map/LOCATION_WATCH_CREATED';
 const locationWatchDeleted = 'map/LOCATION_WATCH_DELETED';
 const initialState = {
@@ -16,7 +17,10 @@ const initialState = {
     bounds: null,
     watchId: null,
     position: null,
-    foodtrucks: []
+    foodtrucks: [],
+    presences: [],
+    infoFoodtrucks: [],
+    allFoodtrucks: new Map()
 };
 
 export const actionCreators = {
@@ -59,7 +63,7 @@ export const actionCreators = {
     },
     loadPoi: async (dispatch, getState) => {
         const state = getState().map;
-        const response = await fetch('api/foodtruck/find',
+        const foodtrucksResponse = await fetch('api/foodtruck/find',
             {
                 method: 'POST',
                 headers: {
@@ -76,8 +80,20 @@ export const actionCreators = {
                     }
                 }),
             });
-        const content = await response.json();
-        dispatch({ type: foodtrucksUpdate, foodtrucks: content.foodtrucks });
+        const foodtruckContent = await foodtrucksResponse.json();
+        dispatch({ type: foodtrucksPresencesUpdate, foodtrucks: foodtruckContent.foodtrucks, presences: foodtruckContent.presences });
+        const infoResponse = await fetch('api/foodtruck/findByIds',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ids: Array.from(new Set(foodtruckContent.presences.map(p => p.foodtruckId)))
+                }),
+            });
+        const infoContent = await infoResponse.json();
+        dispatch({ type: infoFoodtrucksUpdate, foodtrucks: infoContent })
     },
     clearWatch: () => async (dispatch, getState) => {
         const watchId = getState().map.watchId;
@@ -114,8 +130,10 @@ export const reducer = (state, action) => {
             return { ...state, watchId: action.watchId };
         case locationWatchDeleted:
             return { ...state, watchId: null };
-        case foodtrucksUpdate:
-            return { ...state, foodtrucks: action.foodtrucks };
+        case foodtrucksPresencesUpdate:
+            return { ...state, foodtrucks: action.foodtrucks, presences: action.presences, allFoodtrucks: new Map(action.foodtrucks.concat(state.infoFoodtrucks).map(f => [f.id, f])) };
+        case infoFoodtrucksUpdate:
+            return { ...state, infoFoodtrucks: action.foodtrucks, allFoodtrucks: new Map(action.foodtrucks.concat(state.foodtrucks).map(f => [f.id, f])) };
         default:
             return state;
     }

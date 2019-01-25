@@ -26,7 +26,7 @@ namespace Persistency.Services.Implementations
                                SELECT *
                                FROM ""{nameof(PersistencyContext.Presences)}""
                                WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)
-                           ) AS p ON f.""{nameof(Entities.Foodtruck.Id)}"" = p.""{nameof(Presence.FoodTruckId)}""
+                           ) AS p ON f.""{nameof(Entities.Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
                        WHERE NOT f.""{nameof(Entities.Foodtruck.Deleted)}""
 "
                     , coordinate.Longitude, coordinate.Latitude, distance
@@ -42,7 +42,7 @@ namespace Persistency.Services.Implementations
                                SELECT *
                                FROM ""{nameof(PersistencyContext.Presences)}""
                                WHERE ""{nameof(Entity.Location)}"" && ST_MakeEnvelope(@p0, @p1, @p2, @p3, 4326)
-                           ) AS p ON f.""{nameof(Entities.Foodtruck.Id)}"" = p.""{nameof(Presence.FoodTruckId)}""
+                           ) AS p ON f.""{nameof(Entities.Foodtruck.Id)}"" = p.""{nameof(Presence.FoodtruckId)}""
                        WHERE NOT f.""{nameof(Entities.Foodtruck.Deleted)}""
 "
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
@@ -50,8 +50,8 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<Presence>();
 
         public async Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<Guid> foodtruckIds) =>
-             (await DbSet.Where(e => foodtruckIds.Contains(e.FoodTruckId))
-                .OrderBy(p => p.FoodTruckId).ThenBy(p => p.StartTime)
+             (await DbSet.Where(e => foodtruckIds.Contains(e.FoodtruckId))
+                .OrderBy(p => p.FoodtruckId).ThenBy(p => p.StartTime)
                 .ToListAsync())
                 .Aggregate(new SortedDictionary<Guid, IList<Presence>>(), (acc, pres) =>
                 {
@@ -65,7 +65,7 @@ namespace Persistency.Services.Implementations
                     return acc;
                 });
         public async Task<IList<Presence>> FindPresences(Guid id) =>
-            await DbSet.Where(e => id == e.FoodTruckId)
+            await DbSet.Where(e => id == e.FoodtruckId)
                 .OrderBy(p => p.StartTime)
                 .ProjectToListAsync<Presence>();
     }

@@ -38,5 +38,16 @@ namespace WebApplication.Controllers
                     Presences = await _presenceService.FindPresencesWithin(foodtrucksQuery.TopLeft, foodtrucksQuery.BottomRight)
                 });
         }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult<GenericListResult<Foodtruck>>> FindByIds([FromBody] IdsQuery ids)
+        {
+            if (ids?.Ids == null)
+                return BadRequest();
+            return Ok(new GenericListResult<Foodtruck>
+            {
+                Result = await _foodtruckService.FindById(ids.Ids)
+            });
+        }
     }
 }

@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet-easybutton/src/easy-button.css'
-import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
-import {actionCreators} from '../store/Map';
+import { FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert } from 'react-bootstrap';
+import { actionCreators } from '../store/Map';
 import L from 'leaflet';
 import MarkerClusterGroup from 'leaflet.markercluster';
 import EasyButton from 'leaflet-easybutton';
@@ -27,6 +27,7 @@ class MapComponent extends Component {
     constructor(props) {
         super(props);
         this.foodtruckMarkers = new Map();
+        this.presenceMarkers = new Map();
         this.userMarker = null;
     }
 
@@ -95,6 +96,11 @@ class MapComponent extends Component {
             }
         }
 
+        this.updateFoodtrucks();
+        this.updatePresences();
+    };
+
+    updateFoodtrucks = () => {
         const allNewIds = new Set(this.props.foodtrucks.map(f => f.id));
         const newMarkers = new Map(this.props.foodtrucks
             .filter(f => !this.foodtruckMarkers.has(f.id) && f.defaultLocation)
@@ -109,6 +115,23 @@ class MapComponent extends Component {
         });
         this.markers.removeLayers(markersToRemove);
         this.foodtruckMarkers = newMarkers;
+    };
+
+    updatePresences = () => {
+        const allNewIds = new Set(this.props.presences.map(f => f.id));
+        const newMarkers = new Map(this.props.presences
+            .filter(f => !this.presenceMarkers.has(f.id))
+            .map(f => [f.id, L.marker([f.location.latitude, f.location.longitude]).bindPopup(f.title)]));
+        this.markers.addLayers(Array.from(newMarkers.values()));
+        const markersToRemove = [];
+        this.presenceMarkers.forEach((marker, id) => {
+            if (allNewIds.has(id))
+                newMarkers.set(id, marker);
+            else
+                markersToRemove.push(marker);
+        });
+        this.markers.removeLayers(markersToRemove);
+        this.presenceMarkers = newMarkers;
     };
 
     componentWillUnmount = () => {
@@ -138,7 +161,7 @@ class MapComponent extends Component {
     render() {
         return (
             <div className='map-container'>
-                <div id='map'/>
+                <div id='map' />
             </div>
         );
     }

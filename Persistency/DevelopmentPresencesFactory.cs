@@ -46,7 +46,7 @@ namespace Persistency
                         continue;
                     await _context.Presences.AddAsync(new Entities.Presence
                     {
-                        FoodTruckId = foodtruck.Id,
+                        FoodtruckId = foodtruck.Id,
                         Description = $"Presence of {foodtruck.DisplayName}",
                         Title = $"Presence of {foodtruck.DisplayName}",
                         Location = new Dtos.Coordinate

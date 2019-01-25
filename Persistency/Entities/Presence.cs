@@ -7,7 +7,7 @@ namespace Persistency.Entities
 {
     public class Presence : BaseEntity
     {
-        [Required] public Guid FoodTruckId { get; set; }
+        [Required] public Guid FoodtruckId { get; set; }
         public Foodtruck Foodtruck { get; set; }
         [Required] public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
