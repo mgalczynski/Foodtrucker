@@ -91,7 +91,7 @@ export const actionCreators = {
                 }),
             });
         const infoContent = await infoResponse.json();
-        dispatch({ type: infoFoodtrucksUpdate, foodtrucks: infoContent })
+        dispatch({ type: infoFoodtrucksUpdate, foodtrucks: infoContent.result })
     },
     clearWatch: () => async (dispatch, getState) => {
         const watchId = getState().map.watchId;
