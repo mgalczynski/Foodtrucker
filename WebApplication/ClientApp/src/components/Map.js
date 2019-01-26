@@ -110,7 +110,7 @@ class MapComponent extends Component {
                     [this.props.position.latitude, this.props.position.longitude],
                     {
                         icon: L.icon({
-                            iconUrl: 'location.svg',
+                            iconUrl: 'icons/location.svg',
 
                             iconSize: [24, 24], // size of the icon
                             iconAnchor: [12, 12] // point of the icon which will correspond to marker's location
@@ -195,6 +195,6 @@ class MapComponent extends Component {
 }
 
 export default connect(
-    state => ({ ...state.map, disabled: false }),
+    state => state.map,
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(MapComponent);

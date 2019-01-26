@@ -1,4 +1,7 @@
-﻿const locationChanged = 'map/LOCATION_CHANGED';
+﻿import {foodtruckPath} from '../App';
+import {LOCATION_CHANGE as urlChanged} from 'react-router-redux';
+
+const locationChanged = 'map/LOCATION_CHANGED';
 const zoomChanged = 'map/ZOOM_CHANGED';
 const boundsChanged = 'map/BOUNDS_CHANGED';
 const positionChanged = 'map/POSITION_CHANGED';
@@ -18,26 +21,27 @@ const initialState = {
     foodtrucks: [],
     presences: [],
     infoFoodtrucks: [],
-    allFoodtrucks: new Map()
+    allFoodtrucks: new Map(),
+    disabled: false
 };
 
 export const actionCreators = {
     locationChanged: (longitude, latitude, bounds) => async (dispatch, getState) => {
-        dispatch({ type: locationChanged, longitude, latitude, bounds });
+        dispatch({type: locationChanged, longitude, latitude, bounds});
         actionCreators.loadPoi(dispatch, getState);
     },
     boundsChanged: (bounds) => async (dispatch, getState) => {
-        dispatch({ type: boundsChanged, bounds });
+        dispatch({type: boundsChanged, bounds});
         actionCreators.loadPoi(dispatch, getState);
     },
     zoomChanged: (zoom, bounds) => async (dispatch, getState) => {
-        dispatch({ type: zoomChanged, zoom, bounds });
+        dispatch({type: zoomChanged, zoom, bounds});
         actionCreators.loadPoi(dispatch, getState);
     },
     goToLocation: async (dispatch, getState) => {
         const state = getState();
         if (state.map.position !== null)
-            dispatch({ type: locationZoomChanged, ...state.map.position, zoom: 16 });
+            dispatch({type: locationZoomChanged, ...state.map.position, zoom: 16});
     },
     goToLocationExtended: () => async (dispatch, getState) => {
         if (getState().map.watchId === null)
@@ -48,15 +52,16 @@ export const actionCreators = {
     watchPosition: () => async (dispatch, getState) => {
         if ("geolocation" in navigator) {
             const watchId = navigator.geolocation.watchPosition((e) => {
-                const goToLocationDecision = getState().map.position === null;
-                dispatch({ type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude });
-                if (goToLocationDecision) {
-                    actionCreators.goToLocation(dispatch, getState);
-                }
-            },
-                () => dispatch({ type: locationWatchDeleted }),
-                { enableHighAccurency: true });
-            dispatch({ type: locationWatchCreated, watchId });
+                    const state = getState();
+                    const goToLocationDecision = state.map.position === null && !state.map.disabled;
+                    dispatch({type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude});
+                    if (goToLocationDecision) {
+                        actionCreators.goToLocation(dispatch, getState);
+                    }
+                },
+                () => dispatch({type: locationWatchDeleted}),
+                {enableHighAccurency: true});
+            dispatch({type: locationWatchCreated, watchId});
         }
     },
     loadPoi: async (dispatch, getState) => {
@@ -79,7 +84,11 @@ export const actionCreators = {
                 }),
             });
         const foodtruckContent = await foodtrucksResponse.json();
-        dispatch({ type: foodtrucksPresencesUpdate, foodtrucks: foodtruckContent.foodtrucks, presences: foodtruckContent.presences });
+        dispatch({
+            type: foodtrucksPresencesUpdate,
+            foodtrucks: foodtruckContent.foodtrucks,
+            presences: foodtruckContent.presences
+        });
         const infoResponse = await fetch('api/foodtruck/findByIds',
             {
                 method: 'POST',
@@ -91,14 +100,14 @@ export const actionCreators = {
                 }),
             });
         const infoContent = await infoResponse.json();
-        dispatch({ type: infoFoodtrucksUpdate, foodtrucks: infoContent.result })
+        dispatch({type: infoFoodtrucksUpdate, foodtrucks: infoContent.result});
     },
     clearWatch: () => async (dispatch, getState) => {
         const watchId = getState().map.watchId;
         if (watchId !== null) {
             navigator.geolocation.clearWatch(watchId);
-            dispatch({ type: locationWatchDeleted });
-            dispatch({ type: positionRemoved });
+            dispatch({type: locationWatchDeleted});
+            dispatch({type: positionRemoved});
         }
     }
 };
@@ -107,10 +116,12 @@ export const reducer = (state, action) => {
     state = state || initialState;
 
     switch (action.type) {
+        case urlChanged:
+            return {...state, disabled: action.payload.pathname !== '/'};
         case boundsChanged:
-            return { ...state, bounds: action.bounds };
+            return {...state, bounds: action.bounds};
         case locationZoomChanged:
-            return { ...state, longitude: action.longitude, latitude: action.latitude, zoom: action.zoom };
+            return {...state, longitude: action.longitude, latitude: action.latitude, zoom: action.zoom};
         case locationChanged:
             return {
                 ...state,
@@ -119,19 +130,28 @@ export const reducer = (state, action) => {
                 bounds: action.bounds || state.bounds
             };
         case zoomChanged:
-            return { ...state, zoom: action.zoom, bounds: action.bounds };
+            return {...state, zoom: action.zoom, bounds: action.bounds};
         case positionChanged:
-            return { ...state, position: { longitude: action.longitude, latitude: action.latitude } };
+            return {...state, position: {longitude: action.longitude, latitude: action.latitude}};
         case positionRemoved:
-            return { ...state, position: null };
+            return {...state, position: null};
         case locationWatchCreated:
-            return { ...state, watchId: action.watchId };
+            return {...state, watchId: action.watchId};
         case locationWatchDeleted:
-            return { ...state, watchId: null };
+            return {...state, watchId: null};
         case foodtrucksPresencesUpdate:
-            return { ...state, foodtrucks: action.foodtrucks, presences: action.presences, allFoodtrucks: new Map(action.foodtrucks.concat(state.infoFoodtrucks).map(f => [f.id, f])) };
+            return {
+                ...state,
+                foodtrucks: action.foodtrucks,
+                presences: action.presences,
+                allFoodtrucks: new Map(action.foodtrucks.concat(state.infoFoodtrucks).map(f => [f.id, f]))
+            };
         case infoFoodtrucksUpdate:
-            return { ...state, infoFoodtrucks: action.foodtrucks, allFoodtrucks: new Map(action.foodtrucks.concat(state.foodtrucks).map(f => [f.id, f])) };
+            return {
+                ...state,
+                infoFoodtrucks: action.foodtrucks,
+                allFoodtrucks: new Map(action.foodtrucks.concat(state.foodtrucks).map(f => [f.id, f]))
+            };
         default:
             return state;
     }
