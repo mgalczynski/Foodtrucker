@@ -7,6 +7,7 @@ using Persistency;
 using Persistency.Dtos;
 using Persistency.Entities;
 using Persistency.Services;
+using Foodtruck = Persistency.Dtos.Foodtruck;
 
 namespace WebApplication.Controllers.FoodtruckStaff
 {
@@ -27,22 +28,22 @@ namespace WebApplication.Controllers.FoodtruckStaff
         }
 
         [HttpPost]
-        public async Task<ActionResult<InsertStatus<Guid>>> CreateNewFoodtruck(
+        public async Task<ActionResult<Foodtruck>> CreateNewFoodtruck(
             [FromBody] CreateNewFoodtruck createNewFoodtruck)
         {
             if (createNewFoodtruck?.Name == null || createNewFoodtruck?.DisplayName == null)
                 return BadRequest();
-            Guid foodtruckId;
+            Foodtruck foodtruck;
             using (var transaction = await Transaction())
             {
                 var taskUser = CurrentUser();
-                foodtruckId = await _foodtruckService.CreateNewFoodtruck(createNewFoodtruck);
-                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruckId,
+                foodtruck = await _foodtruckService.CreateNewFoodtruck(createNewFoodtruck);
+                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruck.Id,
                     OwnershipType.OWNER);
                 transaction.Commit();
             }
 
-            return new InsertStatus<Guid> {Id = foodtruckId, Successful = true};
+            return foodtruck;
         }
 
         [HttpDelete]

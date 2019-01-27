@@ -1,6 +1,6 @@
 namespace Persistency.Dtos
 {
-    public class CreateNewFoodtruck
+    public sealed class CreateNewFoodtruck
     {
         public string Name { get; set; }
         public string DisplayName { get; set; }

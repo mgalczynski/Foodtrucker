@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using NetTopologySuite.Geometries;
 using Persistency.Services;
 using Persistency.Services.Implementations;
+using Slugify;
 
 namespace Persistency
 {
@@ -20,6 +20,7 @@ namespace Persistency
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
             services.AddScoped<IFoodtruckOwnershipService, FoodtruckOwnershipService>();
+            services.AddScoped<ISlugHelper, SlugHelper>();
 #if DEBUG
             services.AddScoped<DevelopmentPresencesFactory>();
 #endif
@@ -86,8 +87,6 @@ namespace Persistency
 #if DEBUG
             if (isDevelopment)
                 serviceProvider
-                    // .CreateScope()
-                    // .ServiceProvider
                     .GetService<DevelopmentPresencesFactory>()
                     .GenerateDevelopmentPresences()
                     .Wait();

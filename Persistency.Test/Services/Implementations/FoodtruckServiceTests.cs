@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Persistency.Dtos;
 using Persistency.Services.Implementations;
+using Slugify;
 using Xunit;
 
 namespace Persistency.Test.Services.Implementations
@@ -18,7 +19,8 @@ namespace Persistency.Test.Services.Implementations
 
         public FoodtruckServiceTests()
         {
-            Context.Foodtrucks.AddRange(new List<Entities.Foodtruck>
+            var slugHelper = new SlugHelper();
+            var foodtrucks = new List<Entities.Foodtruck>
             {
                 new Entities.Foodtruck
                 {
@@ -37,9 +39,11 @@ namespace Persistency.Test.Services.Implementations
                     Name = "Foodtruck without location",
                     DisplayName = "Foodtruck without location"
                 }
-            });
+            };
+            foodtrucks.ForEach(f => f.Slug = slugHelper.GenerateSlug(f.Name));
+            Context.Foodtrucks.AddRange(foodtrucks);
             Context.SaveChanges();
-            _foodtruckService = new FoodtruckService(Context);
+            _foodtruckService = new FoodtruckService(Context, slugHelper);
         }
 
         [Fact]
@@ -68,7 +72,7 @@ namespace Persistency.Test.Services.Implementations
             var result = await _foodtruckService.CreateNewFoodtruck(new CreateNewFoodtruck
                 {Name = "New foodtruck", DisplayName = "New foodtruck"});
             Assert.Equal("New foodtruck",
-                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Id == result)?.Name);
+                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Id == result.Id && foodtruck.Slug == result.Slug)?.Name);
         }
 
         [Fact]

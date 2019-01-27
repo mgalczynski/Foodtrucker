@@ -11,8 +11,8 @@ using Persistency;
 namespace Persistency.Migrations
 {
     [DbContext(typeof(PersistencyContext))]
-    [Migration("20190124170257_PresenceConstraintsChanged")]
-    partial class PresenceConstraintsChanged
+    [Migration("20190127192733_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -120,7 +120,12 @@ namespace Persistency.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("Slug")
+                        .IsRequired();
+
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("Slug");
 
                     b.ToTable("Foodtrucks");
                 });
@@ -232,7 +237,7 @@ namespace Persistency.Migrations
 
                     b.Property<DateTime?>("EndTime");
 
-                    b.Property<Guid>("FoodTruckId");
+                    b.Property<Guid>("FoodtruckId");
 
                     b.Property<Point>("Location")
                         .IsRequired()
@@ -245,7 +250,7 @@ namespace Persistency.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FoodTruckId");
+                    b.HasIndex("FoodtruckId");
 
                     b.ToTable("Presences");
                 });
@@ -312,7 +317,7 @@ namespace Persistency.Migrations
                 {
                     b.HasOne("Persistency.Entities.Foodtruck", "Foodtruck")
                         .WithMany("Presences")
-                        .HasForeignKey("FoodTruckId")
+                        .HasForeignKey("FoodtruckId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

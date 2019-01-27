@@ -9,6 +9,7 @@ namespace Persistency.Entities
     {
         [Required] public string Name { get; set; }
         [Required] public string DisplayName { get; set; }
+        [Required] public string Slug { get; set; }
 
         [Column(TypeName = "geography(Point,4326)")]
         public Point DefaultLocation { get; set; }

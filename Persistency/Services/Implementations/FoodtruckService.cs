@@ -1,22 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Persistency.Dtos;
+using Slugify;
 using Entity = Persistency.Entities.Foodtruck;
 
 namespace Persistency.Services.Implementations
 {
     internal class FoodtruckService : BaseService<Entity, Foodtruck>, IFoodtruckService
     {
-        protected override DbSet<Entity> DbSet => PersistencyContext.Foodtrucks;
+        private readonly ISlugHelper _slugHelper;
 
-        public FoodtruckService(IInternalPersistencyContext persistencyContext) : base(persistencyContext)
+        public FoodtruckService(IInternalPersistencyContext persistencyContext, ISlugHelper slugHelper) : base(persistencyContext)
         {
+            _slugHelper = slugHelper;
         }
 
-        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance) =>
-            await PersistencyContext.Foodtrucks.FromSql(
+        protected override DbSet<Entity> DbSet => PersistencyContext.Foodtrucks;
+
+
+        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance)
+        {
+            return await PersistencyContext.Foodtrucks.FromSql(
                     $@"SELECT *
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}""
                        WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
@@ -24,9 +32,11 @@ namespace Persistency.Services.Implementations
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
                 .ProjectToListAsync<Foodtruck>();
+        }
 
-        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight) =>
-            await PersistencyContext.Foodtrucks.FromSql(
+        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight)
+        {
+            return await PersistencyContext.Foodtrucks.FromSql(
                     $@"SELECT *
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}""
                        WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
@@ -34,9 +44,14 @@ namespace Persistency.Services.Implementations
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
                 )
                 .ProjectToListAsync<Foodtruck>();
+        }
 
-        public async Task<Guid> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck) =>
-            await CreateNewEntity(createNewFoodtruck);
+        public async Task<Foodtruck> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck)
+        {
+            var entity = Mapper.Map<Entity>(createNewFoodtruck);
+            entity.Slug = GenerateSlug(createNewFoodtruck.Name);
+            return Mapper.Map<Foodtruck>(await CreateNewEntity(entity));
+        }
 
         public async Task MarkAsDeleted(Guid id)
         {
@@ -45,6 +60,22 @@ namespace Persistency.Services.Implementations
                 throw new ArgumentException();
             foodtruck.Deleted = true;
             await PersistencyContext.SaveChangesAsync();
+        }
+
+        public string GenerateSlug(string name)
+        {
+            var slug = _slugHelper.GenerateSlug(name);
+            var slugs = DbSet.Where(f => f.Slug.StartsWith(slug)).Select(f => f.Slug).ToHashSet();
+            if (slugs.Any())
+                return slug;
+            for (ulong i = 1;; ++i)
+            {
+                var slugWithNumber = slug + i;
+                if (!slugs.Contains(slugWithNumber))
+                    return slugWithNumber;
+                if (ulong.MaxValue == i)
+                    throw new SystemException("Illegal state");
+            }
         }
     }
 }

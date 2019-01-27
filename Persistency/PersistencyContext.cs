@@ -18,6 +18,7 @@ namespace Persistency
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Foodtruck>().HasAlternateKey(f => f.Slug);
             builder.Entity<FoodtruckOwnership>().HasKey(e => new {e.UserId, e.FoodtruckId});
             builder.Entity<FoodtruckOwnership>()
                 .Property(e => e.Type)

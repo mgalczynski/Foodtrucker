@@ -4,6 +4,7 @@ using System.Linq;
 using NetTopologySuite.Geometries;
 using Persistency.Dtos;
 using Persistency.Services.Implementations;
+using Slugify;
 using Xunit;
 using Foodtruck = Persistency.Entities.Foodtruck;
 
@@ -17,7 +18,8 @@ namespace Persistency.Test.Services.Implementations
 
         public PresenceServiceTests()
         {
-            Context.Foodtrucks.AddRange(new List<Foodtruck>
+            var slugHelper = new SlugHelper();
+            var foodtrucks = new List<Foodtruck>
             {
                 new Foodtruck
                 {
@@ -51,7 +53,9 @@ namespace Persistency.Test.Services.Implementations
                     },
                     Deleted = true
                 }
-            });
+            };
+            foodtrucks.ForEach(f => f.Slug = slugHelper.GenerateSlug(f.Name));
+            Context.Foodtrucks.AddRange(foodtrucks);
             Context.SaveChanges();
             _presenceService = new PresenceService(Context);
         }

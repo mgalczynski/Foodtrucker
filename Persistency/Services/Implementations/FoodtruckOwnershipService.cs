@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Persistency.Dtos;
-using OwnershipType = Persistency.Entities.OwnershipType;
+using Persistency.Entities;
 using Entity = Persistency.Entities.FoodtruckOwnership;
+using FoodtruckOwnership = Persistency.Dtos.FoodtruckOwnership;
 
 namespace Persistency.Services.Implementations
 {
@@ -30,11 +30,7 @@ namespace Persistency.Services.Implementations
                     foreach (var ownershipType in pair.Value)
                     {
                         IList<OwnershipType> list = null;
-                        if (!acc.TryGetValue(ownershipType, out list))
-                        {
-                            // Create if not exists in dictionary
-                            list = acc[ownershipType] = new List<OwnershipType>();
-                        }
+                        if (!acc.TryGetValue(ownershipType, out list)) list = acc[ownershipType] = new List<OwnershipType>();
 
                         list.Add(pair.Key);
                     }
@@ -49,7 +45,7 @@ namespace Persistency.Services.Implementations
             _persistencyContext = persistencyContext;
         }
 
-        public async Task CreateOwnership(Guid userId, Guid foodtruckId, Entities.OwnershipType type)
+        public async Task CreateOwnership(Guid userId, Guid foodtruckId, OwnershipType type)
         {
             await _persistencyContext.FoodtruckOwnerships.AddAsync(new Entity
                 {UserId = userId, FoodtruckId = foodtruckId, Type = type});
@@ -58,14 +54,6 @@ namespace Persistency.Services.Implementations
 
         public async Task<FoodtruckOwnership> FindByUserEmailAndFoodtruck(string email, Guid foodtruckId) =>
             Mapper.Map<FoodtruckOwnership>(await FindEntityByUserEmailAndFoodtruck(email, foodtruckId));
-
-        private async Task<Entity> FindEntityByUserAndFoodtruck(Guid userId, Guid foodtruckId) =>
-            await _persistencyContext.FoodtruckOwnerships
-                .FirstOrDefaultAsync(e => e.UserId == userId && e.FoodtruckId == foodtruckId);
-
-        private async Task<Entity> FindEntityByUserEmailAndFoodtruck(string email, Guid foodtruckId) =>
-            await _persistencyContext.FoodtruckOwnerships.FirstOrDefaultAsync(e =>
-                e.User.Email == email && e.FoodtruckId == foodtruckId);
 
 
         public async Task<OwnershipType?> FindTypeByUserAndFoodtruck(Guid userId, Guid foodtruckId) =>
@@ -90,5 +78,13 @@ namespace Persistency.Services.Implementations
                 await FindEntityByUserEmailAndFoodtruck(userEmail, foodtruckId));
             await _persistencyContext.SaveChangesAsync();
         }
+
+        private async Task<Entity> FindEntityByUserAndFoodtruck(Guid userId, Guid foodtruckId) =>
+            await _persistencyContext.FoodtruckOwnerships
+                .FirstOrDefaultAsync(e => e.UserId == userId && e.FoodtruckId == foodtruckId);
+
+        private async Task<Entity> FindEntityByUserEmailAndFoodtruck(string email, Guid foodtruckId) =>
+            await _persistencyContext.FoodtruckOwnerships
+                .FirstOrDefaultAsync(e => e.User.Email == email && e.FoodtruckId == foodtruckId);
     }
 }
