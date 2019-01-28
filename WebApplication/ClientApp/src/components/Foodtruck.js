@@ -35,6 +35,7 @@ class Foodtruck extends Component {
                 <Modal.Body>
                     {this.props.foodtruck.defaultLocation != null &&
                         <SmallMap
+                            position={this.props.position}
                             latitude={this.props.foodtruck.defaultLocation.latitude}
                             longitude={this.props.foodtruck.defaultLocation.longitude}
                         />
@@ -45,6 +46,6 @@ class Foodtruck extends Component {
 }
 
 export default connect(
-    state => state.foodtruckModal,
+    state => ({ ...state.foodtruckModal, position: state.map.position }),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(Foodtruck);

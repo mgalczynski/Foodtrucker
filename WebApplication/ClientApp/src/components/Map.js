@@ -81,6 +81,8 @@ class MapComponent extends Component {
         this.mapLatitidue = center.lat;
         this.mapZoom = this.map.getZoom();
         this.props.boundsChanged(this.map.getBounds());
+        this.updateFoodtrucks(this.props);
+        this.updatePresences(this.props);
     };
     disableMap = () => {
         this.map.zoomControl.disable();
@@ -105,50 +107,48 @@ class MapComponent extends Component {
         if (this.map.tap)
             this.map.tap.enable();
     };
-    componentDidUpdate = (prevProps, prevState, snapshot) => {
-        if (prevProps.disabled && !this.props.disabled)
+    componentWillReceiveProps = (props) => {
+        if (this.props.disabled && !props.disabled)
             this.enableMap();
-        else if (this.props.disabled && !prevProps.disabled)
+        else if (props.disabled && !this.props.disabled)
             this.disableMap();
         let changed = false;
-        if (this.props.latitude !== this.mapLatitidue || this.props.longitude !== this.mapLongitude) {
-            this.mapLongitude = this.props.longitude;
-            this.mapLatitidue = this.props.latitude;
+        if (props.latitude !== this.mapLatitidue || props.longitude !== this.mapLongitude) {
+            this.mapLongitude = props.longitude;
+            this.mapLatitidue = props.latitude;
             changed = true;
         }
-        if (this.props.zoom !== this.mapZoom) {
-            this.mapZoom = this.props.zoom;
+        if (props.zoom !== this.mapZoom) {
+            this.mapZoom = props.zoom;
             changed = true;
         }
         if (changed)
             this.map.flyTo([this.mapLatitidue, this.mapLongitude], this.mapZoom);
 
-        if (this.props.position !== null) {
+        if (props.position !== null) {
             if (this.userMarker == null) {
                 this.userMarker = L.marker(
-                    [this.props.position.latitude, this.props.position.longitude],
+                    [props.position.latitude, props.position.longitude],
                     {
                         icon: L.icon({
                             iconUrl: 'icons/location.svg',
-
                             iconSize: [24, 24], // size of the icon
                             iconAnchor: [12, 12] // point of the icon which will correspond to marker's location
                         })
                     }
                 );
                 this.map.addLayer(this.userMarker);
-            } else {
-                this.userMarker.setLatLng([this.props.position.latitude, this.props.position.longitude]);
-            }
+            } else
+                this.userMarker.setLatLng([props.position.latitude, props.position.longitude]);
         }
 
-        this.updateFoodtrucks();
-        this.updatePresences();
+        this.updateFoodtrucks(props);
+        this.updatePresences(props);
     };
 
-    updateFoodtrucks = () => {
-        const allNewIds = new Set(this.props.foodtrucks.map(f => f.id));
-        const newMarkers = new Map(this.props.foodtrucks
+    updateFoodtrucks = (props) => {
+        const allNewIds = new Set(props.foodtrucks.map(f => f.id));
+        const newMarkers = new Map(props.foodtrucks
             .filter(f => !this.foodtruckMarkers.has(f.id) && f.defaultLocation)
             .map(f => {
                 const div = document.createElement('div');
@@ -174,9 +174,9 @@ class MapComponent extends Component {
         this.foodtruckMarkers = newMarkers;
     };
 
-    updatePresences = () => {
-        const allNewIds = new Set(this.props.presences.map(f => f.id));
-        const newMarkers = new Map(this.props.presences
+    updatePresences = (props) => {
+        const allNewIds = new Set(props.presences.map(f => f.id));
+        const newMarkers = new Map(props.presences
             .filter(f => !this.presenceMarkers.has(f.id))
             .map(p => {
                 const div = document.createElement('div');
