@@ -70,7 +70,7 @@ namespace Persistency.Services.Implementations
                     .Select(f => f.Slug)
                     .ToList())
                 .ToHashSet();
-            if (slugs.Any())
+            if (!slugs.Contains(slug))
                 return slug;
             for (ulong i = 1;; ++i)
             {
