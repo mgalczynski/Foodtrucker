@@ -1,20 +1,20 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
 import 'leaflet-easybutton/src/easy-button.css';
-import {Route, Router, Link} from 'react-router-dom';
-import {actionCreators} from '../store/Map';
+import { Route, Router, Link } from 'react-router-dom';
+import { actionCreators } from '../store/Map';
 import L from 'leaflet';
 import MarkerClusterGroup from 'leaflet.markercluster';
 import EasyButton from 'leaflet-easybutton';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
-// import Foodtruck from "./Foodtruck";
+import Foodtruck from "./Foodtruck";
 import ErrorBoundary from './ErrorBoundary';
 import Login from "./Login";
 import Layout from "../App";
@@ -34,7 +34,7 @@ class ParentRouter extends Component {
     }
 
     render() {
-       return this.props.children;
+        return this.props.children;
     }
 }
 
@@ -83,6 +83,7 @@ class MapComponent extends Component {
         this.props.boundsChanged(this.map.getBounds());
     };
     disableMap = () => {
+        this.map.zoomControl.disable();
         this.map.dragging.disable();
         this.map.touchZoom.disable();
         this.map.doubleClickZoom.disable();
@@ -94,6 +95,7 @@ class MapComponent extends Component {
         document.getElementById('map').style.cursor = 'default';
     };
     enableMap = () => {
+        this.map.zoomControl.enable();
         this.map.dragging.enable();
         this.map.touchZoom.enable();
         this.map.doubleClickZoom.enable();
@@ -176,7 +178,7 @@ class MapComponent extends Component {
         const allNewIds = new Set(this.props.presences.map(f => f.id));
         const newMarkers = new Map(this.props.presences
             .filter(f => !this.presenceMarkers.has(f.id))
-            .map(p =>{
+            .map(p => {
                 const div = document.createElement('div');
                 const pair = [p.id, L.marker([p.location.latitude, p.location.longitude])
                     .bindPopup(div)];
@@ -227,8 +229,8 @@ class MapComponent extends Component {
     render() {
         return (
             <div className={`map-container${this.props.disabled ? ' disabled' : ''}`}>
-                <div id='map'/>
-                {/*<Route path='/foodtruck/:foodtruckUrlName/:presenceId?' component={Foodtruck}/>*/}
+                <div id='map' className='map' />
+                <Route path='/foodtruck/:foodtruckSlug/:presenceId?' component={Foodtruck} />
             </div>
         );
     }

@@ -1,11 +1,12 @@
-﻿import {applyMiddleware, combineReducers, compose, createStore} from 'redux';
+﻿import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
-import {routerReducer, routerMiddleware} from 'react-router-redux';
+import { routerReducer, routerMiddleware } from 'react-router-redux';
 import * as Counter from './Counter';
 import * as WeatherForecasts from './WeatherForecasts';
 import * as Login from './Login';
-import * as Map from './Map';
+import * as MapStore from './Map';
 import * as Register from './Register';
+import * as Foodtruck from './Foodtruck';
 import * as App from './App';
 
 export default function configureStore(history, initialState) {
@@ -15,7 +16,8 @@ export default function configureStore(history, initialState) {
         register: Register.reducer,
         login: Login.reducer,
         app: App.reducer,
-        map: Map.reducer
+        map: MapStore.reducer,
+        foodtruckModal: Foodtruck.reducer
     };
 
     const middleware = [
