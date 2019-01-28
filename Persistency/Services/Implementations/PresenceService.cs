@@ -18,6 +18,7 @@ namespace Persistency.Services.Implementations
         }
 
         protected override DbSet<Entity> DbSet => PersistencyContext.Presences;
+        private IQueryable<Entity> Queryable => DbSet.Include(p => p.Foodtruck.Slug);
 
         public async Task<IList<Presence>> FindPresencesWithin(Coordinate coordinate, double distance)
         {
@@ -47,7 +48,7 @@ namespace Persistency.Services.Implementations
                                SELECT *
                                FROM ""{nameof(PersistencyContext.Presences)}""
                                WHERE ""{nameof(Entity.Location)}"" && ST_MakeEnvelope(@p0, @p1, @p2, @p3, 4326)
-                           ) AS p ON f.""{nameof(Foodtruck.Id)}"" = p.""{nameof(Presence.FoodtruckId)}""
+                           ) AS p ON f.""{nameof(Entity.Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
                        WHERE NOT f.""{nameof(Foodtruck.Deleted)}""
 "
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
@@ -55,9 +56,9 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<Presence>();
         }
 
-        public async Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<Guid> foodtruckIds)
+        public async Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<string> foodtruckSlugs)
         {
-            return (await DbSet.Where(e => foodtruckIds.Contains(e.FoodtruckId))
+            return (await Queryable.Where(e => foodtruckSlugs.Contains(e.Foodtruck.Slug))
                     .OrderBy(p => p.FoodtruckId).ThenBy(p => p.StartTime)
                     .ToListAsync())
                 .Aggregate(new SortedDictionary<Guid, IList<Presence>>(), (acc, pres) =>
@@ -78,7 +79,7 @@ namespace Persistency.Services.Implementations
 
         public async Task<IList<Presence>> FindPresences(Guid id)
         {
-            return await DbSet.Where(e => id == e.FoodtruckId)
+            return await Queryable.Where(e => id == e.FoodtruckId)
                 .OrderBy(p => p.StartTime)
                 .ProjectToListAsync<Presence>();
         }

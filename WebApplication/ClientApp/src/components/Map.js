@@ -1,18 +1,23 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 import './Map.css';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
-import 'leaflet-easybutton/src/easy-button.css'
-import { FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert } from 'react-bootstrap';
-import { actionCreators } from '../store/Map';
+import 'leaflet-easybutton/src/easy-button.css';
+import {Route, Router, Link} from 'react-router-dom';
+import {actionCreators} from '../store/Map';
 import L from 'leaflet';
 import MarkerClusterGroup from 'leaflet.markercluster';
 import EasyButton from 'leaflet-easybutton';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+// import Foodtruck from "./Foodtruck";
+import ErrorBoundary from './ErrorBoundary';
+import Login from "./Login";
+import Layout from "../App";
 
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -22,6 +27,18 @@ L.Icon.Default.mergeOptions({
     iconUrl: iconUrl,
     shadowUrl: shadowUrl
 });
+
+class ParentRouter extends Component {
+    getChildContext() {
+        return this.props.context;
+    }
+
+    render() {
+       return this.props.children;
+    }
+}
+
+ParentRouter.childContextTypes = Link.contextTypes;
 
 class MapComponent extends Component {
     constructor(props) {
@@ -131,7 +148,18 @@ class MapComponent extends Component {
         const allNewIds = new Set(this.props.foodtrucks.map(f => f.id));
         const newMarkers = new Map(this.props.foodtrucks
             .filter(f => !this.foodtruckMarkers.has(f.id) && f.defaultLocation)
-            .map(f => [f.id, L.marker([f.defaultLocation.latitude, f.defaultLocation.longitude]).bindPopup(f.displayName)]));
+            .map(f => {
+                const div = document.createElement('div');
+                const pair = [f.id, L.marker([f.defaultLocation.latitude, f.defaultLocation.longitude])
+                    .bindPopup(div)];
+                ReactDOM.render(
+                    <ErrorBoundary>
+                        <ParentRouter context={this.context}>
+                            <Link to={`/foodtruck/${f.slug}`}>{f.displayName}</Link>
+                        </ParentRouter>
+                    </ErrorBoundary>, div);
+                return pair;
+            }));
         this.markers.addLayers(Array.from(newMarkers.values()));
         const markersToRemove = [];
         this.foodtruckMarkers.forEach((marker, id) => {
@@ -148,7 +176,18 @@ class MapComponent extends Component {
         const allNewIds = new Set(this.props.presences.map(f => f.id));
         const newMarkers = new Map(this.props.presences
             .filter(f => !this.presenceMarkers.has(f.id))
-            .map(f => [f.id, L.marker([f.location.latitude, f.location.longitude]).bindPopup(f.title)]));
+            .map(p =>{
+                const div = document.createElement('div');
+                const pair = [p.id, L.marker([p.location.latitude, p.location.longitude])
+                    .bindPopup(div)];
+                ReactDOM.render(
+                    <ErrorBoundary>
+                        <ParentRouter context={this.context}>
+                            <Link to={`/foodtruck/${p.foodtruckSlug}/${p.id}`}>{p.title}</Link>
+                        </ParentRouter>
+                    </ErrorBoundary>, div);
+                return pair;
+            }));
         this.markers.addLayers(Array.from(newMarkers.values()));
         const markersToRemove = [];
         this.presenceMarkers.forEach((marker, id) => {
@@ -188,11 +227,14 @@ class MapComponent extends Component {
     render() {
         return (
             <div className={`map-container${this.props.disabled ? ' disabled' : ''}`}>
-                <div id='map' />
+                <div id='map'/>
+                {/*<Route path='/foodtruck/:foodtruckUrlName/:presenceId?' component={Foodtruck}/>*/}
             </div>
         );
     }
 }
+
+MapComponent.contextTypes = Link.contextTypes;
 
 export default connect(
     state => state.map,

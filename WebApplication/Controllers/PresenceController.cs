@@ -24,9 +24,9 @@ namespace WebApplication.Controllers
         [HttpPost("[action]")]
         public async Task<ActionResult<IDictionary<Guid, IList<Presence>>>> Find([FromBody] PresencesQuery presencesQuery)
         {
-            if (presencesQuery.Ids == null)
+            if (presencesQuery.Slugs == null)
                 return BadRequest();
-            return new OkObjectResult(await _presenceService.FindPresences(presencesQuery.Ids));
+            return new OkObjectResult(await _presenceService.FindPresences(presencesQuery.Slugs));
         }
     }
 }

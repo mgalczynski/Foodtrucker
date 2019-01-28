@@ -10,7 +10,7 @@ import FoodtruckStaff from './foodtruckStaff/App';
 
 export default () => (
     <Layout>
-        <Route exact path={['/', '/foodtruck/:foodtruckUrlName', '/presence/:presenceId']} component={Map}/>
+        <Route exact path={['/', '/foodtruck/:foodtruckUrlName/:presenceId?']} component={Map}/>
         <Route path='/counter' component={Counter}/>
         <Route path='/login' component={Login}/>
         <Route path='/register' component={Register}/>

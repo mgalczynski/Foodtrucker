@@ -40,14 +40,27 @@ namespace WebApplication.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<ActionResult<GenericListResult<Foodtruck>>> FindByIds([FromBody] IdsQuery ids)
+        public async Task<ActionResult<GenericListResult<Foodtruck>>> FindBySlugs([FromBody] SlugsQuery slugs)
         {
-            if (ids?.Ids == null)
+            if (slugs?.Slugs == null)
                 return BadRequest();
             return Ok(new GenericListResult<Foodtruck>
             {
-                Result = await _foodtruckService.FindById(ids.Ids)
+                Result = await _foodtruckService.FindBySlugs(slugs.Slugs)
             });
+        }
+
+        [HttpGet("{slug}")]
+        public async Task<ActionResult<FoodtruckWithPresences>> FindBySlug([FromRoute] string slug)
+        {
+            var foodtruck = await _foodtruckService.FindBySlug(slug);
+            if (foodtruck == null)
+                return NotFound();
+            return new FoodtruckWithPresences
+            {
+                Foodtruck = foodtruck,
+                Presences = await _presenceService.FindPresences(foodtruck.Id)
+            };
         }
     }
 }

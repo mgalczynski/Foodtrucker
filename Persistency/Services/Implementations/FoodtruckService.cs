@@ -49,7 +49,7 @@ namespace Persistency.Services.Implementations
         public async Task<Foodtruck> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck)
         {
             var entity = Mapper.Map<Entity>(createNewFoodtruck);
-            entity.Slug = GenerateSlug(createNewFoodtruck.Name);
+            entity.Slug = await GenerateSlug(createNewFoodtruck.Name);
             return Mapper.Map<Foodtruck>(await CreateNewEntity(entity));
         }
 
@@ -62,10 +62,14 @@ namespace Persistency.Services.Implementations
             await PersistencyContext.SaveChangesAsync();
         }
 
-        public string GenerateSlug(string name)
+        private async Task<string> GenerateSlug(string name)
         {
             var slug = _slugHelper.GenerateSlug(name);
-            var slugs = DbSet.Where(f => f.Slug.StartsWith(slug)).Select(f => f.Slug).ToHashSet();
+            var slugs = (await DbSet.ToAsyncEnumerable()
+                    .Where(f => f.Slug.StartsWith(slug))
+                    .Select(f => f.Slug)
+                    .ToList())
+                .ToHashSet();
             if (slugs.Any())
                 return slug;
             for (ulong i = 1;; ++i)
@@ -77,5 +81,11 @@ namespace Persistency.Services.Implementations
                     throw new SystemException("Illegal state");
             }
         }
+
+        public async Task<Foodtruck> FindBySlug(string slug) =>
+            Mapper.Map<Foodtruck>(await DbSet.FirstOrDefaultAsync(f => f.Slug == slug));
+
+        public async Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs) =>
+            await DbSet.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>();
     }
 }

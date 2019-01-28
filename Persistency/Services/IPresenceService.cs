@@ -9,7 +9,7 @@ namespace Persistency.Services
     {
         Task<IList<Presence>> FindPresencesWithin(Coordinate coordinate, double distance);
         Task<IList<Presence>> FindPresences(Guid id);
-        Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<Guid> foodtruckIds);
+        Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<string> foodtruckSlug);
         Task<IList<Presence>> FindPresencesWithin(Coordinate topLeft, Coordinate bottomRight);
     }
 }

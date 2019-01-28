@@ -11,5 +11,7 @@ namespace Persistency.Services
         Task<Foodtruck> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck);
         Task MarkAsDeleted(Guid id);
         Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight);
+        Task<Foodtruck> FindBySlug(string slug);
+        Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs);
     }
 }

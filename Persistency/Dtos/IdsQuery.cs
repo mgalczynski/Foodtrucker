@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 
 namespace Persistency.Dtos
 {
-    public sealed class IdsQuery
+    public sealed class SlugsQuery
     {
-        public IList<Guid> Ids { get; set; }
+        public IList<string> Slugs { get; set; }
     }
 }

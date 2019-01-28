@@ -89,14 +89,14 @@ export const actionCreators = {
             foodtrucks: foodtruckContent.foodtrucks,
             presences: foodtruckContent.presences
         });
-        const infoResponse = await fetch('api/foodtruck/findByIds',
+        const infoResponse = await fetch('api/foodtruck/findBySlugs',
             {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    ids: Array.from(new Set(foodtruckContent.presences.map(p => p.foodtruckId)))
+                    slugs: Array.from(new Set(foodtruckContent.presences.map(p => p.foodtruckSlug)))
                 }),
             });
         const infoContent = await infoResponse.json();
