@@ -1,11 +1,11 @@
-﻿import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
-import {Glyphicon, Nav, Navbar, NavItem} from 'react-bootstrap';
-import {LinkContainer} from 'react-router-bootstrap';
+﻿import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Glyphicon, Nav, Navbar, NavItem } from 'react-bootstrap';
+import { LinkContainer } from 'react-router-bootstrap';
 import './NavMenu.css';
-import {connect} from "react-redux";
-import {bindActionCreators} from "redux";
-import {actionCreators} from "../store/App";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
+import { actionCreators } from "../store/App";
 
 class NavMenu extends Component {
     render() {
@@ -15,23 +15,23 @@ class NavMenu extends Component {
                     <Navbar.Brand>
                         <Link to={'/'}>Foodtrucker</Link>
                     </Navbar.Brand>
-                    <Navbar.Toggle/>
+                    <Navbar.Toggle />
                 </Navbar.Header>
                 <Navbar.Collapse>
                     <Nav>
                         <LinkContainer to={'/'} exact>
                             <NavItem>
-                                <Glyphicon glyph='home'/> Home
+                                <Glyphicon glyph='home' /> Home
                             </NavItem>
                         </LinkContainer>
                         <LinkContainer to={'/counter'}>
                             <NavItem>
-                                <Glyphicon glyph='education'/> Counter
+                                <Glyphicon glyph='education' /> Counter
                             </NavItem>
                         </LinkContainer>
                         <LinkContainer to={'/fetchdata'}>
                             <NavItem>
-                                <Glyphicon glyph='th-list'/> Fetch data
+                                <Glyphicon glyph='th-list' /> Fetch data
                             </NavItem>
                         </LinkContainer>
                     </Nav>
@@ -42,7 +42,7 @@ class NavMenu extends Component {
                                     Welcome {this.props.app.user.firstName}&nbsp;{this.props.app.user.lastName}!
                                 </Navbar.Text>
                                 <NavItem onClick={this.props.logOut}>
-                                    <Glyphicon glyph='th-list'/> Log out
+                                    <Glyphicon glyph='th-list' /> Log out
                                 </NavItem>
                             </ul>
                         )
@@ -51,12 +51,12 @@ class NavMenu extends Component {
                             <ul className='pull-down nav navbar-nav'>
                                 <LinkContainer to={'/login'}>
                                     <NavItem>
-                                        <Glyphicon glyph='th-list'/> Sing in
+                                        <Glyphicon glyph='th-list' /> Sing in
                                     </NavItem>
                                 </LinkContainer>
                                 <LinkContainer to={'/register'}>
                                     <NavItem>
-                                        <Glyphicon glyph='th-list'/> Sing up
+                                        <Glyphicon glyph='th-list' /> Sing up
                                     </NavItem>
                                 </LinkContainer>
                             </ul>
