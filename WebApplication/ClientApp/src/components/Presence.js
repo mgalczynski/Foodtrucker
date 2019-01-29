@@ -23,7 +23,7 @@ export default class Presence extends Component {
                     <Modal.Title>{this.props.presence.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <h7>{this.props.presence.description}</h7>
+                    <h5>{this.props.presence.description}</h5>
                     <SmallMap
                         position={this.props.position}
                         latitude={this.props.presence.location.latitude}

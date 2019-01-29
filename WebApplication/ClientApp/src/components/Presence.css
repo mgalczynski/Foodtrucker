@@ -5,3 +5,13 @@
 .presence .map{
     height: 50vh;
 }
+
+.presence{
+    margin: 20px;
+}
+
+@media(min-width: 768px){
+    .presence{
+        margin: 50px;
+    }
+}
