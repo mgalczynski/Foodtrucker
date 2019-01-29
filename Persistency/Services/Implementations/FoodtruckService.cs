@@ -22,9 +22,8 @@ namespace Persistency.Services.Implementations
         protected override DbSet<Entity> DbSet => PersistencyContext.Foodtrucks;
 
 
-        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance)
-        {
-            return await PersistencyContext.Foodtrucks.FromSql(
+        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance) =>
+            await PersistencyContext.Foodtrucks.FromSql(
                     $@"SELECT *
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}""
                        WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
@@ -32,11 +31,9 @@ namespace Persistency.Services.Implementations
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
                 .ProjectToListAsync<Foodtruck>();
-        }
 
-        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight)
-        {
-            return await PersistencyContext.Foodtrucks.FromSql(
+        public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight) =>
+            await PersistencyContext.Foodtrucks.FromSql(
                     $@"SELECT *
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}""
                        WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
@@ -44,7 +41,6 @@ namespace Persistency.Services.Implementations
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
                 )
                 .ProjectToListAsync<Foodtruck>();
-        }
 
         public async Task<Foodtruck> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck)
         {
