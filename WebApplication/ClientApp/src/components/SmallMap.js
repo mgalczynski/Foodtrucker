@@ -8,7 +8,7 @@ export default class SmallMap extends Component {
         this.marker = null;
     }
     componentDidMount = () => {
-        this.map = L.map('small-map', {
+        this.map = L.map(this.props.mapId, {
             center: [this.props.latitude, this.props.longitude],
             zoom: 15,
             layers: [
@@ -29,7 +29,7 @@ export default class SmallMap extends Component {
             this.map.tap.disable();
         this.marker = L.marker([this.props.latitude, this.props.longitude]);
         this.map.addLayer(this.marker);
-        document.getElementById('small-map').style.cursor = 'default';
+        document.getElementById(this.props.mapId).style.cursor = 'default';
         window.addEventListener('resize', this.containerSizeChanged);
         this.updatePosition(this.props.position);
     };
@@ -60,7 +60,7 @@ export default class SmallMap extends Component {
     };
     render() {
         return (
-            <div id='small-map' className='map' />
+            <div id={this.props.mapId} className='map' />
         );
     }
 }
