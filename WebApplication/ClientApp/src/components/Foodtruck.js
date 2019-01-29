@@ -26,7 +26,7 @@ class Foodtruck extends Component {
         return (
             <div>
                 {this.props.foodtruck === null ?
-                    <Modal show={true} className='foodtruck' bsSize='large'>
+                    <Modal show className='foodtruck' bsSize='large'>
                         <Modal.Body className='foodtruck-loader'>
                             <Loader loaded={false} lines={13} length={20} width={10} radius={30}
                                 corners={1} rotate={0} direction={1} color='#000' speed={1}
@@ -35,7 +35,7 @@ class Foodtruck extends Component {
                         </Modal.Body>
                     </Modal>
                     :
-                    <Modal show={true} className='foodtruck' bsSize='large'>
+                    <Modal show className='foodtruck' bsSize='large'>
                         <Modal.Header>
                             <CloseButton to='/' />
                             <Modal.Title>{this.props.foodtruck.name}</Modal.Title>

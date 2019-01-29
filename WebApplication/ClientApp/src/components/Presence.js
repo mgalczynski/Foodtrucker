@@ -4,11 +4,12 @@ import { Modal } from 'react-bootstrap';
 import Loader from 'react-loader'
 import SmallMap from './SmallMap';
 import CloseButton from './CloseButton';
+import { format } from './Helpers';
 
 export default class Presence extends Component {
     render() {
         return this.props.presence === null ?
-            <Modal show={true} className='presence'>
+            <Modal show className='presence'>
                 <Modal.Body className='presence-loader'>
                     <Loader loaded={false} lines={13} length={20} width={10} radius={30}
                         corners={1} rotate={0} direction={1} color='#000' speed={1}
@@ -17,13 +18,15 @@ export default class Presence extends Component {
                 </Modal.Body>
             </Modal>
             :
-            <Modal show={true} className='presence'>
+            <Modal show className='presence'>
                 <Modal.Header>
                     <CloseButton to={`/foodtruck/${this.props.presence.foodtruckSlug}`} />
                     <Modal.Title>{this.props.presence.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <h5>{this.props.presence.description}</h5>
+                    Start time: {this.props.presence.startTime.format(format)}<br/>
+                    End time: {this.props.presence.endTime === null? "-----" : this.props.presence.startTime.format(format)}
                     <SmallMap
                         position={this.props.position}
                         latitude={this.props.presence.location.latitude}

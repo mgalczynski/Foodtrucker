@@ -1,0 +1,1 @@
+export const format = 'Do MMMM YYYY, h:mm a';
