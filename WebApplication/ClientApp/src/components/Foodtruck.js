@@ -3,6 +3,8 @@ import './Foodtruck.css'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { format } from './Helpers';
 import { actionCreators } from '../store/Foodtruck';
 import Loader from 'react-loader'
 import SmallMap from './SmallMap';
@@ -48,6 +50,18 @@ class Foodtruck extends Component {
                                     longitude={this.props.foodtruck.defaultLocation.longitude}
                                     mapId='foodtruck-map'
                                 />
+                            }
+                            {this.props.presences.length !== 0&&
+                                <div className='foodtruck-presences-container' >
+                                    {this.props.presences.map(p =>
+                                        <Link
+                                            key={p.id}
+                                            to={`/foodtruck/${this.props.foodtruck.slug}/${p.id}`}
+                                        >
+                                            {p.title} Starts on: {p.startTime.format(format)}{p.endTime !== null&& `, ends on: ${p.endTime.format(format)}`}
+                                        </Link>
+                                    )}
+                                </div>
                             }
                         </Modal.Body>
                     </Modal>

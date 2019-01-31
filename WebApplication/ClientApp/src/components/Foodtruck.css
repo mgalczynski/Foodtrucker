@@ -5,3 +5,11 @@
 .foodtruck .map{
     height: 75vh;
 }
+
+.foodtruck .foodtruck-presences-container {
+    margin: 10px 0 10px 0;
+}
+
+.foodtruck .foodtruck-presences-container a{
+    display: block;
+}

@@ -6,6 +6,10 @@
     height: 50vh;
 }
 
+.presence .presence-details {
+    margin-bottom: 10px;
+}
+
 .presence{
     margin: 20px;
 }
