@@ -39,8 +39,7 @@ namespace WebApplication.Controllers
             {
                 var result = await _userManager.CreateAsync(user, password);
                 if (!result.Succeeded)
-                    return new RegisterResult
-                        {Successful = false, Errors = result.Errors.Select(error => error.Description).ToList()};
+                    return new RegisterResult { Successful = false, Errors = result.Errors.Select(error => error.Description).ToList() };
 
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
                 if (!addToRoleResult.Succeeded)
@@ -51,7 +50,8 @@ namespace WebApplication.Controllers
 
                 if (role != FoodtruckerRole.ServiceStaff)
                     await _signInManager.SignInAsync(user, isPersistent: true);
-                return new RegisterResult {Successful = true, User = Mapper.Map<User>(user)};
+                transaction.Commit();
+                return new RegisterResult { Successful = true, User = Mapper.Map<User>(user) };
             }
         }
 
@@ -72,7 +72,7 @@ namespace WebApplication.Controllers
 
         [AllowAnonymous]
         [HttpPost("[action]")]
-        public async Task<ActionResult<RegisterResult>> RegisterFoodTruckUser([FromBody] RegisterUser registerUser)
+        public async Task<ActionResult<RegisterResult>> RegisterStaff([FromBody] RegisterUser registerUser)
         {
             var user = new FoodtruckerUser
             {
@@ -87,12 +87,20 @@ namespace WebApplication.Controllers
 
         [AllowAnonymous]
         [HttpPost("[action]")]
-        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginUser loginUser)
+        public async Task<ActionResult<LoginResult>> Login([FromBody] LoginUser loginUser) =>
+            await Login(loginUser, FoodtruckerRole.Customer);
+
+        [AllowAnonymous]
+        [HttpPost("[action]")]
+        public async Task<ActionResult<LoginResult>> LoginStaff([FromBody] LoginUser loginUser) =>
+            await Login(loginUser, FoodtruckerRole.FoodtruckStaff);
+
+        private async Task<ActionResult<LoginResult>> Login([FromBody] LoginUser loginUser, string role)
         {
             if (loginUser?.Email == null || loginUser?.Password == null)
                 return BadRequest();
             var user = await _userManager.FindByEmailAsync(loginUser.Email);
-            if (user == null)
+            if (user == null || !await _userManager.IsInRoleAsync(user, role))
                 return new LoginResult
                 {
                     IsNotAllowed = false,
@@ -127,9 +135,9 @@ namespace WebApplication.Controllers
         {
             var username = User.Identity.Name;
             if (username == null)
-                return new CheckResult {IsSignedIn = false};
+                return new CheckResult { IsSignedIn = false };
             var user = await _userManager.FindByNameAsync(username);
-            return new CheckResult {IsSignedIn = true, User = Mapper.Map<User>(user)};
+            return new CheckResult { IsSignedIn = true, User = Mapper.Map<User>(user) };
         }
 
         [HttpGet("[action]")]

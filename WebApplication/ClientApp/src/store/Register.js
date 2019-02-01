@@ -1,5 +1,6 @@
-﻿import {push} from 'react-router-redux';
-import {userChanged} from './App';
+﻿import { push } from 'react-router-redux';
+import { userChanged } from './App';
+import { staffPrefix } from '../Helpers';
 
 const emailChanged = 'register/EMAIL_CHANGED';
 const firstNameChanged = 'register/FIRSTNAME_CHANGED';
@@ -7,27 +8,27 @@ const lastNameChanged = 'register/LASTNAME_CHANGED';
 const passwordChanged = 'register/PASSWORD_CHANGED';
 const failedAttempt = 'register/FAILED_ATTEMPT';
 const requestStarted = 'register/REQUEST_STARTED';
-const initialState = {cause: null, email: '', firstName: '', lastName: '', password: '', ongoingRequest: false};
+const initialState = { cause: null, email: '', firstName: '', lastName: '', password: '', ongoingRequest: false };
 
 export const actionCreators = {
     emailChanged: value => async (dispatch) => {
-        dispatch({type: emailChanged, value});
+        dispatch({ type: emailChanged, value });
     },
     lastNameChanged: value => async (dispatch) => {
-        dispatch({type: lastNameChanged, value});
+        dispatch({ type: lastNameChanged, value });
     },
     firstNameChanged: value => async (dispatch) => {
-        dispatch({type: firstNameChanged, value});
+        dispatch({ type: firstNameChanged, value });
     },
     passwordChanged: value => async (dispatch) => {
-        dispatch({type: passwordChanged, value});
+        dispatch({ type: passwordChanged, value });
     },
-    submit: () => async (dispatch, getState) => {
+    submit: (staff) => async (dispatch, getState) => {
         const state = getState().register;
         if (!state.email.trim() || !state.firstName.trim() || !state.lastName.trim() || !state.password.trim())
             return;
-        dispatch({type: requestStarted});
-        const response = await fetch('api/auth/register',
+        dispatch({ type: requestStarted });
+        const response = await fetch(staff ? 'api/auth/registerStaff' : 'api/auth/register',
             {
                 credentials: 'same-origin',
                 method: 'POST',
@@ -43,10 +44,10 @@ export const actionCreators = {
             });
         const result = await response.json();
         if (result.successful) {
-            dispatch({type: userChanged, user: result.user});
-            dispatch(push('/'));
+            dispatch({ type: userChanged, user: result.user });
+            dispatch(push(staff ? staffPrefix : '/'));
         } else
-            dispatch({type: failedAttempt, cause: result.errors});
+            dispatch({ type: failedAttempt, cause: result.errors });
     }
 };
 
@@ -55,17 +56,17 @@ export const reducer = (state, action) => {
 
     switch (action.type) {
         case emailChanged:
-            return {...state, email: action.value};
+            return { ...state, email: action.value };
         case firstNameChanged:
-            return {...state, firstName: action.value};
+            return { ...state, firstName: action.value };
         case lastNameChanged:
-            return {...state, lastName: action.value};
+            return { ...state, lastName: action.value };
         case passwordChanged:
-            return {...state, password: action.value};
+            return { ...state, password: action.value };
         case requestStarted:
-            return {...state, ongoingRequest: true, password: ''};
+            return { ...state, ongoingRequest: true, password: '' };
         case failedAttempt:
-            return {...state, ongoingRequest: false, cause: action.cause};
+            return { ...state, ongoingRequest: false, cause: action.cause };
         case userChanged:
             return initialState;
         default:

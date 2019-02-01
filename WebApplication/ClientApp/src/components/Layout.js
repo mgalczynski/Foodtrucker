@@ -1,15 +1,8 @@
 import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
 import {Col, Grid, Row} from 'react-bootstrap';
 import NavMenu from './NavMenu';
-import {actionCreators} from '../store/App';
 
-class Layout extends Component {
-    componentDidMount = () => {
-        this.props.checkUser();
-    };
-
+export default class Layout extends Component {
     render() {
         return (
             <Grid fluid>
@@ -25,8 +18,3 @@ class Layout extends Component {
         );
     }
 }
-
-export default connect(
-    state => state,
-    dispatch => bindActionCreators(actionCreators, dispatch)
-)(Layout);

@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/css/bootstrap-theme.css';
 import './index.css';
-import { foodtruckPrefix } from './Helpers'
+import { staffPrefix } from './Helpers'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -27,7 +27,7 @@ ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <Switch>
-        <Route path={foodtruckPrefix} component={FoodtruckStaff} />
+        <Route path={staffPrefix} component={FoodtruckStaff} />
         <Route path='/' component={App} />
       </Switch>
     </ConnectedRouter>

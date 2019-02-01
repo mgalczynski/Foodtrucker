@@ -1,1 +1,1 @@
-export const foodtruckPrefix = '/foodtruckStaff';
+export const staffPrefix = '/foodtruckStaff';

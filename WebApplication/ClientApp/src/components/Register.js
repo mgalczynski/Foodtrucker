@@ -1,14 +1,14 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
-import {FormGroup, ControlLabel, FormControl, HelpBlock, Button, Alert} from 'react-bootstrap';
-import {actionCreators} from '../store/Register';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { FormGroup, ControlLabel, FormControl, HelpBlock, Button, Alert } from 'react-bootstrap';
+import { actionCreators } from '../store/Register';
 
 class Register extends Component {
     submit = event => {
         event.preventDefault();
-        this.props.submit();
+        this.props.submit(this.props.staff);
     };
 
     render() {
@@ -27,7 +27,7 @@ class Register extends Component {
                             placeholder="First name"
                             onChange={e => this.props.firstNameChanged(e.target.value)}
                         />
-                        <FormControl.Feedback/>
+                        <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
                         controlId="formBasicText"
@@ -41,7 +41,7 @@ class Register extends Component {
                             placeholder="Last name"
                             onChange={e => this.props.lastNameChanged(e.target.value)}
                         />
-                        <FormControl.Feedback/>
+                        <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
                         controlId="formBasicText"
@@ -55,7 +55,7 @@ class Register extends Component {
                             placeholder="Email"
                             onChange={e => this.props.emailChanged(e.target.value)}
                         />
-                        <FormControl.Feedback/>
+                        <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
                         controlId="formBasicText"
@@ -69,10 +69,10 @@ class Register extends Component {
                             placeholder="Password"
                             onChange={e => this.props.passwordChanged(e.target.value)}
                         />
-                        <FormControl.Feedback/>
+                        <FormControl.Feedback />
                     </FormGroup>
                     {this.props.cause &&
-                    this.props.cause.map(cause => <Alert bsStyle="danger" key={cause}>{cause}</Alert>)}
+                        this.props.cause.map(cause => <Alert bsStyle="danger" key={cause}>{cause}</Alert>)}
                     <Button type="submit">Sign up</Button>
                 </form>
             </div>
@@ -81,6 +81,6 @@ class Register extends Component {
 }
 
 export default connect(
-    state => state.register,
+    (state, ownProps) => ({ ...state.register, staff: ownProps.staff === undefined ? false : ownProps.staff }),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(Register);

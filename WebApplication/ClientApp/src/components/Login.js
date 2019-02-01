@@ -1,13 +1,13 @@
-import React, {Component} from 'react';
-import {bindActionCreators} from 'redux';
-import {connect} from 'react-redux';
-import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
-import {actionCreators} from '../store/Login';
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert } from 'react-bootstrap';
+import { actionCreators } from '../store/Login';
 
 class Login extends Component {
     submit = event => {
         event.preventDefault();
-        this.props.submit();
+        this.props.submit(this.props.staff);
     };
 
     render() {
@@ -27,7 +27,7 @@ class Login extends Component {
                             placeholder="Email"
                             onChange={e => this.props.emailChanged(e.target.value)}
                         />
-                        <FormControl.Feedback/>
+                        <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
                         controlId="formBasicText"
@@ -41,11 +41,11 @@ class Login extends Component {
                             placeholder="Password"
                             onChange={e => this.props.passwordChanged(e.target.value)}
                         />
-                        <FormControl.Feedback/>
+                        <FormControl.Feedback />
                     </FormGroup>
                     <Button type="submit">Sign up</Button>
                     <Checkbox value={this.props.rememberMe}
-                              onChange={e => this.props.rememberMeChanged(e.target.value)}>
+                        onChange={e => this.props.rememberMeChanged(e.target.value)}>
                         Remember me
                     </Checkbox>
                 </form>
@@ -55,6 +55,6 @@ class Login extends Component {
 }
 
 export default connect(
-    state => state.login,
+    (state, ownProps) => ({ ...state.login, staff: ownProps.staff === undefined ? false : ownProps.staff }),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(Login);
