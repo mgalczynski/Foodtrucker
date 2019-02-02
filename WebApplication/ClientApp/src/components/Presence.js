@@ -27,7 +27,7 @@ export default class Presence extends Component {
                     <div className='presence-details'>
                         <h5>{this.props.presence.description}</h5>
                         Start time: {this.props.presence.startTime.format(format)}<br/>
-                        End time: {this.props.presence.endTime === null ? "-----" : this.props.presence.startTime.format(format)}
+                        End time: {this.props.presence.endTime === null ? '-----' : this.props.presence.startTime.format(format)}
                     </div>
                     <SmallMap
                         position={this.props.position}

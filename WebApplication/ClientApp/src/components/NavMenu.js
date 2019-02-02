@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 import { Glyphicon, Nav, Navbar, NavItem } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import './NavMenu.css';
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import { actionCreators } from "../store/App";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { actionCreators } from '../store/App';
 
 class NavMenu extends Component {
     render() {

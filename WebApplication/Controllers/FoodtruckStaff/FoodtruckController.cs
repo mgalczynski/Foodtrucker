@@ -13,7 +13,7 @@ using Foodtruck = Persistency.Dtos.Foodtruck;
 namespace WebApplication.Controllers.FoodtruckStaff
 {
     [Authorize(Roles = FoodtruckerRole.FoodtruckStaff)]
-    [Route("api/staff/[controller]")]
+    [Route("api/foodtruckStaff/[controller]")]
     public class FoodtruckController : BaseController
     {
         private readonly IFoodtruckService _foodtruckService;

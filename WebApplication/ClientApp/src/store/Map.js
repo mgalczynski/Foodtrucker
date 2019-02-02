@@ -1,5 +1,6 @@
 ﻿import {foodtruckPath} from '../App';
 import {LOCATION_CHANGE as urlChanged} from 'react-router-redux';
+import {positionWatch} from '../Helpers';
 
 const locationChanged = 'map/LOCATION_CHANGED';
 const zoomChanged = 'map/ZOOM_CHANGED';
@@ -49,21 +50,18 @@ export const actionCreators = {
         else
             actionCreators.goToLocation(dispatch, getState);
     },
-    watchPosition: () => async (dispatch, getState) => {
-        if ("geolocation" in navigator) {
-            const watchId = navigator.geolocation.watchPosition((e) => {
-                    const state = getState();
-                    const goToLocationDecision = state.map.position === null && !state.map.disabled;
-                    dispatch({type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude});
-                    if (goToLocationDecision) {
-                        actionCreators.goToLocation(dispatch, getState);
-                    }
-                },
-                () => dispatch({type: locationWatchDeleted}),
-                {enableHighAccurency: true});
-            dispatch({type: locationWatchCreated, watchId});
-        }
-    },
+    watchPosition: () => async (dispatch, getState) => positionWatch(
+        (e) => {
+            const state = getState();
+            const goToLocationDecision = state.map.position === null && !state.map.disabled;
+            dispatch({type: positionChanged, longitude: e.coords.longitude, latitude: e.coords.latitude});
+            if (goToLocationDecision) {
+                actionCreators.goToLocation(dispatch, getState);
+            }
+        },
+        () => dispatch({type: locationWatchDeleted}),
+        (watchId) => dispatch({type: locationWatchCreated, watchId})
+    ),
     loadPoi: async (dispatch, getState) => {
         const state = getState().map;
         const foodtrucksResponse = await fetch('api/foodtruck/find',

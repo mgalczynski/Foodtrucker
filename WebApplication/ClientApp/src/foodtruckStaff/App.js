@@ -8,6 +8,7 @@ import Login from '../components/Login';
 import Register from '../components/Register';
 import { staffPrefix } from '../Helpers'
 import { actionCreators } from '../store/App';
+import Foodtruck from './components/Foodtruck';
 
 class App extends Component {
     componentDidMount = () => {
@@ -23,6 +24,7 @@ class App extends Component {
             :
             <Layout>
                 <Route exact path={`${staffPrefix}`} component={Home}/>
+                <Route exact path={`${staffPrefix}/foodtruck/:foodtruckSlug`} component={Foodtruck}/>
             </Layout>;
     }
 }

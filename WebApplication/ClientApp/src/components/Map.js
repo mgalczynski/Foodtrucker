@@ -14,10 +14,10 @@ import EasyButton from 'leaflet-easybutton';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
-import Foodtruck from "./Foodtruck";
+import Foodtruck from './Foodtruck';
 import ErrorBoundary from './ErrorBoundary';
-import Login from "./Login";
-import Layout from "../App";
+import Login from './Login';
+import Layout from '../App';
 
 
 delete L.Icon.Default.prototype._getIconUrl;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import L from 'leaflet';
 
 export default class SmallMap extends Component {
@@ -7,6 +7,7 @@ export default class SmallMap extends Component {
         this.userMarker = null;
         this.marker = null;
     }
+
     componentDidMount = () => {
         this.map = L.map(this.props.mapId, {
             center: [this.props.latitude, this.props.longitude],
@@ -31,13 +32,15 @@ export default class SmallMap extends Component {
         this.map.addLayer(this.marker);
         document.getElementById(this.props.mapId).style.cursor = 'default';
         window.addEventListener('resize', this.containerSizeChanged);
-        this.updatePosition(this.props.position);
+        if (this.props.position !== null)
+            this.updatePosition(this.props.position);
     };
     containerSizeChanged = () => {
         this.map.invalidateSize(false);
     };
     componentWillReceiveProps = (props) => {
-        this.updatePosition(props.position);
+        if (props.position !== null)
+            this.updatePosition(props.position);
         this.marker.setLatLng([props.latitude, props.longitude]);
     };
     updatePosition = (position) => {
@@ -58,9 +61,12 @@ export default class SmallMap extends Component {
         } else
             this.userMarker.setLatLng([position.latitude, position.longitude]);
     };
+
     render() {
         return (
-            <div id={this.props.mapId} className='map' />
+            <div id={this.props.mapId} className='map'/>
         );
     }
 }
+
+SmallMap.defaultProps = {position: null};

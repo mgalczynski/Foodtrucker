@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {Glyphicon, Table, FormControl, InputGroup} from 'react-bootstrap';
-import {LinkContainer} from 'react-router-bootstrap';
 import {staffPrefix} from '../../Helpers';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -34,8 +33,10 @@ class StaffHome extends Component {
                 <tbody>
                 {this.props.filteredFoodtrucks.map(f =>
                     <tr key={f.foodtruck.id}>
-                        <td>{f.foodtruck.name}</td>
-                        <td>{f.foodtruck.displayName}</td>
+                        <td><Link to={`${staffPrefix}/foodtruck/${f.foodtruck.slug}`}>{f.foodtruck.name}</Link></td>
+                        <td>
+                            <Link to={`${staffPrefix}/foodtruck/${f.foodtruck.slug}`}>{f.foodtruck.displayName}</Link>
+                        </td>
                         <td>{f.foodtruck.defaultLocation === null ? 'No' : 'Yes'}</td>
                         <td>{f.type}</td>
                     </tr>

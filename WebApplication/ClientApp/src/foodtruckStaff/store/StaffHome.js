@@ -1,4 +1,5 @@
 import {push, LOCATION_CHANGE as urlChanged} from 'react-router-redux';
+import {staffPrefix} from '../../Helpers';
 
 const foodtrucksChanged = 'staff/home/FOODTRUCKS_CHANGED';
 
@@ -20,7 +21,7 @@ const getQuery = (search) =>
 
 export const actionCreators = {
     updateFoodtrucks: () => async (dispatch, getState) => {
-        const response = await fetch(`api/staff/foodtruck`);
+        const response = await fetch(`api${staffPrefix}/foodtruck`);
         const result = (await response.json()).result;
         result.sort((f1, f2) => f1.foodtruck.name.localeCompare(f2.foodtruck.name));
         dispatch({

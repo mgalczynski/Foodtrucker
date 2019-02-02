@@ -20,7 +20,7 @@ class Foodtruck extends Component {
     };
     componentWillUnmount = () => {
         this.props.clear();
-    }
+    };
     render() {
         // abstract equality!
         const shouldRenderPresenceModal = this.props.match.params.presenceId != null;

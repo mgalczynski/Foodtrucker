@@ -14,36 +14,36 @@ class Login extends Component {
         return (
             <div>
                 <form onSubmit={this.submit}>
-                    {this.props.failed && <Alert bsStyle="danger">Wrong user or password</Alert>}
+                    {this.props.failed && <Alert bsStyle='danger'>Wrong user or password</Alert>}
                     <FormGroup
-                        controlId="formBasicText"
+                        controlId='formBasicText'
                     >
                         <ControlLabel>Email</ControlLabel>
                         <FormControl
                             disabled={this.props.ongoingRequest}
-                            autoComplete="email"
-                            type="email"
+                            autoComplete='email'
+                            type='email'
                             value={this.props.email}
-                            placeholder="Email"
+                            placeholder='Email'
                             onChange={e => this.props.emailChanged(e.target.value)}
                         />
                         <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
-                        controlId="formBasicText"
+                        controlId='formBasicText'
                     >
                         <ControlLabel>Password</ControlLabel>
                         <FormControl
                             disabled={this.props.ongoingRequest}
-                            autoComplete="password"
-                            type="password"
+                            autoComplete='password'
+                            type='password'
                             value={this.props.password}
-                            placeholder="Password"
+                            placeholder='Password'
                             onChange={e => this.props.passwordChanged(e.target.value)}
                         />
                         <FormControl.Feedback />
                     </FormGroup>
-                    <Button type="submit">Sign up</Button>
+                    <Button type='submit'>Sign up</Button>
                     <Checkbox value={this.props.rememberMe}
                         onChange={e => this.props.rememberMeChanged(e.target.value)}>
                         Remember me
