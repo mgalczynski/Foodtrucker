@@ -19,7 +19,7 @@ export default function configureStore(history, initialState) {
         app: App.reducer,
         map: MapStore.reducer,
         foodtruckModal: Foodtruck.reducer,
-        foodtruckStaff: foodtruckStaff
+        ...foodtruckStaff
     };
 
     const middleware = [
@@ -36,7 +36,7 @@ export default function configureStore(history, initialState) {
 
     const rootReducer = combineReducers({
         ...reducers,
-        routing: routerReducer
+        foodtruckStaff: foodtruckStaff,
     });
 
     return createStore(
