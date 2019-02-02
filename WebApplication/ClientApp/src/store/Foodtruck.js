@@ -12,8 +12,8 @@ export const actionCreators = {
         if (getState().foodtruckModal.foodtruck !== null &&
             getState().foodtruckModal.foodtruck.slug === foodtruckSlug)
             return;
-        var response = await fetch(`api/foodtruck/${foodtruckSlug}`);
-        var result = await response.json();
+        const response = await fetch(`api/foodtruck/${foodtruckSlug}`);
+        const result = await response.json();
         dispatch({ type: foodtruckChanged, foodtruck: result.foodtruck, presences: result.presences });
     },
     clear: () => async (dispatch) => {

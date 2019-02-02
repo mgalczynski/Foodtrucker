@@ -8,6 +8,7 @@ import * as MapStore from './Map';
 import * as Register from './Register';
 import * as Foodtruck from './Foodtruck';
 import * as App from './App';
+import foodtruckStaff from '../foodtruckStaff/store/configureStore';
 
 export default function configureStore(history, initialState) {
     const reducers = {
@@ -17,7 +18,8 @@ export default function configureStore(history, initialState) {
         login: Login.reducer,
         app: App.reducer,
         map: MapStore.reducer,
-        foodtruckModal: Foodtruck.reducer
+        foodtruckModal: Foodtruck.reducer,
+        foodtruckStaff: foodtruckStaff
     };
 
     const middleware = [

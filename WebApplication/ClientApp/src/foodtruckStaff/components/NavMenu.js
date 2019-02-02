@@ -47,7 +47,7 @@ class NavMenu extends Component {
           :
           (
             <Nav>
-              <LinkContainer to={`${staffPrefix}/login`}>
+              <LinkContainer exact to={`${staffPrefix}/`}>
                 <NavItem>
                   <Glyphicon glyph='th-list' /> Sing in
                 </NavItem>
