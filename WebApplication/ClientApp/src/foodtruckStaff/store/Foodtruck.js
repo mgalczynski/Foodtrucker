@@ -5,9 +5,11 @@ const foodtruckChanged = 'staff/foodtruck/FOODTRUCK_CHANGED';
 const positionChanged = 'staff/foodtruck/POSITION_CHANGED';
 const resetState = 'staff/foodtruck/RESET_STATE';
 const locationWatchCreated = 'staff/foodtruck/LOCATION_WATCH_CREATED';
+const updateSlug = 'staff/foodtruck/UPDATE_SLUG';
 const locationWatchDeleted = 'staff/foodtruck/LOCATION_WATCH_DELETED';
 
 const initialState = {
+    loadedSlug: null,
     foodtruck: null,
     watchId: null,
     position: null
@@ -15,9 +17,9 @@ const initialState = {
 
 export const actionCreators = {
     loadFoodtruck: (foodtruckSlug) => async (dispatch, getState) => {
-        if (getState().foodtruckForStaff.foodtruck !== null &&
-            getState().foodtruckForStaff.foodtruck.slug === foodtruckSlug)
+        if (getState().foodtruckForStaff.loadedSlug === foodtruckSlug)
             return;
+        dispatch({type: updateSlug, slug: foodtruckSlug});
         const response = await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}`);
         const foodtruck = await response.json();
         dispatch({type: foodtruckChanged, foodtruck});
@@ -49,6 +51,8 @@ export const reducer = (state, action) => {
             return {...state, watchId: action.watchId};
         case locationWatchDeleted:
             return {...state, watchId: null};
+        case updateSlug:
+            return {...state, loadedSlug: action.slug};
         default:
             return state;
     }

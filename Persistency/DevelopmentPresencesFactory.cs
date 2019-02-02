@@ -43,7 +43,7 @@ namespace Persistency
                     .Take(300)
                     .OrderBy(p => DistanceOp.Distance(point, p.DefaultLocation.ToDbPoint())))
                 {
-                    if (!(await _presenceService.FindPresences(foodtruck.Id)).Any())
+                    if ((await _presenceService.FindPresences(foodtruck.Id)).Any())
                         continue;
                     await _context.Presences.AddAsync(new Presence
                     {
