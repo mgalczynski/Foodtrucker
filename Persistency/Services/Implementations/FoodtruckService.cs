@@ -83,5 +83,14 @@ namespace Persistency.Services.Implementations
 
         public async Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs) =>
             await DbSet.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>();
+
+        public async Task<FoodtruckDetailed> FindBySlugDetailed(string slug) =>
+            Mapper.Map<FoodtruckDetailed>(
+                await DbSet
+                    .Include(f => f.Ownerships)
+                    .ThenInclude(o => o.User)
+                    .Include(f => f.Presences)
+                    .FirstOrDefaultAsync(f => f.Slug == slug)
+            );
     }
 }

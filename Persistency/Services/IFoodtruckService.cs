@@ -13,5 +13,6 @@ namespace Persistency.Services
         Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight);
         Task<Foodtruck> FindBySlug(string slug);
         Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs);
+        Task<FoodtruckDetailed> FindBySlugDetailed(string slug);
     }
 }

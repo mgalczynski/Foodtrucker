@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -106,9 +107,19 @@ namespace WebApplication.Controllers.FoodtruckStaff
         public async Task<ActionResult<GenericListResult<FoodtruckWithOwnership>>> GetFoodtrucks()
         {
             using (await Transaction())
-                return Ok(new GenericListResult<FoodtruckWithOwnership>{
+                return Ok(new GenericListResult<FoodtruckWithOwnership>
+                {
                     Result = await _foodtruckOwnershipService.FindFoodtruckOwnershipsByUser((await CurrentUser()).Id)
                 });
+        }
+
+        [HttpGet("{slug}")]
+        public async Task<ActionResult<FoodtruckDetailed>> FindBySlug([FromRoute] string slug)
+        {
+            var result = await _foodtruckService.FindBySlugDetailed(slug);
+            if (result == null || !result.Ownerships.Select(o => o.User.Email).Contains((await CurrentUser()).Email))
+                return NotFound();
+            return result;
         }
     }
 }
