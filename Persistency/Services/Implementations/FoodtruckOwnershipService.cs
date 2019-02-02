@@ -71,6 +71,7 @@ namespace Persistency.Services.Implementations
         public async Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId) =>
             await _persistencyContext.FoodtruckOwnerships
                 .Where(e => e.UserId == userId)
+                .OrderBy(e => e.Foodtruck.Name)
                 .ProjectToListAsync<FoodtruckWithOwnership>();
 
         public async Task DeleteOwnership(string userEmail, Guid foodtruckId)

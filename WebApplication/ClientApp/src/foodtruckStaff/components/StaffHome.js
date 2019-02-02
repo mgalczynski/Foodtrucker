@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {Glyphicon, Nav, FormControl, InputGroup} from 'react-bootstrap';
+import {Glyphicon, Table, FormControl, InputGroup} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import {staffPrefix} from '../../Helpers';
 import {connect} from 'react-redux';
@@ -15,13 +15,33 @@ class StaffHome extends Component {
     render() {
         return <div>
             <InputGroup>
-                <FormControl 
+                <FormControl
                     type='query'
                     placeholder='Filter foodtrucks'
-                    onChange={e=>this.props.changeQuery(e.target.value)}
+                    onChange={e => this.props.changeQuery(e.target.value)}
                     value={this.props.query}
                 />
             </InputGroup>
+            <Table striped bordered hover>
+                <thead>
+                <tr>
+                    <td>Name</td>
+                    <td>Long name</td>
+                    <td>Has default location</td>
+                    <td>Your permissions</td>
+                </tr>
+                </thead>
+                <tbody>
+                {this.props.filteredFoodtrucks.map(f =>
+                    <tr key={f.foodtruck.id}>
+                        <td>{f.foodtruck.name}</td>
+                        <td>{f.foodtruck.displayName}</td>
+                        <td>{f.foodtruck.defaultLocation === null ? 'No' : 'Yes'}</td>
+                        <td>{f.type}</td>
+                    </tr>
+                )}
+                </tbody>
+            </Table>
         </div>;
     }
 }

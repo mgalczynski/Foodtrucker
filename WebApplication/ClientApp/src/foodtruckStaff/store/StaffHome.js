@@ -12,7 +12,8 @@ const mapQueryToArgs = (query) =>
     query.split(' ').filter(v => v.length > 0).map(v => v.toLowerCase());
 
 const filter = (foodtrucks, args) =>
-    args.length === 0 ? foodtrucks : foodtrucks.filter(f => args.some(a => f.name.toLowerCase().contains.includes(a) || f.displayName.toLowerCase().contains.includes(a)));
+    (args.length === 0 ? foodtrucks : foodtrucks.filter(f => args.some(a => f.foodtruck.name.toLowerCase().includes(a) || f.foodtruck.displayName.toLowerCase().includes(a))))
+        .slice(0, 10);
 
 const getQuery = (search) =>
     decodeURIComponent(new URLSearchParams(search).get('q') || '');
@@ -20,8 +21,13 @@ const getQuery = (search) =>
 export const actionCreators = {
     updateFoodtrucks: () => async (dispatch, getState) => {
         const response = await fetch(`api/staff/foodtruck`);
-        const result = await response.json();
-        dispatch({type: foodtrucksChanged, foodtrucks: result.result, search: getState()});
+        const result = (await response.json()).result;
+        result.sort((f1, f2) => f1.foodtruck.name.localeCompare(f2.foodtruck.name));
+        dispatch({
+            type: foodtrucksChanged,
+            foodtrucks: result,
+            search: getState()
+        });
     },
     changeQuery: (query) => async (dispatch) => {
         const q = encodeURIComponent(query);
