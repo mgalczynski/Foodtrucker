@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -24,11 +26,25 @@ namespace WebApplication
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddJsonOptions(o =>
+                {
+                    o.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                    o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                });
 
             // In production, the React files will be served from this directory
             Persistency.Persistency.RegisterPersistency(services);
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
+            services.ConfigureApplicationCookie(o =>
+                o.Events.OnRedirectToLogin = e =>
+                {
+                    e.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                    return Task.CompletedTask;
+                }
+            );
             return services.BuildServiceProvider();
         }
 

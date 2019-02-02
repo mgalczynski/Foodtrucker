@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Persistency.Dtos;
 using Persistency.Entities;
 using FoodtruckOwnership = Persistency.Dtos.FoodtruckOwnership;
 
@@ -14,6 +15,6 @@ namespace Persistency.Services
         Task<FoodtruckOwnership> FindByUserEmailAndFoodtruck(string email, Guid foodtruckId);
         Task DeleteOwnership(string userEmail, Guid foodtruckId);
         Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(Guid foodtruckId);
-        Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByUser(Guid userId);
+        Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId);
     }
 }

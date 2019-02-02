@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Persistency.Dtos;
 using Persistency.Entities;
 using Entity = Persistency.Entities.FoodtruckOwnership;
 using FoodtruckOwnership = Persistency.Dtos.FoodtruckOwnership;
@@ -67,10 +68,10 @@ namespace Persistency.Services.Implementations
                 .Where(e => e.FoodtruckId == foodtruckId)
                 .ProjectToListAsync<FoodtruckOwnership>();
 
-        public async Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByUser(Guid userId) =>
+        public async Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId) =>
             await _persistencyContext.FoodtruckOwnerships
                 .Where(e => e.UserId == userId)
-                .ProjectToListAsync<FoodtruckOwnership>();
+                .ProjectToListAsync<FoodtruckWithOwnership>();
 
         public async Task DeleteOwnership(string userEmail, Guid foodtruckId)
         {

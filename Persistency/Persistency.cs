@@ -25,7 +25,8 @@ namespace Persistency
             services.AddScoped<DevelopmentPresencesFactory>();
 #endif
             services.AddIdentity<Entities.FoodtruckerUser, Entities.FoodtruckerRole>()
-                .AddEntityFrameworkStores<AbstractPersistencyContext>().AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<AbstractPersistencyContext>()
+                .AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings.
@@ -68,6 +69,7 @@ namespace Persistency
             mapper.CreateMap<Dtos.Presence, Entities.Presence>().ReverseMap();
             mapper.CreateMap<Dtos.Coordinate, Point>().ConvertUsing(c => c.ToDbPoint());
             mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(p => p.ToCoordinate());
+            mapper.CreateMap<Enum, string>().IncludeAllDerived().ConvertUsing(e => e.ToString());
         }
 
         public static void OnStart(

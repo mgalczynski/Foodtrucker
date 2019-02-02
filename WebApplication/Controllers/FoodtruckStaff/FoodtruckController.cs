@@ -12,7 +12,7 @@ using Foodtruck = Persistency.Dtos.Foodtruck;
 namespace WebApplication.Controllers.FoodtruckStaff
 {
     [Authorize(Roles = FoodtruckerRole.FoodtruckStaff)]
-    [Route("api/foodtruckStaff/[controller]")]
+    [Route("api/staff/[controller]")]
     public class FoodtruckController : BaseController
     {
         private readonly IFoodtruckService _foodtruckService;
@@ -100,6 +100,15 @@ namespace WebApplication.Controllers.FoodtruckStaff
             }
 
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<GenericListResult<FoodtruckWithOwnership>>> GetFoodtrucks()
+        {
+            using (await Transaction())
+                return Ok(new GenericListResult<FoodtruckWithOwnership>{
+                    Result = await _foodtruckOwnershipService.FindFoodtruckOwnershipsByUser((await CurrentUser()).Id)
+                });
         }
     }
 }
