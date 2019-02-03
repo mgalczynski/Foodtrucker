@@ -18,21 +18,6 @@ class NavMenu extends Component {
         <Navbar.Toggle />
       </Navbar.Header>
       <Navbar.Collapse>
-        {/*<LinkContainer to={staffPrefix} exact>
-          <NavItem>
-            <Glyphicon glyph='home' /> Home
-          </NavItem>
-        </LinkContainer>
-        <LinkContainer to={`${staffPrefix}/counter`}>
-          <NavItem>
-            <Glyphicon glyph='education' /> Counter
-          </NavItem>
-        </LinkContainer>
-        <LinkContainer to={`${staffPrefix}/fetchdata`}>
-          <NavItem>
-            <Glyphicon glyph='th-list' /> Fetch data
-          </NavItem>
-</LinkContainer>*/}
         {this.props.app.user ?
           (
             <ul className='pull-down nav navbar-nav'>

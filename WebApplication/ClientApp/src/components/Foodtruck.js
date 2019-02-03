@@ -24,7 +24,7 @@ class Foodtruck extends Component {
     render() {
         // abstract equality!
         const shouldRenderPresenceModal = this.props.match.params.presenceId != null;
-        const presence = this.props.presences.find(p => p.id == this.props.match.params.presenceId) || null;
+        const presence = this.props.presences.find(p => p.id === this.props.match.params.presenceId) || null;
         return (
             <div>
                 {this.props.foodtruck === null ?

@@ -1,6 +1,6 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {Link} from 'react-router-dom';
-import {Glyphicon, Table, FormControl, InputGroup, Modal} from 'react-bootstrap';
+import {Glyphicon, Table, Button, InputGroup, Modal} from 'react-bootstrap';
 import {staffPrefix} from '../../Helpers';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -9,6 +9,15 @@ import Loader from 'react-loader';
 import SmallMap from '../../components/SmallMap';
 import {format} from '../../components/Helpers';
 import './Foodtruck.css';
+
+const OWNER = 'OWNER';
+const ADMIN = 'ADMIN';
+const REPORTER = 'REPORTER';
+const ownershipMap = new Map([
+    [OWNER, new Set([OWNER, ADMIN, REPORTER])],
+    [ADMIN, new Set([REPORTER])],
+    [REPORTER, new Set()],
+]);
 
 class Foodtruck extends Component {
     componentDidMount = () => {
@@ -21,6 +30,11 @@ class Foodtruck extends Component {
     componentWillUnmount = () => {
         this.props.clear();
     };
+    canManipulate = (ownership) =>
+        ownership.user.email !== this.props.user.email &&
+        ownershipMap.get(this.props.foodtruck.ownerships.find(o => o.user.email = this.props.user.email).type)
+            .has(ownership.type)
+    ;
 
     render() {
         return this.props.foodtruck === null ?
@@ -46,15 +60,37 @@ class Foodtruck extends Component {
                         <td>Last name</td>
                         <td>E-mail</td>
                         <td>Type</td>
+                        <td>Change type</td>
+                        <td>Remove</td>
                     </tr>
                     </thead>
                     <tbody>
-                    {this.props.foodtruck.ownerships.map(p =>
-                        <tr key={p.user.email}>
-                            <td>{p.user.firstName}</td>
-                            <td>{p.user.lastName}</td>
-                            <td><a href={`mailto:${p.user.firstName} ${p.user.lastName}\<${p.user.email}\>`}>{p.user.email}</a></td>
-                            <td>{p.type}</td>
+                    {this.props.foodtruck.ownerships.map(o =>
+                        <tr key={o.user.email}>
+                            <td>{o.user.firstName}</td>
+                            <td>{o.user.lastName}</td>
+                            <td><a
+                                href={`mailto:${o.user.firstName} ${o.user.lastName}\<${o.user.email}\>`}>{o.user.email}</a>
+                            </td>
+                            <td>{o.type}</td>
+                            {this.canManipulate(o) ?
+                                <Fragment>
+                                    <td><Button variant='primary'>Change Type</Button></td>
+                                    <td><Button variant='primary'
+                                                onClick={() => this.props.removeOwnership(
+                                                    this.props.match.params.foodtruckSlug,
+                                                    o.user.email
+                                                )}>
+                                        Remove
+                                    </Button>
+                                    </td>
+                                </Fragment>
+                                :
+                                <Fragment>
+                                    <td></td>
+                                    <td></td>
+                                </Fragment>
+                            }
                         </tr>
                     )}
                     </tbody>
@@ -85,6 +121,6 @@ class Foodtruck extends Component {
 }
 
 export default connect(
-    state => state.foodtruckForStaff,
+    state => ({...state.foodtruckForStaff, user: state.app.user}),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(Foodtruck);

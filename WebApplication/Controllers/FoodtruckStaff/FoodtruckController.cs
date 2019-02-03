@@ -47,7 +47,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return foodtruck;
         }
 
-        [HttpDelete]
+        [HttpDelete("{foodtruckId}")]
         public async Task<ActionResult> DeleteFoodtruck([FromRoute] Guid id)
         {
             using (var transaction = await Transaction())
@@ -82,21 +82,25 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return Ok();
         }
 
-        [HttpPost("{foodtruckId}/[action]")]
-        public async Task<ActionResult> DeleteOwnership([FromRoute] Guid foodtruckId,
+        [HttpPost("{foodtruckSlug}/[action]")]
+        public async Task<ActionResult> DeleteOwnership([FromRoute] string foodtruckSlug,
             [FromBody] DeleteOwnership deleteOwnership)
         {
             if (deleteOwnership?.Email == null)
                 return BadRequest();
             using (var transaction = await Transaction())
             {
-                var taskCurrentUser = CurrentUser();
-                var ownership =
-                    await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(deleteOwnership.Email, foodtruckId);
-                if (!await _foodtruckOwnershipService.CanManipulate((await taskCurrentUser).Id, foodtruckId,
-                    ownership.Type))
+                var foodtruck = await _foodtruckService.FindBySlug(foodtruckSlug);
+                if (foodtruck == null)
+                    return NotFound();
+                var currentUser = await CurrentUser();
+                if (currentUser.Email == deleteOwnership.Email)
                     return Forbid();
-                await _foodtruckOwnershipService.DeleteOwnership(deleteOwnership.Email, foodtruckId);
+
+                var ownership = await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(deleteOwnership.Email, foodtruck.Id);
+                if (ownership == null || !await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruck.Id, ownership.Type))
+                    return Forbid();
+                await _foodtruckOwnershipService.DeleteOwnership(deleteOwnership.Email, foodtruck.Id);
                 transaction.Commit();
             }
 
