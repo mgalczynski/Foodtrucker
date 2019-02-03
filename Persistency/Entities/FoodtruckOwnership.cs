@@ -5,9 +5,9 @@ namespace Persistency.Entities
 {
     public enum OwnershipType
     {
-        OWNER,
-        ADMIN,
-        REPORTER
+        OWNER = 0,
+        ADMIN = 1,
+        REPORTER = 2
     }
 
     public class FoodtruckOwnership

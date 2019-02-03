@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {Link} from 'react-router-dom';
-import {Glyphicon, Table, Button, InputGroup, Modal} from 'react-bootstrap';
+import {Glyphicon, Table, Button, FormControl, Modal} from 'react-bootstrap';
 import {staffPrefix} from '../../Helpers';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -14,9 +14,9 @@ const OWNER = 'OWNER';
 const ADMIN = 'ADMIN';
 const REPORTER = 'REPORTER';
 const ownershipMap = new Map([
-    [OWNER, new Set([OWNER, ADMIN, REPORTER])],
-    [ADMIN, new Set([REPORTER])],
-    [REPORTER, new Set()],
+    [OWNER, [OWNER, ADMIN, REPORTER]],
+    [ADMIN, [REPORTER]],
+    [REPORTER, []],
 ]);
 
 class Foodtruck extends Component {
@@ -30,11 +30,11 @@ class Foodtruck extends Component {
     componentWillUnmount = () => {
         this.props.clear();
     };
+    ownershipset = () =>
+        ownershipMap.get(this.props.foodtruck.ownerships.find(o => o.user.email = this.props.user.email).type);
     canManipulate = (ownership) =>
         ownership.user.email !== this.props.user.email &&
-        ownershipMap.get(this.props.foodtruck.ownerships.find(o => o.user.email = this.props.user.email).type)
-            .has(ownership.type)
-    ;
+        this.ownershipset().includes(ownership.type);
 
     render() {
         return this.props.foodtruck === null ?
@@ -60,7 +60,6 @@ class Foodtruck extends Component {
                         <td>Last name</td>
                         <td>E-mail</td>
                         <td>Type</td>
-                        <td>Change type</td>
                         <td>Remove</td>
                     </tr>
                     </thead>
@@ -72,10 +71,19 @@ class Foodtruck extends Component {
                             <td><a
                                 href={`mailto:${o.user.firstName} ${o.user.lastName}\<${o.user.email}\>`}>{o.user.email}</a>
                             </td>
-                            <td>{o.type}</td>
                             {this.canManipulate(o) ?
                                 <Fragment>
-                                    <td><Button variant='primary'>Change Type</Button></td>
+                                    <td>
+                                        <select className='form-control' value={o.type} onChange={(e)=>this.props.changeOwnership(
+                                            this.props.match.params.foodtruckSlug,
+                                            o.user.email,
+                                            e.target.value
+                                        )}>
+                                            {this.ownershipset().map(o=>
+                                                <option key={o} value={o}>{o}</option>  
+                                            )}
+                                        </select>
+                                    </td>
                                     <td><Button variant='primary'
                                                 onClick={() => this.props.removeOwnership(
                                                     this.props.match.params.foodtruckSlug,
@@ -87,8 +95,8 @@ class Foodtruck extends Component {
                                 </Fragment>
                                 :
                                 <Fragment>
-                                    <td></td>
-                                    <td></td>
+                                    <td>{o.type}</td>
+                                    <td/>
                                 </Fragment>
                             }
                         </tr>

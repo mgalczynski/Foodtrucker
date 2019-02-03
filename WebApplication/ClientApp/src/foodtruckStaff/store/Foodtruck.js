@@ -50,6 +50,22 @@ export const actionCreators = {
             });
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         staffHomeActionCreators.updateFoodtrucks()(dispatch, getState);
+    },
+    changeOwnership: (foodtruckSlug, email, type) => async (dispatch, getState) => {
+        await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}/changeOwnership`,
+            {
+                credentials: 'same-origin',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email,
+                    type
+                }),
+            });
+        actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
+        staffHomeActionCreators.updateFoodtrucks()(dispatch, getState);
     }
 };
 

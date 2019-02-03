@@ -46,10 +46,12 @@ namespace Persistency.Services.Implementations
             _persistencyContext = persistencyContext;
         }
 
+        private DbSet<Entity> DbSet =>
+            _persistencyContext.FoodtruckOwnerships;
+        
         public async Task CreateOwnership(Guid userId, Guid foodtruckId, OwnershipType type)
         {
-            await _persistencyContext.FoodtruckOwnerships.AddAsync(new Entity
-                {UserId = userId, FoodtruckId = foodtruckId, Type = type});
+            await DbSet.AddAsync(new Entity{UserId = userId, FoodtruckId = foodtruckId, Type = type});
             await _persistencyContext.SaveChangesAsync();
         }
 
@@ -64,29 +66,32 @@ namespace Persistency.Services.Implementations
             _revesedAccessDict[type].Contains((await FindEntityByUserAndFoodtruck(userId, foodtruckId)).Type);
 
         public async Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(Guid foodtruckId) =>
-            await _persistencyContext.FoodtruckOwnerships
+            await DbSet
                 .Where(e => e.FoodtruckId == foodtruckId)
                 .ProjectToListAsync<FoodtruckOwnership>();
 
         public async Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId) =>
-            await _persistencyContext.FoodtruckOwnerships
+            await DbSet
                 .Where(e => e.UserId == userId)
                 .OrderBy(e => e.Foodtruck.Name)
                 .ProjectToListAsync<FoodtruckWithOwnership>();
 
+        public async Task ChangeOwnership(Guid foodtruckId, string userEmail, OwnershipType type)
+        {
+            (await DbSet.FirstOrDefaultAsync(o => o.FoodtruckId == foodtruckId && o.User.Email == userEmail)).Type = type;
+            await _persistencyContext.SaveChangesAsync();
+        }
+
         public async Task DeleteOwnership(string userEmail, Guid foodtruckId)
         {
-            _persistencyContext.FoodtruckOwnerships.Remove(
-                await FindEntityByUserEmailAndFoodtruck(userEmail, foodtruckId));
+            DbSet.Remove(await FindEntityByUserEmailAndFoodtruck(userEmail, foodtruckId));
             await _persistencyContext.SaveChangesAsync();
         }
 
         private async Task<Entity> FindEntityByUserAndFoodtruck(Guid userId, Guid foodtruckId) =>
-            await _persistencyContext.FoodtruckOwnerships
-                .FirstOrDefaultAsync(e => e.UserId == userId && e.FoodtruckId == foodtruckId);
+            await DbSet.FirstOrDefaultAsync(e => e.UserId == userId && e.FoodtruckId == foodtruckId);
 
         private async Task<Entity> FindEntityByUserEmailAndFoodtruck(string email, Guid foodtruckId) =>
-            await _persistencyContext.FoodtruckOwnerships
-                .FirstOrDefaultAsync(e => e.User.Email == email && e.FoodtruckId == foodtruckId);
+            await DbSet.FirstOrDefaultAsync(e => e.User.Email == email && e.FoodtruckId == foodtruckId);
     }
 }

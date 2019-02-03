@@ -107,6 +107,31 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return Ok();
         }
 
+        [HttpPost("{foodtruckSlug}/[action]")]
+        public async Task<ActionResult> ChangeOwnership([FromRoute] string foodtruckSlug,
+            [FromBody] ChangeOwnership changeOwnership)
+        {
+            if (changeOwnership?.Email == null)
+                return BadRequest();
+            using (var transaction = await Transaction())
+            {
+                var foodtruck = await _foodtruckService.FindBySlug(foodtruckSlug);
+                if (foodtruck == null)
+                    return NotFound();
+                var currentUser = await CurrentUser();
+                if (currentUser.Email == changeOwnership.Email)
+                    return Forbid();
+
+                var ownership = await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(changeOwnership.Email, foodtruck.Id);
+                if (ownership == null || !await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruck.Id, Min(ownership.Type, changeOwnership.Type)))
+                    return Forbid();
+                await _foodtruckOwnershipService.ChangeOwnership(foodtruck.Id, changeOwnership.Email, changeOwnership.Type);
+                transaction.Commit();
+            }
+
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<ActionResult<GenericListResult<FoodtruckWithOwnership>>> GetFoodtrucks()
         {
@@ -125,5 +150,8 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 return NotFound();
             return result;
         }
+
+        public static OwnershipType Min(params OwnershipType[] args) => 
+            (OwnershipType) args.Cast<int>().Min();
     }
 }
