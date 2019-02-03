@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Debug;
 
@@ -16,11 +17,11 @@ namespace Persistency.Test
         {
             optionsBuilder.EnableSensitiveDataLogging();
             optionsBuilder.UseLoggerFactory(_myLoggerFactory);
-            //            optionsBuilder.UseInMemoryDatabase(nameof(Test));
+            var db = Environment.GetEnvironmentVariable("DB") ?? "db";
+            var port = Environment.GetEnvironmentVariable("PORT") ?? "5432";
             optionsBuilder.UseNpgsql(
-                @"Server=db;Database=FoodtruckerTest;Username=postgres;Password=postgres;",
+                $@"Server={db};Port={port};Database=FoodtruckerTest;Username=postgres;Password=postgres;",
                 builder => builder.UseNetTopologySuite());
-//            optionsBuilder.UseSqlServer(@"Server=localhost\SQLEXPRESS;Database=FoodtruckerTest;Trusted_Connection=True;", builder => builder.UseNetTopologySuite());
         }
     }
 }

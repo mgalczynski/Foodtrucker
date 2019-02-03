@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -26,6 +27,9 @@ namespace Persistency
                 .HasMaxLength(Enum.GetValues(typeof(OwnershipType))
                     .Cast<OwnershipType>()
                     .Max(v => v.ToString().Length));
+            builder.Entity<FoodtruckerUser>()
+                .HasAlternateKey(e => e.Email)
+                .HasName("AK_Users_Mail");
             builder.HasPostgresExtension("postgis");
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Microsoft.AspNetCore.Identity;
 
 namespace Persistency.Entities
@@ -9,7 +10,7 @@ namespace Persistency.Entities
         public const string Customer = "CUSTOMER";
         public const string FoodtruckStaff = "FOODTRUCK_STAFF";
         public const string ServiceStaff = "SERVICE_STAFF";
-        public static readonly ISet<string> Roles = new HashSet<string> {Customer, FoodtruckStaff, ServiceStaff};
+        public static readonly ISet<string> Roles = ImmutableHashSet.Create(Customer, FoodtruckStaff, ServiceStaff);
 
         internal FoodtruckerRole()
         {

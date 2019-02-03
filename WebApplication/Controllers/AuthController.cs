@@ -17,15 +17,12 @@ namespace WebApplication.Controllers
     {
         private readonly UserManager<FoodtruckerUser> _userManager;
         private readonly SignInManager<FoodtruckerUser> _signInManager;
-        private readonly RoleManager<FoodtruckerRole> _roleManager;
         private readonly IPersistencyContext _persistencyContext;
 
-        public AuthController(UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager,
-            RoleManager<FoodtruckerRole> roleManager, IPersistencyContext persistencyContext)
+        public AuthController(UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager, IPersistencyContext persistencyContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _roleManager = roleManager;
             _persistencyContext = persistencyContext;
         }
 

@@ -79,13 +79,7 @@ namespace Persistency
             IServiceProvider serviceProvider
         )
         {
-            var roleManager = serviceProvider.GetService<RoleManager<Entities.FoodtruckerRole>>();
-
-            foreach (var task in Entities.FoodtruckerRole.Roles
-                .Where(name => !roleManager.RoleExistsAsync(name).Result)
-                .Select(name => roleManager.CreateAsync(new Entities.FoodtruckerRole {Name = name})))
-                if (!task.Result.Succeeded)
-                    throw new SystemException(string.Join(", ", task.Result.Errors.Select(error => error.Description)));
+            CreateRoles(serviceProvider.GetService<RoleManager<Entities.FoodtruckerRole>>());
 #if DEBUG
             if (isDevelopment)
                 serviceProvider
@@ -94,5 +88,13 @@ namespace Persistency
                     .Wait();
 #endif
         }
-    }
+
+        internal static void CreateRoles(RoleManager<Entities.FoodtruckerRole> roleManager)
+        {
+            var rolesInDbNormalizedNames = roleManager.Roles.Select(r => r.NormalizedName).ToHashSet();
+            foreach (var r in Entities.FoodtruckerRole.Roles
+                .Where(r => !rolesInDbNormalizedNames.Contains(roleManager.NormalizeKey(r))))
+                roleManager.CreateAsync(new Entities.FoodtruckerRole {Name = r}).Wait();
+        }
+}
 }
