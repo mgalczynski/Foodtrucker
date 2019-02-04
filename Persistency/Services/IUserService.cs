@@ -7,6 +7,6 @@ namespace Persistency.Services
 {
     public interface IUserService
     {
-        Task<IList<User>> FindByQuery(IEnumerable<string> args, IEnumerable<Guid> except);
+        Task<IList<User>> FindByQuery(IEnumerable<string> args, IEnumerable<string> emails);
     }
 }

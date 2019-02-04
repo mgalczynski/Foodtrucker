@@ -51,7 +51,11 @@ namespace Persistency.Test.Services.Implementations
                     LastName = "Doe"
                 }
             };
-            users.ForEach(u => u.UserName = u.Email);
+            users.ForEach(u =>
+            {
+                u.UserName = u.Email;
+                u.NormalizedEmail = u.Email;
+            });
             Context.Users.AddRange(users);
             Context.SaveChanges();
             var foodtruckStaff = Context.Roles.First(r => r.Name == FoodtruckerRole.FoodtruckStaff);
@@ -67,7 +71,7 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void ShouldReturnAllUsersWithLastNameUser()
         {
-            var result = await _userService.FindByQuery(new[] {"user"}, new Guid[] { });
+            var result = await _userService.FindByQuery(new[] {"user"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "f.user@miroslawgalczynski.com",
@@ -79,7 +83,7 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void ShouldReturnAllUsersWithLastNameUserWhenUpperCase()
         {
-            var result = await _userService.FindByQuery(new[] {"USER"}, new Guid[] { });
+            var result = await _userService.FindByQuery(new[] {"USER"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "f.user@miroslawgalczynski.com",
@@ -92,7 +96,7 @@ namespace Persistency.Test.Services.Implementations
         public async void ShouldReturnAllUsersWithLastNameUserWithoutFirstUser()
         {
             var result = await _userService.FindByQuery(new[] {"user"},
-                new[] {Context.Users.First(u => u.Email == "f.user@miroslawgalczynski.com").Id});
+                new[] {"f.user@miroslawgalczynski.com"});
             Assert.Equal(new HashSet<string>
             {
                 "s.user@miroslawgalczynski.com",
@@ -103,7 +107,7 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void ShouldReturnJohn()
         {
-            var result = await _userService.FindByQuery(new[] {"john"}, new Guid[] { });
+            var result = await _userService.FindByQuery(new[] {"john"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "j.d@miroslawgalczynski.com"
@@ -113,7 +117,7 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void ShouldReturnDoe()
         {
-            var result = await _userService.FindByQuery(new[] {"doe"}, new Guid[] { });
+            var result = await _userService.FindByQuery(new[] {"doe"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "j.d@miroslawgalczynski.com"
@@ -123,7 +127,7 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void ShouldReturnJohnWhenUpperCase()
         {
-            var result = await _userService.FindByQuery(new[] {"JOHN"}, new Guid[] { });
+            var result = await _userService.FindByQuery(new[] {"JOHN"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "j.d@miroslawgalczynski.com"
@@ -133,7 +137,7 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void ShouldReturnDoeWhenUpperCase()
         {
-            var result = await _userService.FindByQuery(new[] {"DOE"}, new Guid[] { });
+            var result = await _userService.FindByQuery(new[] {"DOE"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "j.d@miroslawgalczynski.com"

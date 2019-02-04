@@ -20,6 +20,7 @@ namespace Persistency
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
             services.AddScoped<IFoodtruckOwnershipService, FoodtruckOwnershipService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISlugHelper, SlugHelper>();
 #if DEBUG
             services.AddScoped<DevelopmentPresencesFactory>();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -21,10 +20,13 @@ namespace Persistency.Services.Implementations
             _roleManager = roleManager;
         }
 
-        public async Task<IList<User>> FindByQuery(IEnumerable<string> args, IEnumerable<Guid> except)
+        private async Task<IList<Entity>> FindUserByMails(IList<string> mails) =>
+            await _persistencyContext.Users.Where(u => mails.Contains(u.Email)).ToListAsync();
+
+        public async Task<IList<User>> FindByQuery(IEnumerable<string> args, IEnumerable<string> emails)
         {
             var argsList = args.Select(a => a.ToLower()).ToList();
-            var exceptList = except.ToList();
+            var exceptList = (await FindUserByMails(emails.Distinct().ToList())).Select(u => u.Id);
             return await _persistencyContext.Users.FromSql(
                     $@"SELECT u.*
                        FROM ""AspNetUserRoles"" ur

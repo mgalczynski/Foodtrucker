@@ -30,6 +30,9 @@ namespace Persistency
             builder.Entity<FoodtruckerUser>()
                 .HasAlternateKey(e => e.Email)
                 .HasName("AK_Users_Mail");
+            builder.Entity<FoodtruckerUser>()
+                .HasAlternateKey(e => e.NormalizedEmail)
+                .HasName("AK_Users_NormalizedEmail");
             builder.HasPostgresExtension("postgis");
         }
     }

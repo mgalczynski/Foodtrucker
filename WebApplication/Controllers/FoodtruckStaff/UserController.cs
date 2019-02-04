@@ -39,7 +39,9 @@ namespace WebApplication.Controllers.FoodtruckStaff
                     return BadRequest();
                 return new GenericListResult<User>
                 {
-                    Result = await _userService.FindByQuery(query, arg.Except)
+                    Result = await _userService.FindByQuery(query,
+                        arg.Except.Concat(new[] {(await CurrentUser()).Email}).Distinct()
+                    )
                 };
             }
         }
