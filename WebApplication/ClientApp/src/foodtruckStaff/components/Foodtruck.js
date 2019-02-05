@@ -25,7 +25,7 @@ class Foodtruck extends Component {
         this.props.clear();
     };
     ownershipsList = () =>
-        ownershipMap.get(this.props.foodtruck.ownerships.find(o => o.user.email = this.props.user.email).type);
+        ownershipMap.get(this.props.foodtruck.ownerships.find(o => o.user.email === this.props.user.email).type);
 
     canManipulate = (ownership) =>
         ownership.user.email !== this.props.user.email &&
@@ -52,7 +52,10 @@ class Foodtruck extends Component {
                 longitude={this.props.foodtruck.defaultLocation.longitude}
                 position={this.props.position}
             />}
-            <AddNewOwnership ownershipsList={ownershipsList}/>
+            <AddNewOwnership
+                ownershipsList={ownershipsList}
+                foodtruckSlug={this.props.foodtruck.slug}
+            />
             <Button onClick={this.props.openNewOwnershipModal}>Add new ownership</Button>
             <Table striped bordered hover>
                 <thead>
@@ -65,20 +68,20 @@ class Foodtruck extends Component {
                 </tr>
                 </thead>
                 <tbody>
-                {this.props.foodtruck.ownerships.map(o =>
-                    <tr key={o.user.email}>
-                        <td>{o.user.firstName}</td>
-                        <td>{o.user.lastName}</td>
+                {this.props.foodtruck.ownerships.map(ownership =>
+                    <tr key={ownership.user.email}>
+                        <td>{ownership.user.firstName}</td>
+                        <td>{ownership.user.lastName}</td>
                         <td><a
-                            href={`mailto:${o.user.firstName} ${o.user.lastName}\<${o.user.email}\>`}>{o.user.email}</a>
+                            href={`mailto:${ownership.user.firstName} ${ownership.user.lastName}\<${ownership.user.email}\>`}>{ownership.user.email}</a>
                         </td>
-                        {this.canManipulate(o) ?
+                        {this.canManipulate(ownership) ?
                             <Fragment>
                                 <td>
-                                    <select className='form-control' value={o.type}
+                                    <select className='form-control' value={ownership.type}
                                             onChange={(e) => this.props.changeOwnership(
                                                 this.props.match.params.foodtruckSlug,
-                                                o.user.email,
+                                                ownership.user.email,
                                                 e.target.value
                                             )}>
                                         {ownershipsList.map(o =>
@@ -86,18 +89,21 @@ class Foodtruck extends Component {
                                         )}
                                     </select>
                                 </td>
-                                <td><Button variant='primary'
-                                            onClick={() => this.props.removeOwnership(
-                                                this.props.match.params.foodtruckSlug,
-                                                o.user.email
-                                            )}>
+                                <td>
+                                <Button
+                                    variant='primary'
+                                    onClick={() => this.props.removeOwnership(
+                                        this.props.match.params.foodtruckSlug,
+                                        ownership.user.email
+                                    )}
+                                >
                                     Remove
                                 </Button>
                                 </td>
                             </Fragment>
                             :
                             <Fragment>
-                                <td>{o.type}</td>
+                                <td>{ownership.type}</td>
                                 <td/>
                             </Fragment>
                         }

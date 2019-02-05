@@ -62,19 +62,22 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return Ok();
         }
 
-        [HttpPost("{foodtruckId}/[action]")]
-        public async Task<ActionResult> CreateNewOwnership([FromRoute] Guid foodtruckId,
+        [HttpPost("{foodtruckSlug}/[action]")]
+        public async Task<ActionResult> CreateNewOwnership([FromRoute] string foodtruckSlug,
             [FromBody] CreateNewOwnership createNewOwnership)
         {
             if (createNewOwnership?.Email == null)
                 return BadRequest();
             using (var transaction = await Transaction())
             {
+                var foodtruck = await _foodtruckService.FindBySlug(foodtruckSlug);
+                if (foodtruck == null)
+                    return NotFound();
                 var taskUser = UserManager.FindByEmailAsync(createNewOwnership.Email);
-                if (!await _foodtruckOwnershipService.CanManipulate((await CurrentUser()).Id, foodtruckId,
+                if (!await _foodtruckOwnershipService.CanManipulate((await CurrentUser()).Id, foodtruck.Id,
                     createNewOwnership.Type))
                     return Forbid();
-                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruckId,
+                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruck.Id,
                     createNewOwnership.Type);
                 transaction.Commit();
             }

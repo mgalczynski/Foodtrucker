@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { format } from '../../components/Helpers';
 import './AddNewOwnership.css';
-import { Modal, Grid, Row, Col } from 'react-bootstrap';
+import { Modal, Grid, Row, Col, Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { actionCreators } from '../store/AddNewOwnership';
 import Select from 'react-select';
@@ -29,6 +29,7 @@ const AddNewOwnership = props => (
                 <Row>
                     <Col sm={6} xs={6}>
                         <Select
+                            isDisabled={props.isOngoingCreateRequest}
                             isLoading={props.loading}
                             options={props.foundUsers.map(mapUserToSelect)}
                             onInputChange={props.onQueryChanged}
@@ -39,11 +40,23 @@ const AddNewOwnership = props => (
                     </Col>
                     <Col sm={6} xs={6}>
                         <Select
+                            isDisabled={props.isOngoingCreateRequest}
                             options={props.ownershipsList.map(labelToSelect)}
                             onChange={props.changeAddNewOwnerType}
                             defaultValue={labelToSelect(REPORTER)}
                         />
                     </Col>
+                </Row>
+                <Row>
+                    <span className='pull-right'>
+                        <Button
+                            type='submit'
+                            onClick={() => props.createNewOwnership(props.foodtruckSlug)}
+                            className='add-new-ownership-submit'
+                        >
+                            Create new ownership
+                    </Button>
+                    </span>
                 </Row>
             </Grid>
         </Modal.Body>
@@ -51,6 +64,10 @@ const AddNewOwnership = props => (
 );
 
 export default connect(
-    (state, ownProps) => ({ ...state.addNewOwnership, ownershipsList: ownProps.ownershipsList }),
+    (state, ownProps) => ({
+        ...state.addNewOwnership,
+        ownershipsList: ownProps.ownershipsList,
+        foodtruckSlug: ownProps.foodtruckSlug
+    }),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(AddNewOwnership);

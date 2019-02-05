@@ -1,3 +1,7 @@
 .add-new-ownership .container{
     width: unset;
 }
+
+.add-new-ownership .add-new-ownership-submit {
+    margin: 15px;
+}

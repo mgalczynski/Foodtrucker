@@ -1,19 +1,23 @@
 import { REPORTER } from '../Permisions';
-import { staffPrefix } from "../../Helpers";
+import { staffPrefix } from '../../Helpers';
+import { actionCreators as foodtruck } from './Foodtruck';
 
 export const open = 'staff/addNewOwnership/OPEN';
 const close = 'staff/addNewOwnership/CLOSE';
 const changeType = 'staff/addNewOwnership/CHANGE_TYPE';
 const previewOfUsersChanged = 'staff/addNewOwnership/PREVIEW_OF_USERS_CHANGED';
+const createRequestSent = 'staff/addNewOwnership/CREATE_REQUEST_SENT';
 const userChanged = 'staff/addNewOwnership/USER_CHANGED';
 const loadingStarted = 'staff/addNewOwnership/LOADING_STARTED';
 const queryChanged = 'staff/addNewOwnership/QUERY_CHANGED';
 
 const initialState = {
+    isOngoingCreateRequest: false,
     loading: false,
     open: false,
     type: REPORTER,
     user: null,
+    query: '',
     exceptUsers: [],
     foundUsers: []
 };
@@ -51,6 +55,26 @@ export const actionCreators = {
         const users = (await response.json()).result;
         if (query === getState().addNewOwnership.query)
             dispatch({ type: previewOfUsersChanged, users });
+    },
+    createNewOwnership: (foodtruckSlug) => async (dispatch, getState) => {
+        const state = getState().addNewOwnership;
+        if (state.user === null)
+            return;
+        dispatch({ type: createRequestSent });
+        await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}/createNewOwnership`,
+            {
+                credentials: 'same-origin',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: state.user.email,
+                    type: state.type
+                }),
+            });
+        await foodtruck.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
+        dispatch({ type: close });
     }
 };
 
@@ -70,6 +94,8 @@ export const reducer = (state, action) => {
             return { ...state, query: action.query };
         case loadingStarted:
             return { ...state, loading: true };
+        case createRequestSent:
+            return { ...state, isOngoingCreateRequest: true };
         case close:
             return initialState;
         default:
