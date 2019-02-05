@@ -1,6 +1,7 @@
 ﻿import {mapPresence} from '../../store/Helpers';
 import {positionWatch, staffPrefix} from '../../Helpers';
 import {actionCreators as staffHomeActionCreators} from './StaffHome';
+import {open} from './AddNewOwnership';
 
 const foodtruckChanged = 'staff/foodtruck/FOODTRUCK_CHANGED';
 const positionChanged = 'staff/foodtruck/POSITION_CHANGED';
@@ -24,6 +25,10 @@ export const actionCreators = {
         const response = await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}`);
         const foodtruck = await response.json();
         dispatch({type: foodtruckChanged, foodtruck});
+    },
+    openNewOwnershipModal: () => async (dispatch, getState) => {
+        const state = getState();
+        dispatch({type: open, users: state.foodtruckForStaff.foodtruck.ownerships.map(o => o.user.email)});
     },
     clear: () => async (dispatch, getState) => {
         const watchId = getState().map.watchId;

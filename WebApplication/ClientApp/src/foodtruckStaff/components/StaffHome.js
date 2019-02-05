@@ -13,14 +13,12 @@ class StaffHome extends Component {
 
     render() {
         return <div>
-            <InputGroup>
-                <FormControl
-                    type='query'
-                    placeholder='Filter foodtrucks'
-                    onChange={e => this.props.changeQuery(e.target.value)}
-                    value={this.props.query}
-                />
-            </InputGroup>
+            <FormControl
+                type='query'
+                placeholder='Filter foodtrucks'
+                onChange={e => this.props.changeQuery(e.target.value)}
+                value={this.props.query}
+            />
             <Table striped bordered hover>
                 <thead>
                 <tr>
