@@ -10,7 +10,7 @@ using Entity = Persistency.Entities.Foodtruck;
 
 namespace Persistency.Services.Implementations
 {
-    internal class FoodtruckService : BaseService<Entity, Foodtruck>, IFoodtruckService
+    internal class FoodtruckService : BaseService<Entity, Foodtruck>, IInternalFoodtruckService
     {
         private readonly ISlugHelper _slugHelper;
 
@@ -49,9 +49,9 @@ namespace Persistency.Services.Implementations
             return Mapper.Map<Foodtruck>(await CreateNewEntity(entity));
         }
 
-        public async Task MarkAsDeleted(Guid id)
+        public async Task MarkAsDeleted(string slug)
         {
-            var foodtruck = await DbSet.FirstOrDefaultAsync(e => e.Id == id);
+            var foodtruck = await DbSet.FirstOrDefaultAsync(e => e.Slug == slug);
             if (foodtruck == null)
                 throw new ArgumentException();
             foodtruck.Deleted = true;
@@ -68,7 +68,7 @@ namespace Persistency.Services.Implementations
                 .ToHashSet();
             if (!slugs.Contains(slug))
                 return slug;
-            for (ulong i = 1;; ++i)
+            for (ulong i = 1; ; ++i)
             {
                 var slugWithNumber = slug + i;
                 if (!slugs.Contains(slugWithNumber))
@@ -92,5 +92,8 @@ namespace Persistency.Services.Implementations
                     .Include(f => f.Presences)
                     .FirstOrDefaultAsync(f => f.Slug == slug)
             );
+
+        public async Task<Guid> FindFoodtruckIdBySlug(string slug) =>
+            (await DbSet.FirstOrDefaultAsync(f => f.Slug == slug)).Id;
     }
 }

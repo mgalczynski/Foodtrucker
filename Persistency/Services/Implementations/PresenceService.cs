@@ -56,19 +56,20 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<Presence>();
         }
 
-        public async Task<IDictionary<Guid, IList<Presence>>> FindPresences(ICollection<string> foodtruckSlugs)
+        public async Task<IDictionary<string, IList<Presence>>> FindPresences(ICollection<string> foodtruckSlugs)
         {
             return (await Queryable.Where(e => foodtruckSlugs.Contains(e.Foodtruck.Slug))
                     .OrderBy(p => p.FoodtruckId).ThenBy(p => p.StartTime)
+                    .Include(p => p.Foodtruck.Slug)
                     .ToListAsync())
-                .Aggregate(new SortedDictionary<Guid, IList<Presence>>(), (acc, pres) =>
+                .Aggregate(new SortedDictionary<string, IList<Presence>>(), (acc, pres) =>
                 {
                     IList<Presence> list;
                     Debug.Assert(pres.Id != null, "pres.Id != null");
-                    if (acc.TryGetValue(pres.Id.Value, out list))
+                    if (acc.TryGetValue(pres.Foodtruck.Slug, out list))
                     {
                         list = new List<Presence>();
-                        acc[pres.Id.Value] = list;
+                        acc[pres.Foodtruck.Slug] = list;
                     }
 
                     Debug.Assert(list != null, nameof(list) + " != null");
@@ -77,9 +78,9 @@ namespace Persistency.Services.Implementations
                 });
         }
 
-        public async Task<IList<Presence>> FindPresences(Guid id)
+        public async Task<IList<Presence>> FindPresences(string slug)
         {
-            return await Queryable.Where(e => id == e.FoodtruckId)
+            return await Queryable.Where(e => slug == e.Foodtruck.Slug)
                 .OrderBy(p => p.StartTime)
                 .ProjectToListAsync<Presence>();
         }

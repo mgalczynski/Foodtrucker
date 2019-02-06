@@ -20,7 +20,7 @@ namespace Persistency.Services.Implementations
         protected abstract DbSet<TEntity> DbSet { get; }
 
         public async Task<IList<TDto>> FindById(IEnumerable<Guid> ids) =>
-            await DbSet.Where(e => ids.Contains((Guid) e.Id)).ProjectToListAsync<TDto>();
+            await DbSet.Where(e => ids.Contains(e.Id)).ProjectToListAsync<TDto>();
 
         public async Task<TDto> FindById(Guid id) =>
             await DbSet.Where(e => e.Id == id).SingleOrDefaultAsync().MapAsync<TDto, TEntity>();

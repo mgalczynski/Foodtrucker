@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Operation.Distance;
 using Persistency.Dtos;
 using Persistency.Services;
@@ -43,11 +44,12 @@ namespace Persistency
                     .Take(300)
                     .OrderBy(p => DistanceOp.Distance(point, p.DefaultLocation.ToDbPoint())))
                 {
-                    if ((await _presenceService.FindPresences(foodtruck.Id)).Any())
+                    if ((await _presenceService.FindPresences(foodtruck.Slug)).Any())
                         continue;
+                    var foodtruckId = (await _context.Foodtrucks.FirstAsync(f => f.Slug == foodtruck.Slug)).Id;
                     await _context.Presences.AddAsync(new Presence
                     {
-                        FoodtruckId = foodtruck.Id,
+                        FoodtruckId = foodtruckId,
                         Description = $"Presence of {foodtruck.DisplayName}",
                         Title = $"Presence of {foodtruck.DisplayName}",
                         Location = new Coordinate

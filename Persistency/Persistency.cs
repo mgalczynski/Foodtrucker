@@ -17,6 +17,7 @@ namespace Persistency
             services.AddDbContext<IInternalPersistencyContext, PersistencyContext>();
             services.AddDbContext<IPersistencyContext, PersistencyContext>();
             services.AddDbContext<AbstractPersistencyContext, PersistencyContext>();
+            services.AddScoped<IInternalFoodtruckService, FoodtruckService>();
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
             services.AddScoped<IFoodtruckOwnershipService, FoodtruckOwnershipService>();

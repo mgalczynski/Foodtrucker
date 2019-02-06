@@ -9,13 +9,13 @@ namespace Persistency.Services
 {
     public interface IFoodtruckOwnershipService
     {
-        Task CreateOwnership(Guid userId, Guid foodtruckId, OwnershipType type);
-        Task<OwnershipType?> FindTypeByUserAndFoodtruck(Guid userId, Guid foodtruckId);
-        Task<bool> CanManipulate(Guid userId, Guid foodtruckId, OwnershipType type);
-        Task<FoodtruckOwnership> FindByUserEmailAndFoodtruck(string email, Guid foodtruckId);
-        Task DeleteOwnership(string userEmail, Guid foodtruckId);
-        Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(Guid foodtruckId);
+        Task CreateOwnership(Guid userId, string foodtruckSlug, OwnershipType type);
+        Task<OwnershipType?> FindTypeByUserAndFoodtruck(Guid userId, string foodtruckSlug);
+        Task<bool> CanManipulate(Guid userId, string foodtruckSlug, OwnershipType type);
+        Task<FoodtruckOwnership> FindByUserEmailAndFoodtruck(string email, string foodtruckSlug);
+        Task DeleteOwnership(string userEmail, string foodtruckSlug);
+        Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(string foodtruckSlug);
         Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId);
-        Task ChangeOwnership(Guid foodtruckId, string userEmail, OwnershipType type);
+        Task ChangeOwnership(string foodtruckSlug, string userEmail, OwnershipType type);
     }
 }

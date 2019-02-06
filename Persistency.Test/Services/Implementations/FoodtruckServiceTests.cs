@@ -58,9 +58,8 @@ namespace Persistency.Test.Services.Implementations
             result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Assert.Equal(new HashSet<string> {"Foodtruck within location", "Foodtruck outside location"},
                 result.Select(foodtruck => foodtruck.Name).ToHashSet());
-            var id = (await Context.Foodtrucks.FirstAsync(e => e.Name == "Foodtruck outside location")).Id;
-            Debug.Assert(id != null, nameof(id) + " != null");
-            await _foodtruckService.MarkAsDeleted((Guid) id);
+            var slug = (await Context.Foodtrucks.FirstAsync(e => e.Name == "Foodtruck outside location")).Slug;
+            await _foodtruckService.MarkAsDeleted(slug);
             result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Assert.Equal(new HashSet<string> {"Foodtruck within location"},
                 result.Select(foodtruck => foodtruck.Name).ToHashSet());
@@ -72,7 +71,7 @@ namespace Persistency.Test.Services.Implementations
             var result = await _foodtruckService.CreateNewFoodtruck(new CreateNewFoodtruck
                 {Name = "New foodtruck", DisplayName = "New foodtruck"});
             Assert.Equal("New foodtruck",
-                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Id == result.Id && foodtruck.Slug == result.Slug)?.Name);
+                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Slug == result.Slug && foodtruck.Slug == result.Slug)?.Name);
         }
 
         [Fact]

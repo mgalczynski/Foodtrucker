@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -39,7 +38,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
             {
                 var taskUser = CurrentUser();
                 foodtruck = await _foodtruckService.CreateNewFoodtruck(createNewFoodtruck);
-                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruck.Id,
+                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruck.Slug,
                     OwnershipType.OWNER);
                 transaction.Commit();
             }
@@ -47,15 +46,15 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return foodtruck;
         }
 
-        [HttpDelete("{foodtruckId}")]
-        public async Task<ActionResult> DeleteFoodtruck([FromRoute] Guid id)
+        [HttpDelete("{foodtruckSlug}")]
+        public async Task<ActionResult> DeleteFoodtruck([FromRoute] string foodtruckSlug)
         {
             using (var transaction = await Transaction())
             {
                 var user = await CurrentUser();
-                if (await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, id) != OwnershipType.OWNER)
+                if (await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, foodtruckSlug) != OwnershipType.OWNER)
                     return Forbid();
-                await _foodtruckService.MarkAsDeleted(id);
+                await _foodtruckService.MarkAsDeleted(foodtruckSlug);
                 transaction.Commit();
             }
 
@@ -74,10 +73,10 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 if (foodtruck == null)
                     return NotFound();
                 var taskUser = UserManager.FindByEmailAsync(createNewOwnership.Email);
-                if (!await _foodtruckOwnershipService.CanManipulate((await CurrentUser()).Id, foodtruck.Id,
+                if (!await _foodtruckOwnershipService.CanManipulate((await CurrentUser()).Id, foodtruck.Slug,
                     createNewOwnership.Type))
                     return Forbid();
-                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruck.Id,
+                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruck.Slug,
                     createNewOwnership.Type);
                 transaction.Commit();
             }
@@ -100,10 +99,10 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 if (currentUser.Email == deleteOwnership.Email)
                     return Forbid();
 
-                var ownership = await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(deleteOwnership.Email, foodtruck.Id);
-                if (ownership == null || !await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruck.Id, ownership.Type))
+                var ownership = await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(deleteOwnership.Email, foodtruck.Slug);
+                if (ownership == null || !await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruck.Slug, ownership.Type))
                     return Forbid();
-                await _foodtruckOwnershipService.DeleteOwnership(deleteOwnership.Email, foodtruck.Id);
+                await _foodtruckOwnershipService.DeleteOwnership(deleteOwnership.Email, foodtruck.Slug);
                 transaction.Commit();
             }
 
@@ -125,10 +124,10 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 if (currentUser.Email == changeOwnership.Email)
                     return Forbid();
 
-                var ownership = await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(changeOwnership.Email, foodtruck.Id);
-                if (ownership == null || !await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruck.Id, Min(ownership.Type, changeOwnership.Type)))
+                var ownership = await _foodtruckOwnershipService.FindByUserEmailAndFoodtruck(changeOwnership.Email, foodtruck.Slug);
+                if (ownership == null || !await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruck.Slug, Min(ownership.Type, changeOwnership.Type)))
                     return Forbid();
-                await _foodtruckOwnershipService.ChangeOwnership(foodtruck.Id, changeOwnership.Email, changeOwnership.Type);
+                await _foodtruckOwnershipService.ChangeOwnership(foodtruck.Slug, changeOwnership.Email, changeOwnership.Type);
                 transaction.Commit();
             }
 

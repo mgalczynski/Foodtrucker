@@ -59,7 +59,7 @@ namespace WebApplication.Controllers
             return new FoodtruckWithPresences
             {
                 Foodtruck = foodtruck,
-                Presences = await _presenceService.FindPresences(foodtruck.Id)
+                Presences = await _presenceService.FindPresences(foodtruck.Slug)
             };
         }
     }

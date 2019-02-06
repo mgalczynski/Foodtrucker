@@ -4,7 +4,6 @@ namespace Persistency.Dtos
 {
     public sealed class Foodtruck
     {
-        public Guid Id { get; set; }
         public string Slug { get; set; }
         public string Name { get; set; }
         public string DisplayName { get; set; }

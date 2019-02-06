@@ -9,10 +9,15 @@ namespace Persistency.Services
     {
         Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance);
         Task<Foodtruck> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck);
-        Task MarkAsDeleted(Guid id);
+        Task MarkAsDeleted(string slug);
         Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight);
         Task<Foodtruck> FindBySlug(string slug);
         Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs);
         Task<FoodtruckDetailed> FindBySlugDetailed(string slug);
+    }
+
+    internal interface IInternalFoodtruckService : IFoodtruckService
+    {
+        Task<Guid> FindFoodtruckIdBySlug(string slug);
     }
 }
