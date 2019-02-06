@@ -8,6 +8,7 @@ import {actionCreators} from '../store/FoodtruckForm';
 import Select from 'react-select';
 import {REPORTER} from '../Permisions';
 import CloseButton from '../../components/CloseButton';
+import LocationPicker from './LocationPicker';
 
 const FoodtruckForm = props => (
     <Modal show={props.isOpen} dialogClassName='foodtruck-form' bsSize='large'>
@@ -33,6 +34,11 @@ const FoodtruckForm = props => (
                         onChange={e => props.changeDisplayName(e.target.value)}
                     />
                 </FormGroup>
+                <LocationPicker
+                    mapId='foodtruck-form-map'
+                    selection={props.foodtruck.defaultLocation}
+                    onSelectionChanged={props.changeLocation}
+                />
                 <FormGroup className='foodtruck-form-submit-form-group'>
                     <Button
                         type='submit'

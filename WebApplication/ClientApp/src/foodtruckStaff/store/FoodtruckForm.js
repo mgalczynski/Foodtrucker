@@ -9,7 +9,7 @@ const initialState = {
     foodtruck: {
         name: '',
         displayName: '',
-        defaultLocation: null,
+        defaultLocation: null
     }
 };
 
@@ -88,7 +88,10 @@ export const reducer = (state, action) => {
         case displayNameChanged:
             return {...state, foodtruck: {...state.foodtruck, displayName: action.displayName}};
         case locationChanged:
-            return {...state, location: {latitude: action.latitude, longitude: action.longitude}};
+            return {
+                ...state,
+                foodtruck: {...state.foodtruck, defaultLocation: {latitude: action.latitude, longitude: action.longitude}}
+            };
         default:
             return state;
     }

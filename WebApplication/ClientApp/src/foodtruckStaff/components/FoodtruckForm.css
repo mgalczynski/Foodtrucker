@@ -5,3 +5,7 @@
 .foodtruck-form .foodtruck-form-submit-form-group{
     text-align: right;
 }
+
+.foodtruck-form .map {
+    height: 30vh;
+}
