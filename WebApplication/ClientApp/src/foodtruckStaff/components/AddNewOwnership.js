@@ -19,7 +19,7 @@ const labelToSelect = (label) =>
     ({ value: label, label });
 
 const AddNewOwnership = props => (
-    <Modal show={props.open} dialogClassName='add-new-ownership'>
+    <Modal show={props.open} dialogClassName='add-new-ownership' bsSize='large'>
         <Modal.Header>
             <CloseButton onClick={props.close} />
             Add new ownership
@@ -55,7 +55,7 @@ const AddNewOwnership = props => (
                             className='add-new-ownership-submit'
                         >
                             Create new ownership
-                    </Button>
+                        </Button>
                     </span>
                 </Row>
             </Grid>
