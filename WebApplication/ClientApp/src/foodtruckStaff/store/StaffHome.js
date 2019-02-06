@@ -1,5 +1,6 @@
 import {push, LOCATION_CHANGE as urlChanged} from 'react-router-redux';
 import {staffPrefix} from '../../Helpers';
+import {actionCreators as FoodtruckForm} from './FoodtruckForm';
 
 const foodtrucksChanged = 'staff/home/FOODTRUCKS_CHANGED';
 
@@ -35,6 +36,9 @@ export const actionCreators = {
         dispatch(push({
             search: q.length === 0 ? '' : `q=${q}`
         }));
+    },
+    openAddNewFoodtruckModal: () => async (dispatch) => {
+        await FoodtruckForm.open()(dispatch);
     }
 };
 

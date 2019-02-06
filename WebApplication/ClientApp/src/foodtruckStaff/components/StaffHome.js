@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {Glyphicon, Table, FormControl, InputGroup} from 'react-bootstrap';
+import {Glyphicon, Table, FormControl, InputGroup, Button} from 'react-bootstrap';
 import {staffPrefix} from '../../Helpers';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actionCreators} from '../store/StaffHome';
+import FoodtruckForm from './FoodtruckForm';
 
 class StaffHome extends Component {
     componentDidMount = () => {
@@ -19,6 +20,9 @@ class StaffHome extends Component {
                 onChange={e => this.props.changeQuery(e.target.value)}
                 value={this.props.query}
             />
+            <Button onClick={this.props.openAddNewFoodtruckModal}>
+                Add new foodtruck
+            </Button>
             <Table striped bordered hover>
                 <thead>
                 <tr>
@@ -30,7 +34,7 @@ class StaffHome extends Component {
                 </thead>
                 <tbody>
                 {this.props.filteredFoodtrucks.map(f =>
-                    <tr key={f.foodtruck.id}>
+                    <tr key={f.foodtruck.slug}>
                         <td><Link to={`${staffPrefix}/foodtruck/${f.foodtruck.slug}`}>{f.foodtruck.name}</Link></td>
                         <td>
                             <Link to={`${staffPrefix}/foodtruck/${f.foodtruck.slug}`}>{f.foodtruck.displayName}</Link>
@@ -41,6 +45,7 @@ class StaffHome extends Component {
                 )}
                 </tbody>
             </Table>
+            <FoodtruckForm />
         </div>;
     }
 }
