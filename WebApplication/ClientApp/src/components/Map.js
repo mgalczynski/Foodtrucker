@@ -146,12 +146,12 @@ class MapComponent extends Component {
     };
 
     updateFoodtrucks = (props) => {
-        const allNewIds = new Set(props.foodtrucks.map(f => f.id));
+        const allNewSlugs = new Set(props.foodtrucks.map(f => f.slug));
         const newMarkers = new Map(props.foodtrucks
-            .filter(f => !this.foodtruckMarkers.has(f.id) && f.defaultLocation)
+            .filter(f => !this.foodtruckMarkers.has(f.slug) && f.defaultLocation)
             .map(f => {
                 const div = document.createElement('div');
-                const pair = [f.id, L.marker([f.defaultLocation.latitude, f.defaultLocation.longitude])
+                const pair = [f.slug, L.marker([f.defaultLocation.latitude, f.defaultLocation.longitude])
                     .bindPopup(div)];
                 ReactDOM.render(
                     <ErrorBoundary>
@@ -163,9 +163,9 @@ class MapComponent extends Component {
             }));
         this.markers.addLayers(Array.from(newMarkers.values()));
         const markersToRemove = [];
-        this.foodtruckMarkers.forEach((marker, id) => {
-            if (allNewIds.has(id))
-                newMarkers.set(id, marker);
+        this.foodtruckMarkers.forEach((marker, slug) => {
+            if (allNewSlugs.has(slug))
+                newMarkers.set(slug, marker);
             else
                 markersToRemove.push(marker);
         });
@@ -174,9 +174,9 @@ class MapComponent extends Component {
     };
 
     updatePresences = (props) => {
-        const allNewIds = new Set(props.presences.map(f => f.id));
+        const allNewIds = new Set(props.presences.map(p => p.id));
         const newMarkers = new Map(props.presences
-            .filter(f => !this.presenceMarkers.has(f.id))
+            .filter(p => !this.presenceMarkers.has(p.id))
             .map(p => {
                 const div = document.createElement('div');
                 const pair = [p.id, L.marker([p.location.latitude, p.location.longitude])
