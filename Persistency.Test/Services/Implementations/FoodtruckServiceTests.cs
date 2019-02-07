@@ -68,7 +68,7 @@ namespace Persistency.Test.Services.Implementations
         [Fact]
         public async void CreateFoodTruckTest()
         {
-            var result = await _foodtruckService.CreateNewFoodtruck(new CreateNewFoodtruck
+            var result = await _foodtruckService.CreateNewFoodtruck(new CreateModifyFoodtruck
                 {Name = "New foodtruck", DisplayName = "New foodtruck"});
             Assert.Equal("New foodtruck",
                 Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Slug == result.Slug && foodtruck.Slug == result.Slug)?.Name);
@@ -78,7 +78,7 @@ namespace Persistency.Test.Services.Implementations
         public async void CreateFoodTruckTestShouldReturnNotSuccessful()
         {
             await Assert.ThrowsAsync<DbUpdateException>(async () =>
-                await _foodtruckService.CreateNewFoodtruck(new CreateNewFoodtruck {Name = "New foodtruck"}));
+                await _foodtruckService.CreateNewFoodtruck(new CreateModifyFoodtruck {Name = "New foodtruck"}));
             Assert.DoesNotContain("New foodtruck", Context.Foodtrucks.Select(foodtruck => foodtruck.Name));
         }
     }

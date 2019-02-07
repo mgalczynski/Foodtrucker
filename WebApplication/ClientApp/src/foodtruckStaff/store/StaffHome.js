@@ -39,6 +39,9 @@ export const actionCreators = {
     },
     openAddNewFoodtruckModal: () => async (dispatch) => {
         await FoodtruckForm.open()(dispatch);
+    },
+    modifyFoodtruck: (foodtruck) => async (dispatch) => {
+        await FoodtruckForm.openWithFoodtruck(foodtruck)(dispatch);
     }
 };
 

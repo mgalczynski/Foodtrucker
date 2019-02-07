@@ -42,11 +42,22 @@ namespace Persistency.Services.Implementations
                 )
                 .ProjectToListAsync<Foodtruck>();
 
-        public async Task<Foodtruck> CreateNewFoodtruck(CreateNewFoodtruck createNewFoodtruck)
+        public async Task<Foodtruck> CreateNewFoodtruck(CreateModifyFoodtruck createNewFoodtruck)
         {
             var entity = Mapper.Map<Entity>(createNewFoodtruck);
             entity.Slug = await GenerateSlug(createNewFoodtruck.Name);
             return Mapper.Map<Foodtruck>(await CreateNewEntity(entity));
+        }
+
+        public async Task<Foodtruck> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck)
+        {
+            var entity = Mapper.Map<Entity>(changeFoodtruck);
+            var id = (await DbSet.AsNoTracking().FirstAsync(f => f.Slug == slug)).Id;
+            entity.Slug = await GenerateSlug(entity.Name, id);
+            entity.Id = id;
+            DbSet.Update(entity);
+            await PersistencyContext.SaveChangesAsync();
+            return Mapper.Map<Foodtruck>(entity);
         }
 
         public async Task MarkAsDeleted(string slug)
@@ -58,11 +69,11 @@ namespace Persistency.Services.Implementations
             await PersistencyContext.SaveChangesAsync();
         }
 
-        private async Task<string> GenerateSlug(string name)
+        private async Task<string> GenerateSlug(string name, Guid? id=null)
         {
             var slug = _slugHelper.GenerateSlug(name);
             var slugs = (await DbSet
-                    .Where(f => f.Slug.StartsWith(slug))
+                    .Where(f => f.Slug.StartsWith(slug) && f.Id != id)
                     .Select(f => f.Slug)
                     .ToListAsync())
                 .ToHashSet();

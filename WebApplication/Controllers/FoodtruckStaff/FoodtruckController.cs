@@ -28,8 +28,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
         }
 
         [HttpPost]
-        public async Task<ActionResult<Foodtruck>> CreateNewFoodtruck(
-            [FromBody] CreateNewFoodtruck createNewFoodtruck)
+        public async Task<ActionResult<Foodtruck>> CreateNewFoodtruck([FromBody] CreateModifyFoodtruck createNewFoodtruck)
         {
             if (createNewFoodtruck?.Name == null || createNewFoodtruck?.DisplayName == null)
                 return BadRequest();
@@ -43,6 +42,27 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 transaction.Commit();
             }
 
+            return foodtruck;
+        }
+
+
+        [HttpPut("{foodtruckSlug}")]
+        public async Task<ActionResult<Foodtruck>> ModifyFoodtruck(
+            [FromRoute] string foodtruckSlug,
+            [FromBody] CreateModifyFoodtruck modifyFoodtruck
+        )
+        {
+            if (modifyFoodtruck?.Name == null || modifyFoodtruck?.DisplayName == null)
+                return BadRequest();
+            Foodtruck foodtruck;
+            using (var transaction = await Transaction())
+            {
+                var currentUser = await CurrentUser();
+                if(!await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruckSlug, OwnershipType.ADMIN))
+                    return Forbid();
+                foodtruck = await _foodtruckService.ModifyFoodtruck(foodtruckSlug, modifyFoodtruck);
+                transaction.Commit();
+            }
             return foodtruck;
         }
 
@@ -153,7 +173,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return result;
         }
 
-        public static OwnershipType Min(params OwnershipType[] args) => 
-            (OwnershipType) args.Cast<int>().Min();
+        public static OwnershipType Min(params OwnershipType[] args) =>
+            (OwnershipType)args.Cast<int>().Min();
     }
 }

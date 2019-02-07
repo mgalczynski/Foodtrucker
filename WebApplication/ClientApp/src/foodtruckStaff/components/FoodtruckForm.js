@@ -20,7 +20,7 @@ class FoodtruckForm extends Component {
         return <Modal show={this.props.isOpen} dialogClassName='foodtruck-form' bsSize='large'>
             <Modal.Header>
                 <CloseButton onClick={this.props.close}/>
-                {this.props.foodtruckSlug === null ? 'Add new foodtruck' : `Modify ${this.props.foodtruck.name}`}
+                {this.props.slug === null ? 'Add new foodtruck' : `Modify ${this.props.foodtruck.name}`}
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={this.onSubmit}>
@@ -72,8 +72,6 @@ class FoodtruckForm extends Component {
 }
 
 export default connect(
-    (state, ownProps) => ({
-        ...state.foodtruckForm, foodtruckSlug: ownProps.foodtruckSlug || null
-    }),
+    state => state.foodtruckForm,
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(FoodtruckForm);

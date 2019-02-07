@@ -20,8 +20,9 @@ namespace Persistency
         {
             base.OnModelCreating(builder);
             builder.Entity<Foodtruck>()
-                .HasAlternateKey(f => f.Slug)
-                .HasName("AK_Foodtrucks_slug");
+                .HasIndex(e => e.Slug)
+                .IsUnique()
+                .HasName("AK_Foodtrucks_Slug");
             builder.Entity<FoodtruckOwnership>().HasKey(e => new {e.UserId, e.FoodtruckId});
             builder.Entity<FoodtruckOwnership>()
                 .Property(e => e.Type)
@@ -33,7 +34,8 @@ namespace Persistency
                 .HasAlternateKey(e => e.Email)
                 .HasName("AK_Users_Mail");
             builder.Entity<FoodtruckerUser>()
-                .HasAlternateKey(e => e.NormalizedEmail)
+                .HasIndex(e => e.NormalizedEmail)
+                .IsUnique()
                 .HasName("AK_Users_NormalizedEmail");
             builder.HasPostgresExtension("postgis");
         }
