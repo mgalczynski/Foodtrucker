@@ -61,10 +61,10 @@ namespace Persistency.Services.Implementations
         private async Task<string> GenerateSlug(string name)
         {
             var slug = _slugHelper.GenerateSlug(name);
-            var slugs = (await DbSet.ToAsyncEnumerable()
+            var slugs = (await DbSet
                     .Where(f => f.Slug.StartsWith(slug))
                     .Select(f => f.Slug)
-                    .ToList())
+                    .ToListAsync())
                 .ToHashSet();
             if (!slugs.Contains(slug))
                 return slug;
