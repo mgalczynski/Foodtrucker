@@ -44,8 +44,10 @@ class Login extends Component {
                         <FormControl.Feedback />
                     </FormGroup>
                     <Button type='submit'>Sign up</Button>
-                    <Checkbox value={this.props.rememberMe}
-                        onChange={e => this.props.rememberMeChanged(e.target.value)}>
+                    <Checkbox
+                        checked={this.props.rememberMe}
+                        onChange={e => this.props.rememberMeChanged(e.target.checked)}
+                    >
                         Remember me
                     </Checkbox>
                 </form>

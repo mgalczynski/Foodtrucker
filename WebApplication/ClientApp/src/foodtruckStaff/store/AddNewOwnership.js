@@ -50,7 +50,7 @@ export const actionCreators = {
                 body: JSON.stringify({
                     query,
                     except: state.addNewOwnership.exceptUsers
-                }),
+                })
             });
         const users = (await response.json()).result;
         if (query === getState().addNewOwnership.query)
@@ -71,7 +71,7 @@ export const actionCreators = {
                 body: JSON.stringify({
                     email: state.user.email,
                     type: state.type
-                }),
+                })
             });
         await foodtruck.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         dispatch({ type: close });

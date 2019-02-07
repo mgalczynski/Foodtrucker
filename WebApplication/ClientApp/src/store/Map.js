@@ -79,7 +79,7 @@ export const actionCreators = {
                         longitude: state.bounds.getEast(),
                         latitude: state.bounds.getSouth()
                     }
-                }),
+                })
             });
         const foodtruckContent = await foodtrucksResponse.json();
         dispatch({
@@ -95,7 +95,7 @@ export const actionCreators = {
                 },
                 body: JSON.stringify({
                     slugs: Array.from(new Set(foodtruckContent.presences.map(p => p.foodtruckSlug)))
-                }),
+                })
             });
         const infoContent = await infoResponse.json();
         dispatch({type: infoFoodtrucksUpdate, foodtrucks: infoContent.result});

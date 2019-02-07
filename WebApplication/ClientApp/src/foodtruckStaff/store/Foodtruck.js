@@ -51,7 +51,7 @@ export const actionCreators = {
                 },
                 body: JSON.stringify({
                     email
-                }),
+                })
             });
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         staffHomeActionCreators.updateFoodtrucks()(dispatch, getState);
@@ -67,7 +67,7 @@ export const actionCreators = {
                 body: JSON.stringify({
                     email,
                     type
-                }),
+                })
             });
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         staffHomeActionCreators.updateFoodtrucks()(dispatch, getState);

@@ -35,7 +35,7 @@ export const actionCreators = {
                     email: state.email,
                     password: state.password,
                     rememberMe: state.rememberMe
-                }),
+                })
             });
         const result = await response.json();
         if (result.successful) {

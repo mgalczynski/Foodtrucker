@@ -40,7 +40,7 @@ export const actionCreators = {
                     firstName: state.firstName,
                     lastName: state.lastName,
                     password: state.password
-                }),
+                })
             });
         const result = await response.json();
         if (result.successful) {

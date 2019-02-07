@@ -32,7 +32,7 @@ namespace WebApplication
                 .AddJsonOptions(o =>
                 {
                     o.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-                    o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                    o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
                 });
 
             // In production, the React files will be served from this directory

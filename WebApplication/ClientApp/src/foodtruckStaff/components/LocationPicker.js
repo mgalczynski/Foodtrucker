@@ -60,7 +60,6 @@ export default class LocationPicker extends Component {
         this.map.keyboard.disable();
         if (this.map.tap)
             this.map.tap.disable();
-        document.getElementById('map').style.cursor = 'default';
     };
     enableMap = () => {
         this.map.zoomControl.enable();
