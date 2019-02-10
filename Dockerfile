@@ -5,7 +5,7 @@ ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 COPY ./ ./
 WORKDIR /app/WebApplication
-RUN dotnet publish -c Release -o out
+RUN GENERATE_SOURCEMAP=false dotnet publish -c Release -o out
 
 
 FROM microsoft/dotnet:2.2-aspnetcore-runtime
