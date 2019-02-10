@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -8,33 +7,30 @@ using Persistency.Dtos;
 using Persistency.Services.Implementations;
 using Slugify;
 using Xunit;
+using Foodtruck = Persistency.Entities.Foodtruck;
 
 namespace Persistency.Test.Services.Implementations
 {
     public class FoodtruckServiceTests : BaseTests
     {
-        private static readonly Func<double, double, Point> CreatePoint = ExtensionMethods.CreatePointWithSrid;
-
-        private readonly FoodtruckService _foodtruckService;
-
         public FoodtruckServiceTests()
         {
             var slugHelper = new SlugHelper();
-            var foodtrucks = new List<Entities.Foodtruck>
+            var foodtrucks = new List<Foodtruck>
             {
-                new Entities.Foodtruck
+                new Foodtruck
                 {
                     DefaultLocation = CreatePoint(51.125975, 16.978056),
                     Name = "Foodtruck within location",
                     DisplayName = "Foodtruck within location"
                 },
-                new Entities.Foodtruck
+                new Foodtruck
                 {
                     DefaultLocation = CreatePoint(51.107261, 17.059999),
                     Name = "Foodtruck outside location",
                     DisplayName = "Foodtruck outside location"
                 },
-                new Entities.Foodtruck
+                new Foodtruck
                 {
                     Name = "Foodtruck without location",
                     DisplayName = "Foodtruck without location"
@@ -44,6 +40,27 @@ namespace Persistency.Test.Services.Implementations
             Context.Foodtrucks.AddRange(foodtrucks);
             Context.SaveChanges();
             _foodtruckService = new FoodtruckService(Context, slugHelper);
+        }
+
+        private static readonly Func<double, double, Point> CreatePoint = ExtensionMethods.CreatePointWithSrid;
+
+        private readonly FoodtruckService _foodtruckService;
+
+        [Fact]
+        public async void CreateFoodTruckTest()
+        {
+            var result = await _foodtruckService.CreateNewFoodtruck(new CreateModifyFoodtruck
+                {Name = "New foodtruck", DisplayName = "New foodtruck"});
+            Assert.Equal("New foodtruck",
+                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Slug == result.Slug && foodtruck.Slug == result.Slug)?.Name);
+        }
+
+        [Fact]
+        public async void CreateFoodTruckTestShouldReturnNotSuccessful()
+        {
+            await Assert.ThrowsAsync<DbUpdateException>(async () =>
+                await _foodtruckService.CreateNewFoodtruck(new CreateModifyFoodtruck {Name = "New foodtruck"}));
+            Assert.DoesNotContain("New foodtruck", Context.Foodtrucks.Select(foodtruck => foodtruck.Name));
         }
 
         [Fact]
@@ -63,23 +80,6 @@ namespace Persistency.Test.Services.Implementations
             result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Assert.Equal(new HashSet<string> {"Foodtruck within location"},
                 result.Select(foodtruck => foodtruck.Name).ToHashSet());
-        }
-
-        [Fact]
-        public async void CreateFoodTruckTest()
-        {
-            var result = await _foodtruckService.CreateNewFoodtruck(new CreateModifyFoodtruck
-                {Name = "New foodtruck", DisplayName = "New foodtruck"});
-            Assert.Equal("New foodtruck",
-                Context.Foodtrucks.FirstOrDefault(foodtruck => foodtruck.Slug == result.Slug && foodtruck.Slug == result.Slug)?.Name);
-        }
-
-        [Fact]
-        public async void CreateFoodTruckTestShouldReturnNotSuccessful()
-        {
-            await Assert.ThrowsAsync<DbUpdateException>(async () =>
-                await _foodtruckService.CreateNewFoodtruck(new CreateModifyFoodtruck {Name = "New foodtruck"}));
-            Assert.DoesNotContain("New foodtruck", Context.Foodtrucks.Select(foodtruck => foodtruck.Name));
         }
     }
 }

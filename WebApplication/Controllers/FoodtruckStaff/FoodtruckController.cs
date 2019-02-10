@@ -15,8 +15,8 @@ namespace WebApplication.Controllers.FoodtruckStaff
     [Route("api/foodtruckStaff/[controller]")]
     public class FoodtruckController : BaseController
     {
-        private readonly IFoodtruckService _foodtruckService;
         private readonly IFoodtruckOwnershipService _foodtruckOwnershipService;
+        private readonly IFoodtruckService _foodtruckService;
 
         public FoodtruckController(IFoodtruckService foodtruckService,
             IFoodtruckOwnershipService foodtruckOwnershipService,
@@ -61,11 +61,12 @@ namespace WebApplication.Controllers.FoodtruckStaff
             using (var transaction = await Transaction())
             {
                 var currentUser = await CurrentUser();
-                if(!await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruckSlug, OwnershipType.ADMIN))
+                if (!await _foodtruckOwnershipService.CanManipulate(currentUser.Id, foodtruckSlug, OwnershipType.ADMIN))
                     return Forbid();
                 foodtruck = await _foodtruckService.ModifyFoodtruck(foodtruckSlug, modifyFoodtruck);
                 transaction.Commit();
             }
+
             return foodtruck;
         }
 
@@ -177,6 +178,6 @@ namespace WebApplication.Controllers.FoodtruckStaff
         }
 
         private static OwnershipType Min(params OwnershipType[] args) =>
-            (OwnershipType)args.Cast<int>().Min();
+            (OwnershipType) args.Cast<int>().Min();
     }
 }

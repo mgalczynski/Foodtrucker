@@ -7,15 +7,12 @@ using Persistency.Services.Implementations;
 using Slugify;
 using Xunit;
 using Foodtruck = Persistency.Entities.Foodtruck;
+using Presence = Persistency.Entities.Presence;
 
 namespace Persistency.Test.Services.Implementations
 {
     public class PresenceServiceTests : BaseTests
     {
-        private static readonly Func<double, double, Point> CreatePoint = ExtensionMethods.CreatePointWithSrid;
-
-        private readonly PresenceService _presenceService;
-
         public PresenceServiceTests()
         {
             var slugHelper = new SlugHelper();
@@ -25,14 +22,14 @@ namespace Persistency.Test.Services.Implementations
                 {
                     Name = "Foodtruck without location",
                     DisplayName = "Foodtruck without location",
-                    Presences = new List<Entities.Presence>
+                    Presences = new List<Presence>
                     {
-                        new Entities.Presence
+                        new Presence
                         {
                             Location = CreatePoint(51.125975, 16.978056),
                             Title = "Presence within location"
                         },
-                        new Entities.Presence
+                        new Presence
                         {
                             Location = CreatePoint(51.107261, 17.059999),
                             Title = "Presence outside location"
@@ -43,9 +40,9 @@ namespace Persistency.Test.Services.Implementations
                 {
                     Name = "Deleted Foodtruck",
                     DisplayName = "Deleted Foodtruck",
-                    Presences = new List<Entities.Presence>
+                    Presences = new List<Presence>
                     {
-                        new Entities.Presence
+                        new Presence
                         {
                             Location = CreatePoint(51.125975, 16.978056),
                             Title = "Presence within location"
@@ -59,6 +56,10 @@ namespace Persistency.Test.Services.Implementations
             Context.SaveChanges();
             _presenceService = new PresenceService(Context, new FoodtruckService(Context, new SlugHelper()));
         }
+
+        private static readonly Func<double, double, Point> CreatePoint = ExtensionMethods.CreatePointWithSrid;
+
+        private readonly PresenceService _presenceService;
 
         [Fact]
         public async void Test()

@@ -39,8 +39,8 @@ namespace Persistency.Services.Implementations
                     return acc;
                 });
 
-        private readonly IInternalPersistencyContext _persistencyContext;
         private readonly IInternalFoodtruckService _foodtruckService;
+        private readonly IInternalPersistencyContext _persistencyContext;
 
         public FoodtruckOwnershipService(IInternalPersistencyContext persistencyContext, IInternalFoodtruckService foodtruckService)
         {

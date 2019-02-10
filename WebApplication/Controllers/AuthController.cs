@@ -7,17 +7,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Persistency;
-using Persistency.Entities;
 using Persistency.Dtos;
+using Persistency.Entities;
 
 namespace WebApplication.Controllers
 {
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
-        private readonly UserManager<FoodtruckerUser> _userManager;
-        private readonly SignInManager<FoodtruckerUser> _signInManager;
         private readonly IPersistencyContext _persistencyContext;
+        private readonly SignInManager<FoodtruckerUser> _signInManager;
+        private readonly UserManager<FoodtruckerUser> _userManager;
 
         public AuthController(UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager, IPersistencyContext persistencyContext)
         {
@@ -36,7 +36,7 @@ namespace WebApplication.Controllers
             {
                 var result = await _userManager.CreateAsync(user, password);
                 if (!result.Succeeded)
-                    return new RegisterResult { Successful = false, Errors = result.Errors.Select(error => error.Description).ToList() };
+                    return new RegisterResult {Successful = false, Errors = result.Errors.Select(error => error.Description).ToList()};
 
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, role);
                 if (!addToRoleResult.Succeeded)
@@ -48,7 +48,7 @@ namespace WebApplication.Controllers
                 if (role != FoodtruckerRole.ServiceStaff)
                     await _signInManager.SignInAsync(user, isPersistent: true);
                 transaction.Commit();
-                return new RegisterResult { Successful = true, User = Mapper.Map<User>(user) };
+                return new RegisterResult {Successful = true, User = Mapper.Map<User>(user)};
             }
         }
 
@@ -132,9 +132,9 @@ namespace WebApplication.Controllers
         {
             var username = User.Identity.Name;
             if (username == null)
-                return new CheckResult { IsSignedIn = false };
+                return new CheckResult {IsSignedIn = false};
             var user = await _userManager.FindByNameAsync(username);
-            return new CheckResult { IsSignedIn = true, User = Mapper.Map<User>(user) };
+            return new CheckResult {IsSignedIn = true, User = Mapper.Map<User>(user)};
         }
 
         [HttpGet("[action]")]

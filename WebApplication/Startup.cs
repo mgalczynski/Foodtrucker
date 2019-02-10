@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Persistency;
 using Persistency.Entities;
 
@@ -31,8 +33,8 @@ namespace WebApplication
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                 .AddJsonOptions(o =>
                 {
-                    o.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-                    o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
+                    o.SerializerSettings.Converters.Add(new StringEnumConverter());
+                    o.SerializerSettings.NullValueHandling = NullValueHandling.Include;
                 });
 
             // In production, the React files will be served from this directory

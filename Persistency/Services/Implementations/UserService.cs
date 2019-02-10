@@ -20,9 +20,6 @@ namespace Persistency.Services.Implementations
             _roleManager = roleManager;
         }
 
-        private async Task<IList<Entity>> FindUserByMails(IList<string> mails) =>
-            await _persistencyContext.Users.Where(u => mails.Contains(u.Email)).ToListAsync();
-
         public async Task<IList<User>> FindByQuery(IEnumerable<string> args, IEnumerable<string> emails)
         {
             var argsList = args.Select(a => a.ToLower()).ToList();
@@ -41,5 +38,8 @@ namespace Persistency.Services.Implementations
                 )
                 .ProjectToListAsync<User>();
         }
+
+        private async Task<IList<Entity>> FindUserByMails(IList<string> mails) =>
+            await _persistencyContext.Users.Where(u => mails.Contains(u.Email)).ToListAsync();
     }
 }

@@ -12,8 +12,6 @@ namespace Persistency.Test.Services.Implementations
 {
     public class UserServiceTest : BaseTests
     {
-        private readonly UserService _userService;
-
         public UserServiceTest()
         {
             var roleManager = new RoleManager<FoodtruckerRole>(
@@ -68,6 +66,8 @@ namespace Persistency.Test.Services.Implementations
             _userService = new UserService(Context, roleManager);
         }
 
+        private readonly UserService _userService;
+
         [Fact]
         public async void ShouldReturnAllUsersWithLastNameUser()
         {
@@ -105,16 +105,6 @@ namespace Persistency.Test.Services.Implementations
         }
 
         [Fact]
-        public async void ShouldReturnJohn()
-        {
-            var result = await _userService.FindByQuery(new[] {"john"}, new string[] { });
-            Assert.Equal(new HashSet<string>
-            {
-                "j.d@miroslawgalczynski.com"
-            }, result.Select(u => u.Email).ToHashSet());
-        }
-
-        [Fact]
         public async void ShouldReturnDoe()
         {
             var result = await _userService.FindByQuery(new[] {"doe"}, new string[] { });
@@ -125,9 +115,9 @@ namespace Persistency.Test.Services.Implementations
         }
 
         [Fact]
-        public async void ShouldReturnJohnWhenUpperCase()
+        public async void ShouldReturnDoeWhenUpperCase()
         {
-            var result = await _userService.FindByQuery(new[] {"JOHN"}, new string[] { });
+            var result = await _userService.FindByQuery(new[] {"DOE"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "j.d@miroslawgalczynski.com"
@@ -135,9 +125,19 @@ namespace Persistency.Test.Services.Implementations
         }
 
         [Fact]
-        public async void ShouldReturnDoeWhenUpperCase()
+        public async void ShouldReturnJohn()
         {
-            var result = await _userService.FindByQuery(new[] {"DOE"}, new string[] { });
+            var result = await _userService.FindByQuery(new[] {"john"}, new string[] { });
+            Assert.Equal(new HashSet<string>
+            {
+                "j.d@miroslawgalczynski.com"
+            }, result.Select(u => u.Email).ToHashSet());
+        }
+
+        [Fact]
+        public async void ShouldReturnJohnWhenUpperCase()
+        {
+            var result = await _userService.FindByQuery(new[] {"JOHN"}, new string[] { });
             Assert.Equal(new HashSet<string>
             {
                 "j.d@miroslawgalczynski.com"

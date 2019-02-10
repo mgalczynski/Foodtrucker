@@ -16,11 +16,11 @@ namespace WebApplication.Controllers.FoodtruckStaff
     [Route("api/foodtruckStaff/[controller]")]
     public class PresenceController : BaseController
     {
-        private readonly IPresenceService _presenceService;
-        private readonly IFoodtruckOwnershipService _foodtruckOwnershipService;
-
         private static readonly IImmutableSet<OwnershipType?> _canManipulateOwnerships =
             ImmutableHashSet.Create<OwnershipType?>(OwnershipType.ADMIN, OwnershipType.OWNER, OwnershipType.REPORTER);
+
+        private readonly IFoodtruckOwnershipService _foodtruckOwnershipService;
+        private readonly IPresenceService _presenceService;
 
         public PresenceController(IPresenceService presenceService,
             IFoodtruckOwnershipService foodtruckOwnershipService,

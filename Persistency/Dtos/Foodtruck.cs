@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Persistency.Dtos
+﻿namespace Persistency.Dtos
 {
     public sealed class Foodtruck
     {

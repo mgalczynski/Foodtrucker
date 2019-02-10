@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +7,6 @@ using Persistency;
 using Persistency.Dtos;
 using Persistency.Entities;
 using Persistency.Services;
-using Foodtruck = Persistency.Dtos.Foodtruck;
 
 namespace WebApplication.Controllers.FoodtruckStaff
 {

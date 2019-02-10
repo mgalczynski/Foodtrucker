@@ -68,6 +68,24 @@ namespace Persistency.Services.Implementations
             await PersistencyContext.SaveChangesAsync();
         }
 
+        public async Task<Foodtruck> FindBySlug(string slug) =>
+            Mapper.Map<Foodtruck>(await DbSet.FirstOrDefaultAsync(f => f.Slug == slug));
+
+        public async Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs) =>
+            await DbSet.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>();
+
+        public async Task<FoodtruckDetailed> FindBySlugDetailed(string slug) =>
+            Mapper.Map<FoodtruckDetailed>(
+                await DbSet
+                    .Include(f => f.Ownerships)
+                    .ThenInclude(o => o.User)
+                    .Include(f => f.Presences)
+                    .FirstOrDefaultAsync(f => f.Slug == slug)
+            );
+
+        public async Task<Guid> FindFoodtruckIdBySlug(string slug) =>
+            (await DbSet.FirstOrDefaultAsync(f => f.Slug == slug)).Id;
+
         private async Task<string> GenerateSlug(string name, Guid? id = null)
         {
             var slug = _slugHelper.GenerateSlug(name);
@@ -87,23 +105,5 @@ namespace Persistency.Services.Implementations
                     throw new SystemException("Illegal state");
             }
         }
-
-        public async Task<Foodtruck> FindBySlug(string slug) =>
-            Mapper.Map<Foodtruck>(await DbSet.FirstOrDefaultAsync(f => f.Slug == slug));
-
-        public async Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs) =>
-            await DbSet.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>();
-
-        public async Task<FoodtruckDetailed> FindBySlugDetailed(string slug) =>
-            Mapper.Map<FoodtruckDetailed>(
-                await DbSet
-                    .Include(f => f.Ownerships)
-                    .ThenInclude(o => o.User)
-                    .Include(f => f.Presences)
-                    .FirstOrDefaultAsync(f => f.Slug == slug)
-            );
-
-        public async Task<Guid> FindFoodtruckIdBySlug(string slug) =>
-            (await DbSet.FirstOrDefaultAsync(f => f.Slug == slug)).Id;
     }
 }
