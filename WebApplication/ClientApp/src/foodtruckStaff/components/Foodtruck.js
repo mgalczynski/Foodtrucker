@@ -86,7 +86,6 @@ class Foodtruck extends Component {
                                 <td>
                                     <select className='form-control' value={ownership.type}
                                             onChange={(e) => this.props.changeOwnership(
-                                                this.props.match.params.foodtruckSlug,
                                                 ownership.user.email,
                                                 e.target.value
                                             )}>
@@ -98,10 +97,7 @@ class Foodtruck extends Component {
                                 <td>
                                     <Button
                                         variant='primary'
-                                        onClick={() => this.props.removeOwnership(
-                                            this.props.match.params.foodtruckSlug,
-                                            ownership.user.email
-                                        )}
+                                        onClick={() => this.props.removeOwnership(ownership.user.email)}
                                     >
                                         Remove
                                     </Button>
@@ -120,6 +116,7 @@ class Foodtruck extends Component {
             <PresencesList
                 presences={this.props.foodtruck.presences}
                 modifyPresence={this.props.openModifyPresenceModal}
+                removePresence={this.props.removePresence}
             />
         </div>;
     }

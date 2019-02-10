@@ -127,3 +127,4 @@ export default class LocationPicker extends Component {
     }
 }
 
+LocationPicker.defaultProps = {position: null};

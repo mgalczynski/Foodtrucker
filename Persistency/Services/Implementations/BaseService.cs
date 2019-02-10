@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Persistency.Entities;
 
 namespace Persistency.Services.Implementations
 {
     internal abstract class BaseService<TEntity, TDto> : IBaseService<TDto>
-        where TEntity : BaseEntity where TDto : class
+        where TEntity : BaseEntity, new() where TDto : class
     {
         protected BaseService(IInternalPersistencyContext persistencyContext)
         {
@@ -24,6 +25,12 @@ namespace Persistency.Services.Implementations
 
         public async Task<TDto> FindById(Guid id) =>
             await DbSet.Where(e => e.Id == id).SingleOrDefaultAsync().MapAsync<TDto, TEntity>();
+
+        public async Task RemoveById(Guid id)
+        {
+            DbSet.Remove(new TEntity {Id = id});
+            await PersistencyContext.SaveChangesAsync();
+        }
 
         protected async Task<TEntity> CreateNewEntity<TCreateEntityDto>(TCreateEntityDto createEntityDto) =>
             await CreateNewEntity(Mapper.Map<TEntity>(createEntityDto));

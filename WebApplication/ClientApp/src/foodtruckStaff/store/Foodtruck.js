@@ -42,7 +42,8 @@ export const actionCreators = {
         () => dispatch({type: locationWatchDeleted}),
         (watchId) => dispatch({type: locationWatchCreated, watchId})
     ),
-    removeOwnership: (foodtruckSlug, email) => async (dispatch, getState) => {
+    removeOwnership: (email) => async (dispatch, getState) => {
+        const foodtruckSlug = getState().foodtruckForStaff.loadedSlug;
         await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}/deleteOwnership`,
             {
                 credentials: 'same-origin',
@@ -57,7 +58,21 @@ export const actionCreators = {
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         await StaffHome.updateFoodtrucks()(dispatch, getState);
     },
-    changeOwnership: (foodtruckSlug, email, type) => async (dispatch, getState) => {
+    removePresence: (presenceId) => async (dispatch, getState) => {
+        const foodtruckSlug = getState().foodtruckForStaff.loadedSlug;
+        await fetch(`api${staffPrefix}/presence/${presenceId}`,
+            {
+                credentials: 'same-origin',
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
+        await StaffHome.updateFoodtrucks()(dispatch, getState);
+    },
+    changeOwnership: (email, type) => async (dispatch, getState) => {
+        const foodtruckSlug = getState().foodtruckForStaff.loadedSlug;
         await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}/changeOwnership`,
             {
                 credentials: 'same-origin',

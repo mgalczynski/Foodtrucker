@@ -97,9 +97,10 @@ namespace Persistency.Services.Implementations
 
         public async Task<Presence> ModifyPresence(Guid presenceId, CreateModifyPresence createModifyPresence)
         {
-            var entity = Mapper.Map<Entity>(createModifyPresence);
-            await DbSet.AsNoTracking().FirstOrDefaultAsync(p => p.Id == presenceId);
-            DbSet.Update(entity);
+            var entity = await DbSet.FirstOrDefaultAsync(p => p.Id == presenceId);
+            if (entity == null)
+                return null;
+            Mapper.Map(createModifyPresence, entity);
             await PersistencyContext.SaveChangesAsync();
             return Mapper.Map<Presence>(entity);
         }

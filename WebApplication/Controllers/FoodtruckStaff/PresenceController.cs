@@ -70,7 +70,22 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 transaction.Commit();
             }
 
-            return result == null ? (ActionResult<Presence>) NotFound() : Ok(result);
+            return Ok(result);
+        }
+
+        [HttpDelete("{presenceId}")]
+        public async Task<ActionResult> DeletePresence([FromRoute] Guid presenceId)
+        {
+            using (var transaction = await Transaction())
+            {
+                var user = await CurrentUser();
+                if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresence(user.Id, presenceId)))
+                    return Forbid();
+                await _presenceService.RemoveById(presenceId);
+                transaction.Commit();
+            }
+
+            return Ok();
         }
     }
 }

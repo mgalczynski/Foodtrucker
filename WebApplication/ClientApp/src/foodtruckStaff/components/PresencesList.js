@@ -13,6 +13,7 @@ const PresencesList = props => (
             <td>Title</td>
             <td>Description</td>
             <td>Modify</td>
+            <td>Remove</td>
         </tr>
         </thead>
         <tbody>
@@ -28,6 +29,14 @@ const PresencesList = props => (
                         onClick={() => props.modifyPresence(p)}
                     >
                         Modify
+                    </Button>
+                </td>
+                <td>
+                    <Button
+                        variant='primary'
+                        onClick={() => props.removePresence(p.id)}
+                    >
+                        Remove
                     </Button>
                 </td>
             </tr>

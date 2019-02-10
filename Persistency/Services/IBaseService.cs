@@ -8,5 +8,6 @@ namespace Persistency.Services
     {
         Task<IList<TDto>> FindById(IEnumerable<Guid> ids);
         Task<TDto> FindById(Guid id);
+        Task RemoveById(Guid id);
     }
 }
