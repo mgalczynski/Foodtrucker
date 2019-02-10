@@ -67,8 +67,9 @@ namespace Persistency
         {
             Func<Dtos.Coordinate, Point> func = ExtensionMethods.ToDbPoint;
             mapper.CreateMap<Dtos.CreateModifyFoodtruck, Entities.Foodtruck>();
-            mapper.CreateMap<Dtos.Foodtruck, Entities.Foodtruck>().ReverseMap();
-            mapper.CreateMap<Dtos.Presence, Entities.Presence>().ReverseMap();
+            mapper.CreateMap<Entities.Foodtruck, Dtos.Foodtruck>();
+            mapper.CreateMap<Entities.Presence, Dtos.Presence>();
+            mapper.CreateMap<Dtos.CreateModifyPresence, Entities.Presence>();
             mapper.CreateMap<Dtos.Coordinate, Point>().ConvertUsing(c => c.ToDbPoint());
             mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(p => p.ToCoordinate());
             mapper.CreateMap<Enum, string>().IncludeAllDerived().ConvertUsing(e => e.ToString());
@@ -98,5 +99,5 @@ namespace Persistency
                 .Where(r => !rolesInDbNormalizedNames.Contains(roleManager.NormalizeKey(r))))
                 roleManager.CreateAsync(new Entities.FoodtruckerRole {Name = r}).Wait();
         }
-}
+    }
 }

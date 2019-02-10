@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Persistency.Dtos;
 
@@ -10,5 +11,7 @@ namespace Persistency.Services
         Task<IList<Presence>> FindPresences(string slug);
         Task<IDictionary<string, IList<Presence>>> FindPresences(ICollection<string> foodtruckSlug);
         Task<IList<Presence>> FindPresencesWithin(Coordinate topLeft, Coordinate bottomRight);
+        Task<Presence> CreatePresence(string foodtruckSlug, CreateModifyPresence createModifyPresence);
+        Task<Presence> ModifyPresence(Guid presenceId, CreateModifyPresence createModifyPresence);
     }
 }

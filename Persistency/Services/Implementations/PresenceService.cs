@@ -13,8 +13,11 @@ namespace Persistency.Services.Implementations
 {
     internal class PresenceService : BaseService<Entity, Presence>, IPresenceService
     {
-        public PresenceService(IInternalPersistencyContext persistencyContext) : base(persistencyContext)
+        private readonly IInternalFoodtruckService _foodtruckService;
+
+        public PresenceService(IInternalPersistencyContext persistencyContext, IInternalFoodtruckService foodtruckService) : base(persistencyContext)
         {
+            _foodtruckService = foodtruckService;
         }
 
         protected override DbSet<Entity> DbSet => PersistencyContext.Presences;
@@ -83,6 +86,22 @@ namespace Persistency.Services.Implementations
             return await Queryable.Where(e => slug == e.Foodtruck.Slug)
                 .OrderBy(p => p.StartTime)
                 .ProjectToListAsync<Presence>();
+        }
+
+        public async Task<Presence> CreatePresence(string foodtruckSlug, CreateModifyPresence createModifyPresence)
+        {
+            var entity = Mapper.Map<Entity>(createModifyPresence);
+            entity.FoodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug);
+            return Mapper.Map<Presence>(await CreateNewEntity(entity));
+        }
+
+        public async Task<Presence> ModifyPresence(Guid presenceId, CreateModifyPresence createModifyPresence)
+        {
+            var entity = Mapper.Map<Entity>(createModifyPresence);
+            await DbSet.AsNoTracking().FirstOrDefaultAsync(p => p.Id == presenceId);
+            DbSet.Update(entity);
+            await PersistencyContext.SaveChangesAsync();
+            return Mapper.Map<Presence>(entity);
         }
     }
 }

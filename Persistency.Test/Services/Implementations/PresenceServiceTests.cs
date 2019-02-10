@@ -57,7 +57,7 @@ namespace Persistency.Test.Services.Implementations
             foodtrucks.ForEach(f => f.Slug = slugHelper.GenerateSlug(f.Name));
             Context.Foodtrucks.AddRange(foodtrucks);
             Context.SaveChanges();
-            _presenceService = new PresenceService(Context);
+            _presenceService = new PresenceService(Context, new FoodtruckService(Context, new SlugHelper()));
         }
 
         [Fact]

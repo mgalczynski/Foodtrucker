@@ -27,17 +27,20 @@ namespace WebApplication.Controllers.FoodtruckStaff
             _foodtruckOwnershipService = foodtruckOwnershipService;
         }
 
+        private static bool ValidateCreateModifyFoodtruck(CreateModifyFoodtruck createModifyFoodtruck) =>
+            createModifyFoodtruck?.Name == null || createModifyFoodtruck.DisplayName == null;
+
         [HttpPost]
         public async Task<ActionResult<Foodtruck>> CreateNewFoodtruck([FromBody] CreateModifyFoodtruck createNewFoodtruck)
         {
-            if (createNewFoodtruck?.Name == null || createNewFoodtruck?.DisplayName == null)
+            if (ValidateCreateModifyFoodtruck(createNewFoodtruck))
                 return BadRequest();
             Foodtruck foodtruck;
             using (var transaction = await Transaction())
             {
-                var taskUser = CurrentUser();
+                var user = await CurrentUser();
                 foodtruck = await _foodtruckService.CreateNewFoodtruck(createNewFoodtruck);
-                await _foodtruckOwnershipService.CreateOwnership((await taskUser).Id, foodtruck.Slug,
+                await _foodtruckOwnershipService.CreateOwnership(user.Id, foodtruck.Slug,
                     OwnershipType.OWNER);
                 transaction.Commit();
             }
@@ -52,7 +55,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
             [FromBody] CreateModifyFoodtruck modifyFoodtruck
         )
         {
-            if (modifyFoodtruck?.Name == null || modifyFoodtruck?.DisplayName == null)
+            if (ValidateCreateModifyFoodtruck(modifyFoodtruck))
                 return BadRequest();
             Foodtruck foodtruck;
             using (var transaction = await Transaction())
@@ -173,7 +176,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return result;
         }
 
-        public static OwnershipType Min(params OwnershipType[] args) =>
+        private static OwnershipType Min(params OwnershipType[] args) =>
             (OwnershipType)args.Cast<int>().Min();
     }
 }

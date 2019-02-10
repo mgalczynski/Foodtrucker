@@ -1,6 +1,6 @@
 import { REPORTER } from '../Permisions';
 import { staffPrefix } from '../../Helpers';
-import { actionCreators as foodtruck } from './Foodtruck';
+import { actionCreators as Foodtruck } from './Foodtruck';
 
 export const open = 'staff/addNewOwnership/OPEN';
 const close = 'staff/addNewOwnership/CLOSE';
@@ -73,7 +73,7 @@ export const actionCreators = {
                     type: state.type
                 })
             });
-        await foodtruck.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
+        await Foodtruck.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         dispatch({ type: close });
     }
 };

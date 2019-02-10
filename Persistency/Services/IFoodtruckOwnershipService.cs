@@ -17,5 +17,6 @@ namespace Persistency.Services
         Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(string foodtruckSlug);
         Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId);
         Task ChangeOwnership(string foodtruckSlug, string userEmail, OwnershipType type);
+        Task<OwnershipType?> FindTypeByUserAndPresence(Guid userId, Guid presenceId);
     }
 }

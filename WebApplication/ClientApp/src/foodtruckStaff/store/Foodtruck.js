@@ -1,6 +1,7 @@
 ﻿import {mapPresence} from '../../store/Helpers';
 import {positionWatch, staffPrefix} from '../../Helpers';
-import {actionCreators as staffHomeActionCreators} from './StaffHome';
+import {actionCreators as StaffHome} from './StaffHome';
+import {actionCreators as PresenceForm} from './PresenceForm';
 import {open} from './AddNewOwnership';
 
 const foodtruckChanged = 'staff/foodtruck/FOODTRUCK_CHANGED';
@@ -54,7 +55,7 @@ export const actionCreators = {
                 })
             });
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
-        staffHomeActionCreators.updateFoodtrucks()(dispatch, getState);
+        await StaffHome.updateFoodtrucks()(dispatch, getState);
     },
     changeOwnership: (foodtruckSlug, email, type) => async (dispatch, getState) => {
         await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}/changeOwnership`,
@@ -70,7 +71,13 @@ export const actionCreators = {
                 })
             });
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
-        staffHomeActionCreators.updateFoodtrucks()(dispatch, getState);
+        StaffHome.updateFoodtrucks()(dispatch, getState);
+    },
+    openNewPresenceModal: () => async (dispatch, getState) => {
+        await PresenceForm.open(getState().foodtruckForStaff.loadedSlug)(dispatch, getState);
+    },
+    openModifyPresenceModal: (presence) => async (dispatch, getState) => {
+        await PresenceForm.openWithPresence(presence)(dispatch, getState);
     }
 };
 

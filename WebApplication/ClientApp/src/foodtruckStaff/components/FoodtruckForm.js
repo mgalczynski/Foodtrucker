@@ -42,7 +42,7 @@ class FoodtruckForm extends Component {
                             onChange={e => this.props.changeDisplayName(e.target.value)}
                         />
                     </FormGroup>
-                    <FormGroup controlId='shouldHaveDefaultLocation'>
+                    <FormGroup controlId='shouldHasDefaultLocation'>
                         <Checkbox
                             disabled={this.props.requestSent}
                             checked={this.props.shouldHasDefaultLocation}

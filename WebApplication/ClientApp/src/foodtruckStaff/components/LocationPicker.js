@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import L from 'leaflet';
-import { positionWatch } from '../../Helpers';
+import {positionWatch} from '../../Helpers';
 
 export default class LocationPicker extends Component {
     constructor(props) {
@@ -15,7 +15,14 @@ export default class LocationPicker extends Component {
 
     componentDidMount = () => {
         this.map = L.map(this.props.mapId, {
-            center: this.props.selection === null ? [0, 0] : [this.props.selection.latitude, this.props.selection.longitude],
+            center: this.props.selection === null ?
+                (this.props.position === null ?
+                        [0, 0]
+                        :
+                        [this.props.position.latitude, this.props.position.longitude]
+                )
+                :
+                [this.props.selection.latitude, this.props.selection.longitude],
             zoom: this.props.selection === null ? 3 : 17,
             layers: [
                 L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
@@ -33,12 +40,13 @@ export default class LocationPicker extends Component {
         }
         document.getElementById(this.props.mapId).style.cursor = 'default';
         window.addEventListener('resize', this.containerSizeChanged);
-        positionWatch(this.updatePosition, null, watchId => this.setState({ watchId }));
+        if (this.props.position === null)
+            positionWatch((e) => this.updatePosition(e.coords), null, watchId => this.setState({watchId}));
     };
 
     componentWillUnmount = () => {
         if (this.state.watchId !== null)
-            navigator.geolocation.clearWatch(this.state.watchId)
+            navigator.geolocation.clearWatch(this.state.watchId);
     };
 
 
@@ -87,16 +95,18 @@ export default class LocationPicker extends Component {
             this.enableMap();
         else if (props.disabled && !this.props.disabled)
             this.disableMap();
+        if (props.position !== null)
+            this.updatePosition(props.position);
     };
-    updatePosition = (e) => {
+    updatePosition = (c) => {
         if (!this.state.wentToPositionAlready) {
-            this.setState({ wentToPositionAlready: true });
+            this.setState({wentToPositionAlready: true});
             if (this.props.selection === null)
-                this.map.flyTo([e.coords.latitude, e.coords.longitude], 17);
+                this.map.flyTo([c.latitude, c.longitude], 17);
         }
         if (this.userMarker === null) {
             this.userMarker = L.marker(
-                [e.coords.latitude, e.coords.longitude],
+                [c.latitude, c.longitude],
                 {
                     icon: L.icon({
                         iconUrl: 'icons/location.svg',
@@ -107,12 +117,12 @@ export default class LocationPicker extends Component {
             );
             this.map.addLayer(this.userMarker);
         } else
-            this.userMarker.setLatLng([e.coords.latitude, e.coords.longitude]);
+            this.userMarker.setLatLng([c.latitude, c.longitude]);
     };
 
     render() {
         return (
-            <div id={this.props.mapId} className='map' />
+            <div id={this.props.mapId} className='map'/>
         );
     }
 }

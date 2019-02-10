@@ -50,10 +50,10 @@ namespace Persistency.Services.Implementations
 
         private DbSet<Entity> DbSet =>
             _persistencyContext.FoodtruckOwnerships;
-        
+
         public async Task CreateOwnership(Guid userId, string foodtruckSlug, OwnershipType type)
         {
-            await DbSet.AddAsync(new Entity{UserId = userId, FoodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug), Type = type});
+            await DbSet.AddAsync(new Entity {UserId = userId, FoodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug), Type = type});
             await _persistencyContext.SaveChangesAsync();
         }
 
@@ -63,6 +63,9 @@ namespace Persistency.Services.Implementations
 
         public async Task<OwnershipType?> FindTypeByUserAndFoodtruck(Guid userId, string foodtruckSlug) =>
             (await FindEntityByUserAndFoodtruck(userId, foodtruckSlug))?.Type;
+
+        public async Task<OwnershipType?> FindTypeByUserAndPresence(Guid userId, Guid presenceId) =>
+            (await FindEntityByUserAndPresence(userId, presenceId))?.Type;
 
         public async Task<bool> CanManipulate(Guid userId, string foodtruckSlug, OwnershipType type) =>
             _revesedAccessDict[type].Contains((await FindEntityByUserAndFoodtruck(userId, foodtruckSlug)).Type);
@@ -95,5 +98,8 @@ namespace Persistency.Services.Implementations
 
         private async Task<Entity> FindEntityByUserEmailAndFoodtruck(string email, string foodtruckSlug) =>
             await DbSet.FirstOrDefaultAsync(e => e.User.Email == email && e.Foodtruck.Slug == foodtruckSlug);
+
+        private async Task<Entity> FindEntityByUserAndPresence(Guid userId, Guid presenceId) =>
+            await DbSet.FirstOrDefaultAsync(e => e.UserId == userId && e.Foodtruck.Presences.Any(p => p.Id == presenceId));
     }
 }
