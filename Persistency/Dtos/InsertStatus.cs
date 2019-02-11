@@ -1,8 +1,8 @@
 namespace Persistency.Dtos
 {
-    public class InsertStatus<TId>
+    public sealed class ResponseWithStatus<TDto>
     {
-        public TId Id { get; set; }
+        public TDto Dto { get; set; }
         public bool Successful { get; set; }
         public string Description { get; set; }
     }

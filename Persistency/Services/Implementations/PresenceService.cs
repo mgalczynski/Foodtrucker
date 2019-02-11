@@ -88,10 +88,32 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<Presence>();
         }
 
+        private async Task ValidatePresence(Guid foodtruckId, CreateModifyPresence createModifyPresence, Guid? presenceId = null)
+        {
+            var startTime = createModifyPresence.StartTime;
+            var endTime = createModifyPresence.EndTime ?? DateTime.MaxValue.AddDays(-1);
+            var collidingPresence = await DbSet
+                .FirstOrDefaultAsync(p =>
+                    p.FoodtruckId == foodtruckId &&
+                    p.Id != presenceId &&
+                    (
+                        p.EndTime <= startTime &&
+                        p.StartTime >= endTime
+                        ||
+                        endTime <= p.StartTime &&
+                        startTime >= p.EndTime
+                    )
+                );
+            if (collidingPresence != null)
+                throw new ValidationException<Presence>(Mapper.Map<Presence>(collidingPresence));
+        }
+
         public async Task<Presence> CreatePresence(string foodtruckSlug, CreateModifyPresence createModifyPresence)
         {
             var entity = Mapper.Map<Entity>(createModifyPresence);
-            entity.FoodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug);
+            var foodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug);
+            entity.FoodtruckId = foodtruckId;
+            await ValidatePresence(foodtruckId, createModifyPresence);
             return Mapper.Map<Presence>(await CreateNewEntity(entity));
         }
 
@@ -101,6 +123,7 @@ namespace Persistency.Services.Implementations
             if (entity == null)
                 return null;
             Mapper.Map(createModifyPresence, entity);
+            await ValidatePresence(entity.FoodtruckId, createModifyPresence);
             await PersistencyContext.SaveChangesAsync();
             return Mapper.Map<Presence>(entity);
         }
