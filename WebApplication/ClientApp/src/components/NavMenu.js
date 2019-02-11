@@ -6,6 +6,7 @@ import './NavMenu.css';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { actionCreators } from '../store/App';
+import { staffPrefix } from '../Helpers';
 
 class NavMenu extends Component {
     render() {
@@ -22,16 +23,6 @@ class NavMenu extends Component {
                         <LinkContainer to={'/'} exact>
                             <NavItem>
                                 <Glyphicon glyph='home' /> Home
-                            </NavItem>
-                        </LinkContainer>
-                        <LinkContainer to={'/counter'}>
-                            <NavItem>
-                                <Glyphicon glyph='education' /> Counter
-                            </NavItem>
-                        </LinkContainer>
-                        <LinkContainer to={'/fetchdata'}>
-                            <NavItem>
-                                <Glyphicon glyph='th-list' /> Fetch data
                             </NavItem>
                         </LinkContainer>
                     </Nav>
@@ -57,6 +48,11 @@ class NavMenu extends Component {
                                 <LinkContainer to={'/register'}>
                                     <NavItem>
                                         <Glyphicon glyph='th-list' /> Sing up
+                                    </NavItem>
+                                </LinkContainer>
+                                <LinkContainer to={staffPrefix} className='navbar-small'>
+                                    <NavItem>
+                                        <Glyphicon glyph='th-list' /> Are you an employee or owner of foodtruck, click here to add your foodtruck to this app
                                     </NavItem>
                                 </LinkContainer>
                             </ul>

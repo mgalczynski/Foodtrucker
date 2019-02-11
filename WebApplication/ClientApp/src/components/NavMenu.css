@@ -67,3 +67,9 @@
         right: 0;
     }
 }
+
+.navbar .navbar-small a{
+    white-space: normal;
+    word-wrap: break-word;
+    font-size: 10px;
+}
