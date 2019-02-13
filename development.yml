@@ -13,7 +13,7 @@ services:
     image: mdillon/postgis:11
     restart: always
     volumes:
-      - db:/var/lib/postgresql/data
+      - /var/foodtrucker/db:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: Foodtrucker
       POSTGRES_DB: Foodtrucker
@@ -26,6 +26,3 @@ networks:
     internal: true
   public:
     internal: false
-
-volumes:
-  db:
