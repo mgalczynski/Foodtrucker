@@ -9,7 +9,7 @@ export default props => (
       <Col sm={3} className='col-nav-menu'>
         <NavMenu />
       </Col>
-      <Col sm={9} className='col-main'>
+      <Col sm={9} className={`col-main${props.withoutMargin ? '' : ' col-main-custom-margin'}`}>
         {props.children}
       </Col>
     </Row>

@@ -1,12 +1,28 @@
 ﻿import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Route} from 'react-router';
+import {Route, Switch} from 'react-router';
 import Layout from './components/Layout';
 import Map from './components/Map';
 import Login from './components/Login';
 import Register from './components/Register';
 import {actionCreators} from './store/App';
+
+const mapPath = ['/', '/foodtruck/:foodtruckSlug/:presenceId?'];
+
+const WithMargin = () => (
+    <Layout>
+        <Route path='/login' component={Login} />
+        <Route path='/register' component={Register} />
+    </Layout>
+);
+
+const WithoutMargin = () => (
+    <Layout withoutMargin>
+        <Route exact path={mapPath} component={Map} />
+    </Layout>
+)
+
 
 class App extends Component {
     componentDidMount = () => {
@@ -14,11 +30,10 @@ class App extends Component {
     };
 
     render() {
-        return <Layout>
-            <Route exact path={['/', '/foodtruck/:foodtruckSlug/:presenceId?']} component={Map}/>
-            <Route path='/login' component={Login}/>
-            <Route path='/register' component={Register}/>
-        </Layout>;
+        return <Switch>
+            <Route exact path={mapPath} component={WithoutMargin} />
+            <Route component={WithMargin} />
+        </Switch>;
     }
 }
 

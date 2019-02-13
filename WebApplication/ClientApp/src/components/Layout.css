@@ -1,9 +1,9 @@
 @media (min-width: 768px) {
-    .col-main {
+    .col-main-custom-margin {
         margin: 20px 20px 20px 0;
     }
 }
 
-.col-main {
+.col-main-custom-margin {
     margin: 20px;
 }
