@@ -1,14 +1,15 @@
 import React from 'react';
+import '../../components/Layout.css';
 import { Col, Grid, Row } from 'react-bootstrap';
 import NavMenu from './NavMenu';
 
 export default props => (
   <Grid fluid>
     <Row>
-      <Col sm={3}>
+      <Col sm={3} className='col-nav-menu'>
         <NavMenu />
       </Col>
-      <Col sm={9}>
+      <Col sm={9} className='col-main'>
         {props.children}
       </Col>
     </Row>

@@ -1,0 +1,9 @@
+@media (min-width: 768px) {
+    .col-main {
+        margin: 20px 20px 20px 0;
+    }
+}
+
+.col-main {
+    margin: 20px;
+}
