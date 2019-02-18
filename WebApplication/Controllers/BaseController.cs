@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,5 +28,8 @@ namespace WebApplication.Controllers
 
         protected async Task<IDbContextTransaction> Transaction() =>
             await _persistencyContext.Database.BeginTransactionAsync();
+
+        protected ActionResult<T> UnprocessableEntity<T>(T value) =>
+            StatusCode((int) HttpStatusCode.UnprocessableEntity, value);
     }
 }

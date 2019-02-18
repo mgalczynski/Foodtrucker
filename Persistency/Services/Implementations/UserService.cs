@@ -39,7 +39,7 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<User>();
         }
 
-        private async Task<IList<Entity>> FindUserByMails(IList<string> mails) =>
+        private async Task<IList<Entity>> FindUserByMails(ICollection<string> mails) =>
             await _persistencyContext.Users.Where(u => mails.Contains(u.Email)).ToListAsync();
     }
 }
