@@ -34,19 +34,11 @@ pipeline {
                 }
             }
         }
-        stage('Building image') {
+        stage('Building and publish image') {
             steps {
                 script {
                     docker.withRegistry('https://' + registry, registryCredential) {
                         image = docker.build registry + '/foodtrucker:' + tag
-                    }
-                }
-            }
-        }
-        stage('Publishing image') {
-            steps {
-                script {
-                    docker.withRegistry('https://' + registry, registryCredential) {
                         image.push()
                     }
                 }
