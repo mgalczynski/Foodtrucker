@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -7,6 +8,8 @@ using Persistency.Entities;
 
 namespace WebApplication.Controllers
 {
+    [Authorize]
+    [ApiController]
     public class BaseController : Controller
     {
         private readonly IPersistencyContext _persistencyContext;

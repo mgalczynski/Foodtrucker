@@ -127,6 +127,7 @@ namespace WebApplication.Controllers
             };
         }
 
+        [AllowAnonymous]
         [HttpGet("[action]")]
         public async Task<CheckResult> Check()
         {

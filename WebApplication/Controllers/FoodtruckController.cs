@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Persistency;
@@ -24,6 +25,7 @@ namespace WebApplication.Controllers
             _presenceService = presenceService;
         }
 
+        [AllowAnonymous]
         [HttpPost("[action]")]
         public async Task<ActionResult<FoodtrucksWithinResult>> Find([FromBody] FoodtrucksQuery foodtrucksQuery)
         {
@@ -37,6 +39,8 @@ namespace WebApplication.Controllers
                 });
         }
 
+
+        [AllowAnonymous]
         [HttpPost("[action]")]
         public async Task<ActionResult<GenericListResult<Foodtruck>>> FindBySlugs([FromBody] SlugsQuery slugs)
         {
@@ -48,6 +52,7 @@ namespace WebApplication.Controllers
             });
         }
 
+        [AllowAnonymous]
         [HttpGet("{slug}")]
         public async Task<ActionResult<FoodtruckWithPresences>> FindBySlug([FromRoute] string slug)
         {

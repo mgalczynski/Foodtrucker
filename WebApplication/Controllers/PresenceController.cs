@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Persistency;
@@ -21,6 +22,7 @@ namespace WebApplication.Controllers
             _presenceService = presenceService;
         }
 
+        [AllowAnonymous]
         [HttpPost("[action]")]
         public async Task<ActionResult<IDictionary<Guid, IList<Presence>>>> Find([FromBody] PresencesQuery presencesQuery)
         {
