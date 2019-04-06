@@ -14,9 +14,10 @@ namespace Persistency
     {
         public static void RegisterPersistency(IServiceCollection services)
         {
-            services.AddDbContext<IInternalPersistencyContext, PersistencyContext>();
-            services.AddDbContext<IPersistencyContext, PersistencyContext>();
-            services.AddDbContext<AbstractPersistencyContext, PersistencyContext>();
+            services.AddDbContext<PersistencyContext>();
+            services.AddScoped<IInternalPersistencyContext, PersistencyContext>(ContextFactory);
+            services.AddScoped<IPersistencyContext, PersistencyContext>(ContextFactory);
+            services.AddScoped<AbstractPersistencyContext, PersistencyContext>(ContextFactory);
             services.AddScoped<IInternalFoodtruckService, FoodtruckService>();
             services.AddScoped<IFoodtruckService, FoodtruckService>();
             services.AddScoped<IPresenceService, PresenceService>();
@@ -27,7 +28,7 @@ namespace Persistency
             services.AddScoped<DevelopmentPresencesFactory>();
 #endif
             services.AddIdentity<Entities.FoodtruckerUser, Entities.FoodtruckerRole>()
-                .AddEntityFrameworkStores<AbstractPersistencyContext>()
+                .AddEntityFrameworkStores<PersistencyContext>()
                 .AddDefaultTokenProviders();
             services.Configure<IdentityOptions>(options =>
             {
@@ -62,6 +63,9 @@ namespace Persistency
             });
             Mapper.Initialize(InitializeMapper);
         }
+
+        private static PersistencyContext ContextFactory(IServiceProvider provider) =>
+            provider.GetService<PersistencyContext>();
 
         internal static void InitializeMapper(IMapperConfigurationExpression mapper)
         {
