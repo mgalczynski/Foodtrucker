@@ -35,7 +35,7 @@ namespace Persistency.Services.Implementations
                                WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)
                            ) AS p ON f.""{nameof(Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
                        WHERE NOT f.""{nameof(Foodtruck.Deleted)}""
-"
+                    "
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
                 .ProjectToListAsync<Presence>();
@@ -53,7 +53,7 @@ namespace Persistency.Services.Implementations
                                WHERE ""{nameof(Entity.Location)}"" && ST_MakeEnvelope(@p0, @p1, @p2, @p3, 4326)
                            ) AS p ON f.""{nameof(Entity.Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
                        WHERE NOT f.""{nameof(Foodtruck.Deleted)}""
-"
+                    "
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
                 )
                 .ProjectToListAsync<Presence>();
@@ -92,16 +92,26 @@ namespace Persistency.Services.Implementations
         {
             var startTime = createModifyPresence.StartTime;
             var endTime = createModifyPresence.EndTime ?? DateTime.MaxValue.AddDays(-1);
+            var dbsetlist = await DbSet.ToListAsync();
             var collidingPresence = await DbSet
                 .FirstOrDefaultAsync(p =>
                     p.FoodtruckId == foodtruckId &&
                     p.Id != presenceId &&
                     (
-                        p.EndTime <= startTime &&
-                        p.StartTime >= endTime
+                        p.StartTime <= startTime &&
+                        p.EndTime >= endTime
                         ||
-                        endTime <= p.StartTime &&
-                        startTime >= p.EndTime
+                        p.StartTime >= startTime &&
+                        p.StartTime <= endTime
+                        ||
+                        p.StartTime >= startTime &&
+                        p.EndTime <= endTime
+                        ||
+                        p.EndTime <= startTime &&
+                        p.EndTime >= endTime
+                        ||
+                        p.StartTime <= startTime &&
+                        p.EndTime == null
                     )
                 );
             if (collidingPresence != null)

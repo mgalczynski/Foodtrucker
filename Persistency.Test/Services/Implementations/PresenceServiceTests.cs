@@ -90,7 +90,7 @@ namespace Persistency.Test.Services.Implementations
         public async void CannotCreatePresenceForWholeJanuary()
         {
             var title = "Should not be saved";
-            await Assert.ThrowsAsync<ValidationException<Presence>>(() => _presenceService.CreatePresence(
+            await Assert.ThrowsAsync<ValidationException<Dtos.Presence>>(() => _presenceService.CreatePresence(
                 _foodtruckWithoutLocation.Slug,
                 new CreateModifyPresence
                 {
@@ -104,19 +104,20 @@ namespace Persistency.Test.Services.Implementations
 
             Assert.DoesNotContain(title, await Context.Presences.Select(p => p.Title).ToListAsync());
         }
-        
+
+
         [Fact]
-        public async void CannotCreatePresenceStartsFromSixthsNoon1()
+        public async void CannotCreatePresenceStartsFromFifthNoon1()
         {
             var title = "Should not be saved";
-            var exception = await Assert.ThrowsAsync<ValidationException<Presence>>(() => _presenceService.CreatePresence(
+            var exception = await Assert.ThrowsAsync<ValidationException<Dtos.Presence>>(() => _presenceService.CreatePresence(
                 _foodtruckWithoutLocation.Slug,
                 new CreateModifyPresence
                 {
                     Title = title,
                     Description = title,
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,6,12,0,0),
+                    StartTime = new DateTime(2019,1,5,12,0,0),
                     EndTime = new DateTime(2019,2,1)
                 }
             ));
@@ -124,20 +125,20 @@ namespace Persistency.Test.Services.Implementations
             Assert.Equal("Last presence", exception.Dto.Title);
             Assert.DoesNotContain(title, await Context.Presences.Select(p => p.Title).ToListAsync());
         }
-        
-        
+
+
         [Fact]
-        public async void CannotCreatePresenceStartsFromSixthsNoon2()
+        public async void CannotCreatePresenceStartsFromFifthNoon2()
         {
             var title = "Should not be saved";
-            var exception = await Assert.ThrowsAsync<ValidationException<Presence>>(() => _presenceService.CreatePresence(
+            var exception = await Assert.ThrowsAsync<ValidationException<Dtos.Presence>>(() => _presenceService.CreatePresence(
                 _foodtruckWithoutLocation.Slug,
                 new CreateModifyPresence
                 {
                     Title = title,
                     Description = title,
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,6,12,0,0)
+                    StartTime = new DateTime(2019,1,5,12,0,0)
                 }
             ));
             
