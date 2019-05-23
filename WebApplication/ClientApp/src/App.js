@@ -8,8 +8,6 @@ import Login from './components/Login';
 import Register from './components/Register';
 import {actionCreators} from './store/App';
 
-const mapPath = ['/', '/foodtruck/:foodtruckSlug/:presenceId?'];
-
 const WithMargin = () => (
     <Layout>
         <Route path='/login' component={Login} />
@@ -19,9 +17,9 @@ const WithMargin = () => (
 
 const WithoutMargin = () => (
     <Layout withoutMargin>
-        <Route exact path={mapPath} component={Map} />
+        <Map />
     </Layout>
-)
+);
 
 
 class App extends Component {
@@ -31,7 +29,8 @@ class App extends Component {
 
     render() {
         return <Switch>
-            <Route exact path={mapPath} component={WithoutMargin} />
+            <Route exact path='/' component={WithoutMargin} />
+            <Route exact path='/foodtruck/:foodtruckSlug/:presenceId?' component={WithoutMargin} />
             <Route component={WithMargin} />
         </Switch>;
     }
