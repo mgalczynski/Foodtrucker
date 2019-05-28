@@ -1,16 +1,16 @@
 import {staffPrefix} from '../../Helpers';
 import {actionCreators as Foodtruck} from './Foodtruck';
 
-const open = 'staff/presenceForm/OPEN';
-const openWithPresence = 'staff/presenceForm/OPEN_WITH_PRESENCE';
-const close = 'staff/presenceForm/CLOSE';
-const titleChanged = 'staff/presenceForm/TITLE_CHANGED';
-const descriptionChanged = 'staff/presenceForm/DESCRIPTION_CHANGED';
-const locationChanged = 'staff/presenceForm/LOCATION_CHANGED';
-const startTimeChanged = 'staff/presenceForm/START_TIME_CHANGED';
-const endTimeChanged = 'staff/presenceForm/END_TIME_CHANGED';
-const shouldHasEndTimeChanged = 'staff/presenceForm/SHOULD_HAS_END_TIME_CHANGED';
-const requestSent = 'staff/presenceForm/REQUEST_SENT';
+const open = 'staff/presenceOrUnavailabilityForm/OPEN';
+const openWithPresenceOrUnavailability = 'staff/presenceOrUnavailabilityForm/OPEN_WITH_PRESENCE_OR_UNAVAILABILITIES';
+const close = 'staff/presenceOrUnavailabilityForm/CLOSE';
+const titleChanged = 'staff/presenceOrUnavailabilityForm/TITLE_CHANGED';
+const descriptionChanged = 'staff/presenceOrUnavailabilityForm/DESCRIPTION_CHANGED';
+const locationChanged = 'staff/presenceOrUnavailabilityForm/LOCATION_CHANGED';
+const startTimeChanged = 'staff/presenceOrUnavailabilityForm/START_TIME_CHANGED';
+const endTimeChanged = 'staff/presenceOrUnavailabilityForm/END_TIME_CHANGED';
+const shouldHasEndTimeChanged = 'staff/presenceOrUnavailabilityForm/SHOULD_HAS_END_TIME_CHANGED';
+const requestSent = 'staff/presenceOrUnavailabilityForm/REQUEST_SENT';
 
 const initialState = {
     foodtruckSlug: null,
@@ -18,7 +18,7 @@ const initialState = {
     requestSent: false,
     isOpen: false,
     shouldHasEndTime: false,
-    presence: {
+    presenceOrUnavailability: {
         title: '',
         description: '',
         startTime: null,
@@ -46,8 +46,8 @@ export const actionCreators = {
     open: (foodtruckSlug) => async (dispatch) => {
         dispatch({type: open, foodtruckSlug});
     },
-    openWithPresence: (presence) => async (dispatch) => {
-        dispatch({type: openWithPresence, presence, id: presence.id, foodtruckSlug: presence.foodtruckSlug});
+    openWithPresenceOrUnavailability: (presenceOrUnavailability) => async (dispatch) => {
+        dispatch({type: openWithPresenceOrUnavailability, presenceOrUnavailability, id: presenceOrUnavailability.id, foodtruckSlug: presenceOrUnavailability.foodtruckSlug});
     },
     close: () => async (dispatch) => {
         dispatch({type: close});
@@ -56,7 +56,7 @@ export const actionCreators = {
         dispatch({type: shouldHasEndTimeChanged, value});
     },
     save: () => async (dispatch, getState) => {
-        const state = getState().presenceForm;
+        const state = getState().presenceOrUnavailabilityForm;
         const shouldUpdate = state.id !== null;
         if (state.presence.title.length === 0 ||
             state.presence.description.length === 0 ||
@@ -88,7 +88,7 @@ export const reducer = (state, action) => {
     switch (action.type) {
         case open:
             return {...state, isOpen: true, foodtruckSlug: action.foodtruckSlug};
-        case openWithPresence:
+        case openWithPresenceOrUnavailability:
             return {
                 ...state,
                 isOpen: true,
@@ -113,7 +113,7 @@ export const reducer = (state, action) => {
         case descriptionChanged:
             return {...state, presence: {...state.presence, description: action.description}};
         case startTimeChanged:
-            return {...state, presence: {...state.presence, startTime: action.startTime}};
+            return {...state, presence: {...state.presenceOrUnavailability, startTime: action.startTime}};
         case endTimeChanged:
             return {...state, presence: {...state.presence, endTime: action.endTime}};
         case shouldHasEndTimeChanged:

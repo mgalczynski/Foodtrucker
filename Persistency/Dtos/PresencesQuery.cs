@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Persistency.Dtos
 {
-    public sealed class PresencesQuery
+    public sealed class PresencesOrUnavailabilitiesQuery
     {
         public ISet<string> Slugs { get; set; }
     }

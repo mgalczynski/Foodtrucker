@@ -8,7 +8,7 @@ const boundsChanged = 'map/BOUNDS_CHANGED';
 const positionChanged = 'map/POSITION_CHANGED';
 const locationZoomChanged = 'map/LOCATION_ZOOM_CHANGED';
 const positionRemoved = 'map/POSITION_REMOVED';
-const foodtrucksPresencesUpdate = 'map/FOODTRUCKS_AND PRESENCES_UPDATE';
+const foodtrucksPresencesOrUnavailabilitiesUpdate = 'map/FOODTRUCKS_AND_OR_UNAVAILABILITIES_UPDATE';
 const infoFoodtrucksUpdate = 'map/INFO_FOODTRUCKS_UPDATE';
 const locationWatchCreated = 'map/LOCATION_WATCH_CREATED';
 const locationWatchDeleted = 'map/LOCATION_WATCH_DELETED';
@@ -20,7 +20,7 @@ const initialState = {
     watchId: null,
     position: null,
     foodtrucks: [],
-    presences: [],
+    presencesOrUnavailabilities: [],
     infoFoodtrucks: [],
     allFoodtrucks: new Map(),
     disabled: false
@@ -83,9 +83,9 @@ export const actionCreators = {
             });
         const foodtruckContent = await foodtrucksResponse.json();
         dispatch({
-            type: foodtrucksPresencesUpdate,
+            type: foodtrucksPresencesOrUnavailabilitiesUpdate,
             foodtrucks: foodtruckContent.foodtrucks,
-            presences: foodtruckContent.presences
+            presencesOrUnavailabilities: foodtruckContent.presencesOrUnavailabilities
         });
         const infoResponse = await fetch('api/foodtruck/findBySlugs',
             {
@@ -94,7 +94,7 @@ export const actionCreators = {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    slugs: Array.from(new Set(foodtruckContent.presences.map(p => p.foodtruckSlug)))
+                    slugs: Array.from(new Set(foodtruckContent.presencesOrUnavailabilities.map(p => p.foodtruckSlug)))
                 })
             });
         const infoContent = await infoResponse.json();
@@ -137,11 +137,11 @@ export const reducer = (state, action) => {
             return {...state, watchId: action.watchId};
         case locationWatchDeleted:
             return {...state, watchId: null};
-        case foodtrucksPresencesUpdate:
+        case foodtrucksPresencesOrUnavailabilitiesUpdate:
             return {
                 ...state,
                 foodtrucks: action.foodtrucks,
-                presences: action.presences,
+                presencesOrUnavailabilities: action.presencesOrUnavailabilities,
                 allFoodtrucks: new Map(action.foodtrucks.concat(state.infoFoodtrucks).map(f => [f.id, f]))
             };
         case infoFoodtrucksUpdate:

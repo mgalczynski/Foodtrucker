@@ -79,7 +79,7 @@ namespace Persistency.Services.Implementations
                 await DbSet
                     .Include(f => f.Ownerships)
                     .ThenInclude(o => o.User)
-                    .Include(f => f.Presences)
+                    .Include(f => f.PresencesOrUnavailabilities)
                     .FirstOrDefaultAsync(f => f.Slug == slug)
             );
 

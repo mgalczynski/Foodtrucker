@@ -14,10 +14,10 @@ namespace WebApplication.Controllers
     public class FoodtruckController : BaseController
     {
         private readonly IFoodtruckService _foodtruckService;
-        private readonly IPresenceService _presenceService;
+        private readonly IPresenceOrUnavailabilityService _presenceService;
 
         public FoodtruckController(IFoodtruckService foodtruckService,
-            IPresenceService presenceService,
+            IPresenceOrUnavailabilityService presenceService,
             UserManager<FoodtruckerUser> userManager,
             IPersistencyContext persistencyContext) : base(userManager, persistencyContext)
         {
@@ -35,7 +35,7 @@ namespace WebApplication.Controllers
                 return Ok(new FoodtrucksWithinResult
                 {
                     Foodtrucks = await _foodtruckService.FindFoodTrucksWithin(foodtrucksQuery.TopLeft, foodtrucksQuery.BottomRight),
-                    Presences = await _presenceService.FindPresencesWithin(foodtrucksQuery.TopLeft, foodtrucksQuery.BottomRight)
+                    PresencesOrUnavailabilities = await _presenceService.FindPresencesOrUnavailabilitiesWithin(foodtrucksQuery.TopLeft, foodtrucksQuery.BottomRight)
                 });
         }
 
@@ -54,15 +54,15 @@ namespace WebApplication.Controllers
 
         [AllowAnonymous]
         [HttpGet("{slug}")]
-        public async Task<ActionResult<FoodtruckWithPresences>> FindBySlug([FromRoute] string slug)
+        public async Task<ActionResult<FoodtruckWithPresencesOrUnavailabilies>> FindBySlug([FromRoute] string slug)
         {
             var foodtruck = await _foodtruckService.FindBySlug(slug);
             if (foodtruck == null)
                 return NotFound();
-            return new FoodtruckWithPresences
+            return new FoodtruckWithPresencesOrUnavailabilies
             {
                 Foodtruck = foodtruck,
-                Presences = await _presenceService.FindPresences(foodtruck.Slug)
+                PresencesOrUnavailabilities = await _presenceService.FindPresencesOrUnavailabilities(foodtruck.Slug)
             };
         }
     }

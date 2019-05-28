@@ -8,7 +8,7 @@ namespace Persistency
     internal interface IInternalPersistencyContext : IPersistencyContext
     {
         DbSet<Foodtruck> Foodtrucks { get; set; }
-        DbSet<Presence> Presences { get; set; }
+        DbSet<PresenceOrUnavailability> PresencesOrUnavailabilities { get; set; }
         DbSet<FoodtruckOwnership> FoodtruckOwnerships { get; set; }
         DbSet<FoodtruckerUser> Users { get; set; }
         int SaveChanges();

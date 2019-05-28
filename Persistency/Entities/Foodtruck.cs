@@ -14,7 +14,7 @@ namespace Persistency.Entities
         [Column(TypeName = "geography(Point,4326)")]
         public Point DefaultLocation { get; set; }
 
-        public IList<Presence> Presences { get; set; }
+        public IList<PresenceOrUnavailability> PresencesOrUnavailabilities { get; set; }
 
         public IList<FoodtruckOwnership> Ownerships { get; set; }
         public bool Deleted { get; set; }

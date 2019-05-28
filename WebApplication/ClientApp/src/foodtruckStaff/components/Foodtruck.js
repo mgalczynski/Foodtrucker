@@ -8,10 +8,10 @@ import {actionCreators} from '../store/Foodtruck';
 import {ownershipMap} from '../Permisions';
 import Loader from 'react-loader';
 import SmallMap from '../../components/SmallMap';
-import PresencesList from './PresencesList';
+import PresencesOrUnavailabilitiesList from './PresencesOrUnavailabilitiesList';
 import './Foodtruck.css';
 import AddNewOwnership from './AddNewOwnership';
-import PresenceForm from './PresenceForm';
+import PresenceForm from './PresenceOrUnavailabilityForm';
 
 
 class Foodtruck extends Component {
@@ -113,8 +113,8 @@ class Foodtruck extends Component {
                 )}
                 </tbody>
             </Table>
-            <PresencesList
-                presences={this.props.foodtruck.presences}
+            <PresencesOrUnavailabilitiesList
+                presencesOrUnavailabilities={this.props.foodtruck.presencesOrUnavailabilities}
                 modifyPresence={this.props.openModifyPresenceModal}
                 removePresence={this.props.removePresence}
             />

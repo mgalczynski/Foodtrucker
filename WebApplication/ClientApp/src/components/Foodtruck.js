@@ -9,7 +9,7 @@ import {actionCreators} from '../store/Foodtruck';
 import Loader from 'react-loader';
 import SmallMap from './SmallMap';
 import CloseButton from './CloseButton';
-import Presence from './Presence';
+import PresenceOrUnavailability from './PresenceOrUnavailability';
 
 class Foodtruck extends Component {
     componentDidMount = () => {
@@ -24,8 +24,8 @@ class Foodtruck extends Component {
 
     render() {
         // abstract equality!
-        const shouldRenderPresenceModal = this.props.match.params.presenceId != null;
-        const presence = this.props.presences.find(p => p.id === this.props.match.params.presenceId) || null;
+        const shouldRenderPresenceOrUnavailabilityModal = this.props.match.params.presenceOrUnavailabilityId != null;
+        const presenceOrUnavailability = this.props.presencesOrUnavailabilities.find(p => p.id === this.props.match.params.presenceOrUnavailabilityId) || null;
         return (
             <div>
                 {this.props.foodtruck === null ?
@@ -52,9 +52,9 @@ class Foodtruck extends Component {
                                 mapId='foodtruck-map'
                             />
                             }
-                            {this.props.presences.length !== 0 &&
-                            <div className='foodtruck-presences-container'>
-                                {this.props.presences.map(p =>
+                            {this.props.presencesOrUnavailabilities.length !== 0 &&
+                            <div className='foodtruck-presencesOrUnavailabilities-container'>
+                                {this.props.presencesOrUnavailabilities.map(p =>
                                     <Link
                                         key={p.id}
                                         to={`/foodtruck/${this.props.foodtruck.slug}/${p.id}`}
@@ -68,8 +68,8 @@ class Foodtruck extends Component {
                         </Modal.Body>
                     </Modal>
                 }
-                {shouldRenderPresenceModal &&
-                <Presence presence={presence} position={this.props.position}/>
+                {shouldRenderPresenceOrUnavailabilityModal &&
+                <PresenceOrUnavailability presenceOrUnavailability={presenceOrUnavailability} position={this.props.position}/>
                 }
             </div>
         );

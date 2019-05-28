@@ -6,94 +6,93 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Persistency.Dtos;
-using Entity = Persistency.Entities.Presence;
+using Entity = Persistency.Entities.PresenceOrUnavailability;
 using Foodtruck = Persistency.Entities.Foodtruck;
 
 namespace Persistency.Services.Implementations
 {
-    internal class PresenceService : BaseService<Entity, Presence>, IPresenceService
+    internal class PresenceOrUnavailabilityService : BaseService<Entity, PresenceOrUnavailability>, IPresenceOrUnavailabilityService
     {
         private readonly IInternalFoodtruckService _foodtruckService;
 
-        public PresenceService(IInternalPersistencyContext persistencyContext, IInternalFoodtruckService foodtruckService) : base(persistencyContext)
+        public PresenceOrUnavailabilityService(IInternalPersistencyContext persistencyContext, IInternalFoodtruckService foodtruckService) : base(persistencyContext)
         {
             _foodtruckService = foodtruckService;
         }
 
-        protected override DbSet<Entity> DbSet => PersistencyContext.Presences;
+        protected override DbSet<Entity> DbSet => PersistencyContext.PresencesOrUnavailabilities;
         private IQueryable<Entity> Queryable => DbSet.Include(p => p.Foodtruck.Slug);
 
-        public async Task<IList<Presence>> FindPresencesWithin(Coordinate coordinate, double distance)
+        public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate coordinate, double distance)
         {
-            return await PersistencyContext.Presences.FromSql(
+            return await PersistencyContext.PresencesOrUnavailabilities.FromSql(
                     $@"SELECT p.*
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}"" f
                            INNER JOIN
                            (
                                SELECT *
-                               FROM ""{nameof(PersistencyContext.Presences)}""
+                               FROM ""{nameof(PersistencyContext.PresencesOrUnavailabilities)}""
                                WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)
                            ) AS p ON f.""{nameof(Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
                        WHERE NOT f.""{nameof(Foodtruck.Deleted)}""
                     "
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
-                .ProjectToListAsync<Presence>();
+                .ProjectToListAsync<PresenceOrUnavailability>();
         }
 
-        public async Task<IList<Presence>> FindPresencesWithin(Coordinate topLeft, Coordinate bottomRight)
+        public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate topLeft, Coordinate bottomRight)
         {
-            return await PersistencyContext.Presences.FromSql(
+            return await PersistencyContext.PresencesOrUnavailabilities.FromSql(
                     $@"SELECT p.*
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}"" f
                            INNER JOIN
                            (
                                SELECT *
-                               FROM ""{nameof(PersistencyContext.Presences)}""
+                               FROM ""{nameof(PersistencyContext.PresencesOrUnavailabilities)}""
                                WHERE ""{nameof(Entity.Location)}"" && ST_MakeEnvelope(@p0, @p1, @p2, @p3, 4326)
                            ) AS p ON f.""{nameof(Entity.Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
                        WHERE NOT f.""{nameof(Foodtruck.Deleted)}""
                     "
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
                 )
-                .ProjectToListAsync<Presence>();
+                .ProjectToListAsync<PresenceOrUnavailability>();
         }
 
-        public async Task<IDictionary<string, IList<Presence>>> FindPresences(ICollection<string> foodtruckSlugs)
+        public async Task<IDictionary<string, IList<PresenceOrUnavailability>>> FindPresencesOrUnavailabilities(ICollection<string> foodtruckSlugs)
         {
             return (await Queryable.Where(e => foodtruckSlugs.Contains(e.Foodtruck.Slug))
                     .OrderBy(p => p.FoodtruckId).ThenBy(p => p.StartTime)
                     .Include(p => p.Foodtruck.Slug)
                     .ToListAsync())
-                .Aggregate(new SortedDictionary<string, IList<Presence>>(), (acc, pres) =>
+                .Aggregate(new SortedDictionary<string, IList<PresenceOrUnavailability>>(), (acc, pres) =>
                 {
-                    IList<Presence> list;
+                    IList<PresenceOrUnavailability> list;
                     Debug.Assert(pres.Id != null, "pres.Id != null");
                     if (acc.TryGetValue(pres.Foodtruck.Slug, out list))
                     {
-                        list = new List<Presence>();
+                        list = new List<PresenceOrUnavailability>();
                         acc[pres.Foodtruck.Slug] = list;
                     }
 
                     Debug.Assert(list != null, nameof(list) + " != null");
-                    list.Add(Mapper.Map<Presence>(pres));
+                    list.Add(Mapper.Map<PresenceOrUnavailability>(pres));
                     return acc;
                 });
         }
 
-        public async Task<IList<Presence>> FindPresences(string slug)
+        public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilities(string slug)
         {
             return await Queryable.Where(e => slug == e.Foodtruck.Slug)
                 .OrderBy(p => p.StartTime)
-                .ProjectToListAsync<Presence>();
+                .ProjectToListAsync<PresenceOrUnavailability>();
         }
 
-        private async Task ValidatePresence(Guid foodtruckId, CreateModifyPresence createModifyPresence, Guid? presenceId = null)
+        private async Task ValidatePresenceOrUnavailability(Guid foodtruckId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability, Guid? presenceId = null)
         {
-            var startTime = createModifyPresence.StartTime;
-            var endTime = createModifyPresence.EndTime ?? DateTime.MaxValue.AddDays(-1);
-            var dbsetlist = await DbSet.ToListAsync();
-            var collidingPresence = await DbSet
+            var startTime = createModifyPresenceOrUnavailability.StartTime;
+            var endTime = createModifyPresenceOrUnavailability.EndTime ?? DateTime.MaxValue.AddDays(-1);
+            var collidingPresenceOrUnavailability = await DbSet
                 .FirstOrDefaultAsync(p =>
                     p.FoodtruckId == foodtruckId &&
                     p.Id != presenceId &&
@@ -114,28 +113,28 @@ namespace Persistency.Services.Implementations
                         p.EndTime == null
                     )
                 );
-            if (collidingPresence != null)
-                throw new ValidationException<Presence>(Mapper.Map<Presence>(collidingPresence));
+            if (collidingPresenceOrUnavailability != null)
+                throw new ValidationException<PresenceOrUnavailability>(Mapper.Map<PresenceOrUnavailability>(collidingPresenceOrUnavailability));
         }
 
-        public async Task<Presence> CreatePresence(string foodtruckSlug, CreateModifyPresence createModifyPresence)
+        public async Task<PresenceOrUnavailability> CreatePresenceOrUnavailability(string foodtruckSlug, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
-            var entity = Mapper.Map<Entity>(createModifyPresence);
+            var entity = Mapper.Map<Entity>(createModifyPresenceOrUnavailability);
             var foodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug);
             entity.FoodtruckId = foodtruckId;
-            await ValidatePresence(foodtruckId, createModifyPresence);
-            return Mapper.Map<Presence>(await CreateNewEntity(entity));
+            await ValidatePresenceOrUnavailability(foodtruckId, createModifyPresenceOrUnavailability);
+            return Mapper.Map<PresenceOrUnavailability>(await CreateNewEntity(entity));
         }
 
-        public async Task<Presence> ModifyPresence(Guid presenceId, CreateModifyPresence createModifyPresence)
+        public async Task<PresenceOrUnavailability> ModifyPresenceOrUnavailability(Guid presenceId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
             var entity = await DbSet.FirstOrDefaultAsync(p => p.Id == presenceId);
             if (entity == null)
                 return null;
-            Mapper.Map(createModifyPresence, entity);
-            await ValidatePresence(entity.FoodtruckId, createModifyPresence);
+            Mapper.Map(createModifyPresenceOrUnavailability, entity);
+            await ValidatePresenceOrUnavailability(entity.FoodtruckId, createModifyPresenceOrUnavailability);
             await PersistencyContext.SaveChangesAsync();
-            return Mapper.Map<Presence>(entity);
+            return Mapper.Map<PresenceOrUnavailability>(entity);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Persistency.Dtos
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public Coordinate DefaultLocation { get; set; }
-        public IList<Presence> Presences { get; set; }
+        public IList<PresenceOrUnavailability> PresencesOrUnavailabilities { get; set; }
         public IList<Ownership> Ownerships { get; set; }
     }
 }

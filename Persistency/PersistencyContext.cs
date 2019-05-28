@@ -12,7 +12,7 @@ namespace Persistency
         IInternalPersistencyContext
     {
         public DbSet<Foodtruck> Foodtrucks { get; set; }
-        public DbSet<Presence> Presences { get; set; }
+        public DbSet<PresenceOrUnavailability> PresencesOrUnavailabilities { get; set; }
         public DbSet<FoodtruckOwnership> FoodtruckOwnerships { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

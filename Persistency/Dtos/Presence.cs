@@ -2,7 +2,7 @@
 
 namespace Persistency.Dtos
 {
-    public sealed class Presence
+    public sealed class PresenceOrUnavailability
     {
         public Guid Id { get; set; }
         public string FoodtruckSlug { get; set; }

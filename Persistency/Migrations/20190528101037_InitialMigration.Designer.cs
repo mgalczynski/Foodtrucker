@@ -11,8 +11,8 @@ using Persistency;
 namespace Persistency.Migrations
 {
     [DbContext(typeof(PersistencyContext))]
-    [Migration("20190206125850_ConstaintNameAdded")]
-    partial class ConstaintNameAdded
+    [Migration("20190528101037_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -20,7 +20,7 @@ namespace Persistency.Migrations
             modelBuilder
                 .HasAnnotation("Npgsql:PostgresExtension:postgis", ",,")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.SerialColumn)
-                .HasAnnotation("ProductVersion", "2.2.1-servicing-10028")
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -125,8 +125,9 @@ namespace Persistency.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("Slug")
-                        .HasName("AK_Foodtrucks_slug");
+                    b.HasIndex("Slug")
+                        .IsUnique()
+                        .HasName("AK_Foodtrucks_Slug");
 
                     b.ToTable("Foodtrucks");
                 });
@@ -224,11 +225,9 @@ namespace Persistency.Migrations
                     b.HasAlternateKey("Email")
                         .HasName("AK_Users_Mail");
 
-                    b.HasAlternateKey("NormalizedEmail")
-                        .HasName("AK_Users_NormalizedEmail");
-
                     b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
+                        .IsUnique()
+                        .HasName("AK_Users_NormalizedEmail");
 
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
@@ -237,7 +236,7 @@ namespace Persistency.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("Persistency.Entities.Presence", b =>
+            modelBuilder.Entity("Persistency.Entities.PresenceOrUnavailability", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
@@ -249,7 +248,6 @@ namespace Persistency.Migrations
                     b.Property<Guid>("FoodtruckId");
 
                     b.Property<Point>("Location")
-                        .IsRequired()
                         .HasColumnType("geography(Point,4326)");
 
                     b.Property<DateTime>("StartTime");
@@ -261,7 +259,7 @@ namespace Persistency.Migrations
 
                     b.HasIndex("FoodtruckId");
 
-                    b.ToTable("Presences");
+                    b.ToTable("PresencesOrUnavailabilities");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -322,10 +320,10 @@ namespace Persistency.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Persistency.Entities.Presence", b =>
+            modelBuilder.Entity("Persistency.Entities.PresenceOrUnavailability", b =>
                 {
                     b.HasOne("Persistency.Entities.Foodtruck", "Foodtruck")
-                        .WithMany("Presences")
+                        .WithMany("PresencesOrUnavailabilities")
                         .HasForeignKey("FoodtruckId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

@@ -6,18 +6,18 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Operation.Distance;
 using Persistency.Dtos;
 using Persistency.Services;
-using Presence = Persistency.Entities.Presence;
+using PresenceOrUnavailability = Persistency.Entities.PresenceOrUnavailability;
 
 namespace Persistency
 {
-    internal class DevelopmentPresencesFactory
+    internal class DevelopmentPresencesOrUnavailabilitiesFactory
     {
         private readonly AbstractPersistencyContext _context;
         private readonly IFoodtruckService _foodtruckService;
-        private readonly IPresenceService _presenceService;
+        private readonly IPresenceOrUnavailabilityService _presenceService;
         private readonly Random _random;
 
-        public DevelopmentPresencesFactory(IFoodtruckService foodtruckService, IPresenceService presenceService, AbstractPersistencyContext context)
+        public DevelopmentPresencesOrUnavailabilitiesFactory(IFoodtruckService foodtruckService, IPresenceOrUnavailabilityService presenceService, AbstractPersistencyContext context)
         {
             _foodtruckService = foodtruckService;
             _presenceService = presenceService;
@@ -25,7 +25,7 @@ namespace Persistency
             _random = new Random();
         }
 
-        internal async Task GenerateDevelopmentPresences()
+        internal async Task GenerateDevelopmentPresencesOrUnavailabilities()
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
@@ -44,14 +44,14 @@ namespace Persistency
                     .Take(300)
                     .OrderBy(p => DistanceOp.Distance(point, p.DefaultLocation.ToDbPoint())))
                 {
-                    if ((await _presenceService.FindPresences(foodtruck.Slug)).Any())
+                    if ((await _presenceService.FindPresencesOrUnavailabilities(foodtruck.Slug)).Any())
                         continue;
                     var foodtruckId = (await _context.Foodtrucks.FirstAsync(f => f.Slug == foodtruck.Slug)).Id;
-                    await _context.Presences.AddAsync(new Presence
+                    await _context.PresencesOrUnavailabilities.AddAsync(new PresenceOrUnavailability
                     {
                         FoodtruckId = foodtruckId,
-                        Description = $"Presence of {foodtruck.DisplayName}",
-                        Title = $"Presence of {foodtruck.DisplayName}",
+                        Description = $"PresenceOrUnavailability of {foodtruck.DisplayName}",
+                        Title = $"PresenceOrUnavailability of {foodtruck.DisplayName}",
                         Location = new Coordinate
                         {
                             Latitude = minLat + _random.NextDouble() * (maxLat - minLat),

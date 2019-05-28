@@ -44,7 +44,7 @@ class MapComponent extends Component {
     constructor(props) {
         super(props);
         this.foodtruckMarkers = new Map();
-        this.presenceMarkers = new Map();
+        this.presenceOrUnavailabilityMarkers = new Map();
         this.userMarker = null;
     }
 
@@ -82,7 +82,7 @@ class MapComponent extends Component {
         this.mapZoom = this.map.getZoom();
         this.props.boundsChanged(this.map.getBounds());
         this.updateFoodtrucks(this.props);
-        this.updatePresences(this.props);
+        this.updatePresencesOrUnavailabilities(this.props);
     };
     disableMap = () => {
         this.map.zoomControl.disable();
@@ -142,7 +142,7 @@ class MapComponent extends Component {
         }
 
         this.updateFoodtrucks(props);
-        this.updatePresences(props);
+        this.updatePresencesOrUnavailabilities(props);
     };
 
     updateFoodtrucks = (props) => {
@@ -173,10 +173,10 @@ class MapComponent extends Component {
         this.foodtruckMarkers = newMarkers;
     };
 
-    updatePresences = (props) => {
-        const allNewIds = new Set(props.presences.map(p => p.id));
-        const newMarkers = new Map(props.presences
-            .filter(p => !this.presenceMarkers.has(p.id))
+    updatePresencesOrUnavailabilities = (props) => {
+        const allNewIds = new Set(props.presencesOrUnavailabilities.map(p => p.id));
+        const newMarkers = new Map(props.presencesOrUnavailabilities
+            .filter(p => !this.presenceOrUnavailabilityMarkers.has(p.id))
             .map(p => {
                 const div = document.createElement('div');
                 const pair = [p.id, L.marker([p.location.latitude, p.location.longitude])
@@ -191,14 +191,14 @@ class MapComponent extends Component {
             }));
         this.markers.addLayers(Array.from(newMarkers.values()));
         const markersToRemove = [];
-        this.presenceMarkers.forEach((marker, id) => {
+        this.presenceOrUnavailabilityMarkers.forEach((marker, id) => {
             if (allNewIds.has(id))
                 newMarkers.set(id, marker);
             else
                 markersToRemove.push(marker);
         });
         this.markers.removeLayers(markersToRemove);
-        this.presenceMarkers = newMarkers;
+        this.presenceOrUnavailabilityMarkers = newMarkers;
     };
 
     componentWillUnmount = () => {
@@ -229,7 +229,7 @@ class MapComponent extends Component {
         return (
             <div className={`map-container${this.props.disabled ? ' disabled' : ''}`}>
                 <div id='map' className='map' />
-                <Route path='/foodtruck/:foodtruckSlug/:presenceId?' component={Foodtruck} />
+                <Route path='/foodtruck/:foodtruckSlug/:presenceOrUnavailabilityId?' component={Foodtruck} />
             </div>
         );
     }

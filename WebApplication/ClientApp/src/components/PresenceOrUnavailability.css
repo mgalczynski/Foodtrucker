@@ -1,0 +1,21 @@
+.presence-or-unavailability-loader {
+    padding: 100px;
+}
+
+.presence-or-unavailability .map{
+    height: 50vh;
+}
+
+.presence-or-unavailability .presence-details {
+    margin-bottom: 10px;
+}
+
+.presence-or-unavailability {
+    margin: 20px;
+}
+
+@media(min-width: 768px){
+    .presence-or-unavailability {
+        margin: 50px;
+    }
+}

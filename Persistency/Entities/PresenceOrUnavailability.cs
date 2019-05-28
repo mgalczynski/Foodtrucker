@@ -5,7 +5,7 @@ using NetTopologySuite.Geometries;
 
 namespace Persistency.Entities
 {
-    public class Presence : BaseEntity
+    public class PresenceOrUnavailability : BaseEntity
     {
         [Required] public Guid FoodtruckId { get; set; }
         public Foodtruck Foodtruck { get; set; }
@@ -14,7 +14,6 @@ namespace Persistency.Entities
         [Required] public string Title { get; set; }
         public string Description { get; set; }
 
-        [Required]
         [Column(TypeName = "geography(Point,4326)")]
         public Point Location { get; set; }
     }

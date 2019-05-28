@@ -2,7 +2,7 @@
 
 namespace Persistency.Dtos
 {
-    public sealed class CreateModifyPresence
+    public sealed class CreateModifyPresenceOrUnavailability
     {
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }

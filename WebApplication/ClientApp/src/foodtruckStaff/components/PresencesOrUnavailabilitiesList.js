@@ -4,7 +4,7 @@ import {Button} from 'react-bootstrap';
 import {format} from '../../components/Helpers';
 import {Table} from 'react-bootstrap';
 
-const PresencesList = props => (
+const PresencesOrUnavailabilitiesList = props => (
     <Table striped bordered hover>
         <thead>
         <tr>
@@ -17,7 +17,7 @@ const PresencesList = props => (
         </tr>
         </thead>
         <tbody>
-        {props.presences.map(p =>
+        {props.presencesOrUnavailabilities.map(p =>
             <tr key={p.id}>
                 <td>{p.startTime.format(format)}</td>
                 <td>{p.endTime == null ? '----' : p.endTime.format(format)}</td>
@@ -45,4 +45,4 @@ const PresencesList = props => (
     </Table>
 );
 
-export default PresencesList;
+export default PresencesOrUnavailabilitiesList;

@@ -20,12 +20,12 @@ namespace Persistency
             services.AddScoped<AbstractPersistencyContext, PersistencyContext>(ContextFactory);
             services.AddScoped<IInternalFoodtruckService, FoodtruckService>();
             services.AddScoped<IFoodtruckService, FoodtruckService>();
-            services.AddScoped<IPresenceService, PresenceService>();
+            services.AddScoped<IPresenceOrUnavailabilityService, PresenceOrUnavailabilityService>();
             services.AddScoped<IFoodtruckOwnershipService, FoodtruckOwnershipService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ISlugHelper, SlugHelper>();
 #if DEBUG
-            services.AddScoped<DevelopmentPresencesFactory>();
+            services.AddScoped<DevelopmentPresencesOrUnavailabilitiesFactory>();
 #endif
             services.AddIdentity<Entities.FoodtruckerUser, Entities.FoodtruckerRole>()
                 .AddEntityFrameworkStores<PersistencyContext>()
@@ -72,8 +72,8 @@ namespace Persistency
             Func<Dtos.Coordinate, Point> func = ExtensionMethods.ToDbPoint;
             mapper.CreateMap<Dtos.CreateModifyFoodtruck, Entities.Foodtruck>();
             mapper.CreateMap<Entities.Foodtruck, Dtos.Foodtruck>();
-            mapper.CreateMap<Entities.Presence, Dtos.Presence>();
-            mapper.CreateMap<Dtos.CreateModifyPresence, Entities.Presence>();
+            mapper.CreateMap<Entities.PresenceOrUnavailability, Dtos.PresenceOrUnavailability>();
+            mapper.CreateMap<Dtos.CreateModifyPresenceOrUnavailability, Entities.PresenceOrUnavailability>();
             mapper.CreateMap<Dtos.Coordinate, Point>().ConvertUsing(c => c.ToDbPoint());
             mapper.CreateMap<Point, Dtos.Coordinate>().ConvertUsing(p => p.ToCoordinate());
             mapper.CreateMap<Enum, string>().IncludeAllDerived().ConvertUsing(e => e.ToString());
@@ -90,8 +90,8 @@ namespace Persistency
 #if DEBUG
             if (isDevelopment)
                 serviceProvider
-                    .GetService<DevelopmentPresencesFactory>()
-                    .GenerateDevelopmentPresences()
+                    .GetService<DevelopmentPresencesOrUnavailabilitiesFactory>()
+                    .GenerateDevelopmentPresencesOrUnavailabilities()
                     .Wait();
 #endif
         }

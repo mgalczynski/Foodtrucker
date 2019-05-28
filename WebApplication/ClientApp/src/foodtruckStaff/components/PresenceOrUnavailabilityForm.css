@@ -1,0 +1,11 @@
+.presence-or-unavailability-form .presence-or-unavailability-form-submit-form-group .presence-or-unavailability-form-submit {
+    margin-top: 15px;
+}
+
+.presence-or-unavailability-form .presence-or-unavailability-form-submit-form-group{
+    text-align: right;
+}
+
+.presence-or-unavailability-form .map {
+    height: 50vh;
+}

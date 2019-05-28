@@ -1,7 +1,7 @@
-﻿import {mapPresence} from '../../store/Helpers';
+﻿import {mapPresenceOrUnavailability} from '../../store/Helpers';
 import {positionWatch, staffPrefix} from '../../Helpers';
 import {actionCreators as StaffHome} from './StaffHome';
-import {actionCreators as PresenceForm} from './PresenceForm';
+import {actionCreators as PresenceOrUnavailabilityForm} from './PresenceOrUnavailabilityForm';
 import {open} from './AddNewOwnership';
 
 const foodtruckChanged = 'staff/foodtruck/FOODTRUCK_CHANGED';
@@ -58,9 +58,9 @@ export const actionCreators = {
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         await StaffHome.updateFoodtrucks()(dispatch, getState);
     },
-    removePresence: (presenceId) => async (dispatch, getState) => {
+    removePresenceOrUnavailability: (presenceOrUnavailabilityId) => async (dispatch, getState) => {
         const foodtruckSlug = getState().foodtruckForStaff.loadedSlug;
-        await fetch(`api${staffPrefix}/presence/${presenceId}`,
+        await fetch(`api${staffPrefix}/presenceOrUnavailability/${presenceOrUnavailabilityId}`,
             {
                 credentials: 'same-origin',
                 method: 'DELETE',
@@ -88,11 +88,11 @@ export const actionCreators = {
         actionCreators.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);
         StaffHome.updateFoodtrucks()(dispatch, getState);
     },
-    openNewPresenceModal: () => async (dispatch, getState) => {
-        await PresenceForm.open(getState().foodtruckForStaff.loadedSlug)(dispatch, getState);
+    openNewPresenceOrUnavailabilityModal: () => async (dispatch, getState) => {
+        await PresenceOrUnavailabilityForm.open(getState().foodtruckForStaff.loadedSlug)(dispatch, getState);
     },
-    openModifyPresenceModal: (presence) => async (dispatch, getState) => {
-        await PresenceForm.openWithPresence(presence)(dispatch, getState);
+    openModifyPresenceOrUnavailabilityModal: (presenceOrUnavailability) => async (dispatch, getState) => {
+        await PresenceOrUnavailabilityForm.openWithPresenceOrUnavailability(presenceOrUnavailability)(dispatch, getState);
     }
 };
 
@@ -101,7 +101,7 @@ export const reducer = (state, action) => {
 
     switch (action.type) {
         case foodtruckChanged:
-            return {...state, foodtruck: {...action.foodtruck, presences: action.foodtruck.presences.map(mapPresence)}};
+            return {...state, foodtruck: {...action.foodtruck, presencesOrUnavailabilities: action.foodtruck.presencesOrUnavailabilities.map(mapPresenceOrUnavailability())}};
         case resetState:
             return initialState;
         case positionChanged:

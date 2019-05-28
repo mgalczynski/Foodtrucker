@@ -6,10 +6,10 @@
     height: 75vh;
 }
 
-.foodtruck .foodtruck-presences-container {
+.foodtruck .foodtruck-presences-or-unavailabilities-container {
     margin: 10px 0 10px 0;
 }
 
-.foodtruck .foodtruck-presences-container a{
+.foodtruck .foodtruck-presences-or-unavailabilities-container a{
     display: block;
 }

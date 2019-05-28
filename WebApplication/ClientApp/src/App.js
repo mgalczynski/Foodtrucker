@@ -30,7 +30,7 @@ class App extends Component {
     render() {
         return <Switch>
             <Route exact path='/' component={WithoutMargin} />
-            <Route exact path='/foodtruck/:foodtruckSlug/:presenceId?' component={WithoutMargin} />
+            <Route exact path='/foodtruck/:foodtruckSlug/:presenceOrUnavailabilityId?' component={WithoutMargin} />
             <Route component={WithMargin} />
         </Switch>;
     }
