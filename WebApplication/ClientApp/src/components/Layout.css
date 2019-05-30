@@ -1,9 +1,9 @@
-@media (min-width: 768px) {
-    .col-main-custom-margin {
-        margin: 20px 20px 20px 0;
-    }
+.col-main-custom-padding {
+    padding: 20px !important;
 }
 
-.col-main-custom-margin {
-    margin: 20px;
+@media (min-width: 768px) {
+    .col-main-custom-padding {
+        padding: 20px 20px 20px 0 !important;
+    }
 }

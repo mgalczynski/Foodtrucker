@@ -5,6 +5,8 @@
 **/.vscode
 **/.gitignore
 **/*.Development.json
+Dumps
+Scripts
 *.Test
 .gitignore
 .gitattributes

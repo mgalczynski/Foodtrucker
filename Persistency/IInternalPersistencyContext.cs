@@ -12,6 +12,6 @@ namespace Persistency
         DbSet<FoodtruckOwnership> FoodtruckOwnerships { get; set; }
         DbSet<FoodtruckerUser> Users { get; set; }
         int SaveChanges();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

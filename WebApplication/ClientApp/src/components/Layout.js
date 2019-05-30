@@ -11,7 +11,7 @@ export default class Layout extends Component {
                     <Col sm={3} className='col-nav-menu'>
                         <NavMenu/>
                     </Col>
-                    <Col sm={9} className={`col-main${this.props.withoutMargin ? '' : ' col-main-custom-margin'}`}>
+                    <Col sm={9} className={`${this.props.withoutMargin ? '' : 'col-main-custom-padding '}col-main`}>
                         {this.props.children}
                     </Col>
                 </Row>
