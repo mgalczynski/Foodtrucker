@@ -63,13 +63,65 @@ namespace WebApplication.Controllers.FoodtruckStaff
                         Description = "Conflict with"
                     });
                 }
+                catch (ArgumentException)
+                {
+                    return BadRequest();
+                }
             }
 
-            return Ok(new ResponseWithStatus<PresenceOrUnavailability>
+            return Ok(result.MapToResponse());
+        }
+
+        [HttpPost("{foodtruckSlug}")]
+        public async Task<ActionResult<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>>> ValidatePresenceOrUnavailability([FromRoute] string foodtruckSlug, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        {
+            if (ValidateCreateModifyPresenceOrUnavailability(createModifyPresenceOrUnavailability))
+                return BadRequest();
+
+            ResponseWithStatus<PresenceOrUnavailability> result;
+            using (await Transaction())
             {
-                Dto = result,
-                Successful = true
-            });
+                try
+                {
+                    var user = await CurrentUser();
+                    if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, foodtruckSlug)))
+                        return Forbid();
+                    result = await _presenceService.ValidatePresenceOrUnavailability(foodtruckSlug, createModifyPresenceOrUnavailability);
+                }
+                catch (ArgumentException)
+                {
+                    return BadRequest();
+                }
+            }
+
+            return result.Successful ? Ok(result) : UnprocessableEntity(result);
+        }
+
+        [HttpPost("{foodtruckSlug}/{presenceId}")]
+        public async Task<ActionResult<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>>> ValidatePresenceOrUnavailability([FromRoute] Guid presenceId, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        {
+            if (ValidateCreateModifyPresenceOrUnavailability(createModifyPresenceOrUnavailability))
+                return BadRequest();
+
+            ResponseWithStatus<PresenceOrUnavailability> result;
+            using (var transaction = await Transaction())
+            {
+                try
+                {
+                    var user = await CurrentUser();
+                    if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresenceOrUnavailability(user.Id, presenceId)))
+                        return Forbid();
+                    result = await _presenceService.ValidatePresenceOrUnavailability(presenceId, createModifyPresenceOrUnavailability);
+                    transaction.Commit();
+                }
+                catch (ValidationException<PresenceOrUnavailability> ex)
+                {
+                    transaction.Rollback();
+                    return UnprocessableEntity(ex.MapToResponse());
+                }
+            }
+
+            return result.Successful ? Ok(result) : UnprocessableEntity(result);
         }
 
         [HttpPut("{presenceId}")]
@@ -92,12 +144,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 catch (ValidationException<PresenceOrUnavailability> ex)
                 {
                     transaction.Rollback();
-                    return UnprocessableEntity(new ResponseWithStatus<PresenceOrUnavailability>
-                    {
-                        Dto = ex.Dto,
-                        Successful = false,
-                        Description = "Conflict with"
-                    });
+                    return UnprocessableEntity(ex.MapToResponse());
                 }
             }
 

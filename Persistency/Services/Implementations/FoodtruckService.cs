@@ -83,8 +83,8 @@ namespace Persistency.Services.Implementations
                     .FirstOrDefaultAsync(f => f.Slug == slug)
             );
 
-        public async Task<Guid> FindFoodtruckIdBySlug(string slug) =>
-            (await DbSet.FirstOrDefaultAsync(f => f.Slug == slug)).Id;
+        public async Task<Guid?> FindFoodtruckIdBySlug(string slug) =>
+            (await DbSet.FirstOrDefaultAsync(f => f.Slug == slug))?.Id;
 
         private async Task<string> GenerateSlug(string name, Guid? id = null)
         {

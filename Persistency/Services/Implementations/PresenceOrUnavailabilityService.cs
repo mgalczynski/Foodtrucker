@@ -23,6 +23,9 @@ namespace Persistency.Services.Implementations
         protected override DbSet<Entity> DbSet => PersistencyContext.PresencesOrUnavailabilities;
         private IQueryable<Entity> Queryable => DbSet.Include(p => p.Foodtruck.Slug);
 
+        private async Task<Guid> FindFoodtruckId(string foodtruckSlug) =>
+            await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug) ?? throw new ArgumentException("Foodtruck not found");
+
         public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate coordinate, double distance)
         {
             return await PersistencyContext.PresencesOrUnavailabilities.FromSql(
@@ -88,7 +91,44 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<PresenceOrUnavailability>();
         }
 
-        private async Task ValidatePresenceOrUnavailability(Guid foodtruckId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability, Guid? presenceId = null)
+        public async Task<ResponseWithStatus<PresenceOrUnavailability>> ValidatePresenceOrUnavailability(string foodtruckSlug, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        {
+            try
+            {
+                await PrivateValidatePresenceOrUnavailability(await FindFoodtruckId(foodtruckSlug), createModifyPresenceOrUnavailability);
+            }
+            catch (ValidationException<PresenceOrUnavailability> ex)
+            {
+                return ex.MapToResponse();
+            }
+            
+            return Mapper.Map<PresenceOrUnavailability>(createModifyPresenceOrUnavailability).MapToResponse();
+        } 
+
+        public async Task<ResponseWithStatus<PresenceOrUnavailability>> ValidatePresenceOrUnavailability(Guid presenceId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        {
+            var entity = await DbSet.FirstOrDefaultAsync(p => p.Id == presenceId);
+            if (entity == null)
+                return new ResponseWithStatus<PresenceOrUnavailability>
+                {
+                    Description = "Entity not found",
+                    Successful = false
+                };
+            Mapper.Map(createModifyPresenceOrUnavailability, entity);
+
+            try
+            {
+                await PrivateValidatePresenceOrUnavailability(entity.FoodtruckId, createModifyPresenceOrUnavailability, presenceId);
+            }
+            catch (ValidationException<PresenceOrUnavailability> ex)
+            {
+                return ex.MapToResponse();
+            }
+            
+            return Mapper.Map<PresenceOrUnavailability>(entity).MapToResponse();
+        } 
+
+        private async Task PrivateValidatePresenceOrUnavailability(Guid foodtruckId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability, Guid? presenceId = null)
         {
             var startTime = createModifyPresenceOrUnavailability.StartTime;
             var endTime = createModifyPresenceOrUnavailability.EndTime ?? DateTime.MaxValue.AddDays(-1);
@@ -120,9 +160,9 @@ namespace Persistency.Services.Implementations
         public async Task<PresenceOrUnavailability> CreatePresenceOrUnavailability(string foodtruckSlug, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
             var entity = Mapper.Map<Entity>(createModifyPresenceOrUnavailability);
-            var foodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug);
+            var foodtruckId = await FindFoodtruckId(foodtruckSlug);
             entity.FoodtruckId = foodtruckId;
-            await ValidatePresenceOrUnavailability(foodtruckId, createModifyPresenceOrUnavailability);
+            await PrivateValidatePresenceOrUnavailability(foodtruckId, createModifyPresenceOrUnavailability);
             return Mapper.Map<PresenceOrUnavailability>(await CreateNewEntity(entity));
         }
 
@@ -132,7 +172,7 @@ namespace Persistency.Services.Implementations
             if (entity == null)
                 return null;
             Mapper.Map(createModifyPresenceOrUnavailability, entity);
-            await ValidatePresenceOrUnavailability(entity.FoodtruckId, createModifyPresenceOrUnavailability);
+            await PrivateValidatePresenceOrUnavailability(entity.FoodtruckId, createModifyPresenceOrUnavailability, presenceId);
             await PersistencyContext.SaveChangesAsync();
             return Mapper.Map<PresenceOrUnavailability>(entity);
         }

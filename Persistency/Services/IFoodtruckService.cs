@@ -19,6 +19,6 @@ namespace Persistency.Services
 
     internal interface IInternalFoodtruckService : IFoodtruckService
     {
-        Task<Guid> FindFoodtruckIdBySlug(string slug);
+        Task<Guid?> FindFoodtruckIdBySlug(string slug);
     }
 }
