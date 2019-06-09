@@ -63,7 +63,7 @@ namespace Persistency.Test.Services.Implementations
                 UserId = u.Id
             }));
             Context.SaveChanges();
-            _userService = new UserService(Context, roleManager);
+            _userService = new UserService(Context, Persistency.CreateMapper(), roleManager);
         }
 
         private readonly UserService _userService;

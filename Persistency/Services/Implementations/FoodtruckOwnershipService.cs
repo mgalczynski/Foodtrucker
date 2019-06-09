@@ -41,11 +41,13 @@ namespace Persistency.Services.Implementations
 
         private readonly IInternalFoodtruckService _foodtruckService;
         private readonly IInternalPersistencyContext _persistencyContext;
+        private readonly IRuntimeMapper _runtimeMapper;
 
-        public FoodtruckOwnershipService(IInternalPersistencyContext persistencyContext, IInternalFoodtruckService foodtruckService)
+        public FoodtruckOwnershipService(IInternalPersistencyContext persistencyContext, IRuntimeMapper runtimeMapper, IInternalFoodtruckService foodtruckService)
         {
             _persistencyContext = persistencyContext;
             _foodtruckService = foodtruckService;
+            _runtimeMapper = runtimeMapper;
         }
 
         private DbSet<Entity> DbSet =>
@@ -58,7 +60,7 @@ namespace Persistency.Services.Implementations
         }
 
         public async Task<FoodtruckOwnership> FindByUserEmailAndFoodtruck(string email, string foodtruckSlug) =>
-            Mapper.Map<FoodtruckOwnership>(await FindEntityByUserEmailAndFoodtruck(email, foodtruckSlug));
+            _runtimeMapper.Map<FoodtruckOwnership>(await FindEntityByUserEmailAndFoodtruck(email, foodtruckSlug));
 
 
         public async Task<OwnershipType?> FindTypeByUserAndFoodtruck(Guid userId, string foodtruckSlug) =>
@@ -73,13 +75,13 @@ namespace Persistency.Services.Implementations
         public async Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(string foodtruckSlug) =>
             await DbSet
                 .Where(e => e.Foodtruck.Slug == foodtruckSlug)
-                .ProjectToListAsync<FoodtruckOwnership>();
+                .ProjectToListAsync<FoodtruckOwnership>(_runtimeMapper.ConfigurationProvider);
 
         public async Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId) =>
             await DbSet
                 .Where(e => e.UserId == userId)
                 .OrderBy(e => e.Foodtruck.Name)
-                .ProjectToListAsync<FoodtruckWithOwnership>();
+                .ProjectToListAsync<FoodtruckWithOwnership>(_runtimeMapper.ConfigurationProvider);
 
         public async Task ChangeOwnership(string foodtruckSlug, string userEmail, OwnershipType type)
         {

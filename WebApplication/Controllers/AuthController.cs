@@ -15,12 +15,14 @@ namespace WebApplication.Controllers
     [Route("api/[controller]")]
     public class AuthController : Controller
     {
+        private readonly IRuntimeMapper _runtimeMapper;
         private readonly IPersistencyContext _persistencyContext;
         private readonly SignInManager<FoodtruckerUser> _signInManager;
         private readonly UserManager<FoodtruckerUser> _userManager;
 
-        public AuthController(UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager, IPersistencyContext persistencyContext)
+        public AuthController(IRuntimeMapper runtimeMapper, UserManager<FoodtruckerUser> userManager, SignInManager<FoodtruckerUser> signInManager, IPersistencyContext persistencyContext)
         {
+            _runtimeMapper = runtimeMapper;
             _userManager = userManager;
             _signInManager = signInManager;
             _persistencyContext = persistencyContext;
@@ -48,7 +50,7 @@ namespace WebApplication.Controllers
                 if (role != FoodtruckerRole.ServiceStaff)
                     await _signInManager.SignInAsync(user, isPersistent: true);
                 transaction.Commit();
-                return new RegisterResult {Successful = true, User = Mapper.Map<User>(user)};
+                return new RegisterResult {Successful = true, User = _runtimeMapper.Map<User>(user)};
             }
         }
 
@@ -120,7 +122,7 @@ namespace WebApplication.Controllers
             );
             return new LoginResult
             {
-                User = signInResult.Succeeded ? Mapper.Map<User>(user) : null,
+                User = signInResult.Succeeded ? _runtimeMapper.Map<User>(user) : null,
                 Successful = signInResult.Succeeded,
                 IsLockedOut = signInResult.IsLockedOut,
                 IsNotAllowed = signInResult.IsNotAllowed
@@ -135,7 +137,7 @@ namespace WebApplication.Controllers
             if (username == null)
                 return new CheckResult {IsSignedIn = false};
             var user = await _userManager.FindByNameAsync(username);
-            return new CheckResult {IsSignedIn = true, User = Mapper.Map<User>(user)};
+            return new CheckResult {IsSignedIn = true, User = _runtimeMapper.Map<User>(user)};
         }
 
         [HttpGet("[action]")]

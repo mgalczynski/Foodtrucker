@@ -20,15 +20,15 @@ namespace Persistency
         internal static Point CreatePointWithSrid(double latitude, double longitude) =>
             new Point(longitude, latitude) {SRID = 4326};
 
-        internal static async Task<IList<TDestination>> ProjectToListAsync<TDestination>(this IQueryable queryable) =>
-            await queryable.ProjectTo<TDestination>().ToListAsync();
+        internal static async Task<IList<TDestination>> ProjectToListAsync<TDestination>(this IQueryable queryable, IConfigurationProvider configuration) =>
+            await queryable.ProjectTo<TDestination>(configuration).ToListAsync();
 
 
-        internal static async Task<TDestination> MapAsync<TDestination, TSource>(this Task<TSource> task)
+        internal static async Task<TDestination> MapAsync<TDestination, TSource>(this Task<TSource> task, IRuntimeMapper runtimeMapper)
             where TDestination : class
         {
             var obj = await task;
-            return obj == null ? null : Mapper.Map<TDestination>(obj);
+            return obj == null ? null : runtimeMapper.Map<TDestination>(obj);
         }
     }
 }

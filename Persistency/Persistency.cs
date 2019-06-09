@@ -61,13 +61,16 @@ namespace Persistency
                 options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.SlidingExpiration = true;
             });
-            Mapper.Initialize(InitializeMapper);
+            services.AddSingleton(CreateMapper());
         }
 
         private static PersistencyContext ContextFactory(IServiceProvider provider) =>
             provider.GetService<PersistencyContext>();
 
-        internal static void InitializeMapper(IMapperConfigurationExpression mapper)
+        internal static IRuntimeMapper CreateMapper() =>
+            new Mapper(new MapperConfiguration(InitializeMapper));
+
+        private static void InitializeMapper(IMapperConfigurationExpression mapper)
         {
             mapper.CreateMap<Dtos.CreateModifyFoodtruck, Entities.Foodtruck>();
             mapper.CreateMap<Entities.FoodtruckerUser, Dtos.User>();

@@ -15,7 +15,7 @@ namespace Persistency.Services.Implementations
     {
         private readonly IInternalFoodtruckService _foodtruckService;
 
-        public PresenceOrUnavailabilityService(IInternalPersistencyContext persistencyContext, IInternalFoodtruckService foodtruckService) : base(persistencyContext)
+        public PresenceOrUnavailabilityService(IInternalPersistencyContext persistencyContext, IRuntimeMapper runtimeMapper, IInternalFoodtruckService foodtruckService) : base(persistencyContext, runtimeMapper)
         {
             _foodtruckService = foodtruckService;
         }
@@ -41,7 +41,7 @@ namespace Persistency.Services.Implementations
                     "
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
-                .ProjectToListAsync<PresenceOrUnavailability>();
+                .ProjectToListAsync<PresenceOrUnavailability>(ConfigurationProvider);
         }
 
         public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate topLeft, Coordinate bottomRight)
@@ -59,7 +59,7 @@ namespace Persistency.Services.Implementations
                     "
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
                 )
-                .ProjectToListAsync<PresenceOrUnavailability>();
+                .ProjectToListAsync<PresenceOrUnavailability>(ConfigurationProvider);
         }
 
         public async Task<IDictionary<string, IList<PresenceOrUnavailability>>> FindPresencesOrUnavailabilities(ICollection<string> foodtruckSlugs)
@@ -79,7 +79,7 @@ namespace Persistency.Services.Implementations
                     }
 
                     Debug.Assert(list != null, nameof(list) + " != null");
-                    list.Add(Mapper.Map<PresenceOrUnavailability>(pres));
+                    list.Add(RuntimeMapper.Map<PresenceOrUnavailability>(pres));
                     return acc;
                 });
         }
@@ -88,7 +88,7 @@ namespace Persistency.Services.Implementations
         {
             return await Queryable.Where(e => slug == e.Foodtruck.Slug)
                 .OrderBy(p => p.StartTime)
-                .ProjectToListAsync<PresenceOrUnavailability>();
+                .ProjectToListAsync<PresenceOrUnavailability>(ConfigurationProvider);
         }
 
         public async Task<ResponseWithStatus<PresenceOrUnavailability>> ValidatePresenceOrUnavailability(string foodtruckSlug, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
@@ -102,7 +102,7 @@ namespace Persistency.Services.Implementations
                 return ex.MapToResponse();
             }
             
-            return Mapper.Map<PresenceOrUnavailability>(createModifyPresenceOrUnavailability).MapToResponse();
+            return RuntimeMapper.Map<PresenceOrUnavailability>(createModifyPresenceOrUnavailability).MapToResponse();
         } 
 
         public async Task<ResponseWithStatus<PresenceOrUnavailability>> ValidatePresenceOrUnavailability(Guid presenceId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
@@ -114,7 +114,7 @@ namespace Persistency.Services.Implementations
                     Description = "Entity not found",
                     Successful = false
                 };
-            Mapper.Map(createModifyPresenceOrUnavailability, entity);
+            RuntimeMapper.Map(createModifyPresenceOrUnavailability, entity);
 
             try
             {
@@ -125,7 +125,7 @@ namespace Persistency.Services.Implementations
                 return ex.MapToResponse();
             }
             
-            return Mapper.Map<PresenceOrUnavailability>(entity).MapToResponse();
+            return RuntimeMapper.Map<PresenceOrUnavailability>(entity).MapToResponse();
         } 
 
         private async Task PrivateValidatePresenceOrUnavailability(Guid foodtruckId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability, Guid? presenceId = null)
@@ -154,16 +154,16 @@ namespace Persistency.Services.Implementations
                     )
                 );
             if (collidingPresenceOrUnavailability != null)
-                throw new ValidationException<PresenceOrUnavailability>(Mapper.Map<PresenceOrUnavailability>(collidingPresenceOrUnavailability));
+                throw new ValidationException<PresenceOrUnavailability>(RuntimeMapper.Map<PresenceOrUnavailability>(collidingPresenceOrUnavailability));
         }
 
         public async Task<PresenceOrUnavailability> CreatePresenceOrUnavailability(string foodtruckSlug, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
-            var entity = Mapper.Map<Entity>(createModifyPresenceOrUnavailability);
+            var entity = RuntimeMapper.Map<Entity>(createModifyPresenceOrUnavailability);
             var foodtruckId = await FindFoodtruckId(foodtruckSlug);
             entity.FoodtruckId = foodtruckId;
             await PrivateValidatePresenceOrUnavailability(foodtruckId, createModifyPresenceOrUnavailability);
-            return Mapper.Map<PresenceOrUnavailability>(await CreateNewEntity(entity));
+            return RuntimeMapper.Map<PresenceOrUnavailability>(await CreateNewEntity(entity));
         }
 
         public async Task<PresenceOrUnavailability> ModifyPresenceOrUnavailability(Guid presenceId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
@@ -171,10 +171,10 @@ namespace Persistency.Services.Implementations
             var entity = await DbSet.FirstOrDefaultAsync(p => p.Id == presenceId);
             if (entity == null)
                 return null;
-            Mapper.Map(createModifyPresenceOrUnavailability, entity);
+            RuntimeMapper.Map(createModifyPresenceOrUnavailability, entity);
             await PrivateValidatePresenceOrUnavailability(entity.FoodtruckId, createModifyPresenceOrUnavailability, presenceId);
             await PersistencyContext.SaveChangesAsync();
-            return Mapper.Map<PresenceOrUnavailability>(entity);
+            return RuntimeMapper.Map<PresenceOrUnavailability>(entity);
         }
     }
 }

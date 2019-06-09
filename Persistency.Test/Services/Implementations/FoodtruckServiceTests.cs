@@ -39,7 +39,7 @@ namespace Persistency.Test.Services.Implementations
             foodtrucks.ForEach(f => f.Slug = slugHelper.GenerateSlug(f.Name));
             Context.Foodtrucks.AddRange(foodtrucks);
             Context.SaveChanges();
-            _foodtruckService = new FoodtruckService(Context, slugHelper);
+            _foodtruckService = new FoodtruckService(Context, Persistency.CreateMapper(), slugHelper);
         }
 
         private static readonly Func<double, double, Point> CreatePoint = ExtensionMethods.CreatePointWithSrid;

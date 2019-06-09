@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Persistency.Dtos;
@@ -11,11 +12,13 @@ namespace Persistency.Services.Implementations
 {
     internal class UserService : IUserService
     {
+        private readonly IRuntimeMapper _runtimeMapper;
         private readonly IInternalPersistencyContext _persistencyContext;
         private readonly RoleManager<FoodtruckerRole> _roleManager;
 
-        public UserService(IInternalPersistencyContext persistencyContext, RoleManager<FoodtruckerRole> roleManager)
+        public UserService(IInternalPersistencyContext persistencyContext, IRuntimeMapper runtimeMapper, RoleManager<FoodtruckerRole> roleManager)
         {
+            _runtimeMapper = runtimeMapper;
             _persistencyContext = persistencyContext;
             _roleManager = roleManager;
         }
@@ -36,7 +39,7 @@ namespace Persistency.Services.Implementations
                                               u.LastName.ToLower().Contains(a) ||
                                               u.Email.ToLower().Contains(a))
                 )
-                .ProjectToListAsync<User>();
+                .ProjectToListAsync<User>(_runtimeMapper.ConfigurationProvider);
         }
 
         private async Task<IList<Entity>> FindUserByMails(ICollection<string> mails) =>

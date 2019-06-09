@@ -91,7 +91,7 @@ namespace Persistency.Test.Services.Implementations
             foodtrucks.ForEach(f => f.Slug = slugHelper.GenerateSlug(f.Name));
             Context.Foodtrucks.AddRange(foodtrucks);
             Context.SaveChanges();
-            _presenceService = new PresenceOrUnavailabilityService(Context, new FoodtruckService(Context, new SlugHelper()));
+            _presenceService = new PresenceOrUnavailabilityService(Context, Persistency.CreateMapper(), new FoodtruckService(Context, Persistency.CreateMapper(), new SlugHelper()));
             _foodtruckWithoutLocation = Context.Foodtrucks.First(f => f.Name == "Foodtruck without location");
             _foodtruckWithoutLocationAndUnavailabilieties = Context.Foodtrucks.First(f => f.Name == "Foodtruck without location and unavailabilities");
         }

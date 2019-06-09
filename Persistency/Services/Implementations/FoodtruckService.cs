@@ -14,7 +14,7 @@ namespace Persistency.Services.Implementations
     {
         private readonly ISlugHelper _slugHelper;
 
-        public FoodtruckService(IInternalPersistencyContext persistencyContext, ISlugHelper slugHelper) : base(persistencyContext)
+        public FoodtruckService(IInternalPersistencyContext persistencyContext, IRuntimeMapper runtimeMapper, ISlugHelper slugHelper) : base(persistencyContext, runtimeMapper)
         {
             _slugHelper = slugHelper;
         }
@@ -30,7 +30,7 @@ namespace Persistency.Services.Implementations
                          AND ST_DWithin(""{nameof(Entity.DefaultLocation)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)"
                     , coordinate.Longitude, coordinate.Latitude, distance
                 )
-                .ProjectToListAsync<Foodtruck>();
+                .ProjectToListAsync<Foodtruck>(ConfigurationProvider);
 
         public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight) =>
             await PersistencyContext.Foodtrucks.FromSql(
@@ -40,13 +40,13 @@ namespace Persistency.Services.Implementations
                          AND ""{nameof(Entity.DefaultLocation)}"" && ST_MakeEnvelope(@p0, @p1, @p2, @p3, 4326)"
                     , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
                 )
-                .ProjectToListAsync<Foodtruck>();
+                .ProjectToListAsync<Foodtruck>(ConfigurationProvider);
 
         public async Task<Foodtruck> CreateNewFoodtruck(CreateModifyFoodtruck createNewFoodtruck)
         {
-            var entity = Mapper.Map<Entity>(createNewFoodtruck);
+            var entity = RuntimeMapper.Map<Entity>(createNewFoodtruck);
             entity.Slug = await GenerateSlug(createNewFoodtruck.Name);
-            return Mapper.Map<Foodtruck>(await CreateNewEntity(entity));
+            return RuntimeMapper.Map<Foodtruck>(await CreateNewEntity(entity));
         }
 
         public async Task<Foodtruck> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck)
@@ -54,9 +54,9 @@ namespace Persistency.Services.Implementations
             var entity = await DbSet.FirstAsync(f => f.Slug == slug);
             if (entity == null)
                 return null;
-            Mapper.Map(changeFoodtruck, entity);
+            RuntimeMapper.Map(changeFoodtruck, entity);
             await PersistencyContext.SaveChangesAsync();
-            return Mapper.Map<Foodtruck>(entity);
+            return RuntimeMapper.Map<Foodtruck>(entity);
         }
 
         public async Task MarkAsDeleted(string slug)
@@ -69,13 +69,13 @@ namespace Persistency.Services.Implementations
         }
 
         public async Task<Foodtruck> FindBySlug(string slug) =>
-            Mapper.Map<Foodtruck>(await DbSet.FirstOrDefaultAsync(f => f.Slug == slug));
+            RuntimeMapper.Map<Foodtruck>(await DbSet.FirstOrDefaultAsync(f => f.Slug == slug));
 
         public async Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs) =>
-            await DbSet.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>();
+            await DbSet.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>(ConfigurationProvider);
 
         public async Task<FoodtruckDetailed> FindBySlugDetailed(string slug) =>
-            Mapper.Map<FoodtruckDetailed>(
+            RuntimeMapper.Map<FoodtruckDetailed>(
                 await DbSet
                     .Include(f => f.Ownerships)
                     .ThenInclude(o => o.User)
