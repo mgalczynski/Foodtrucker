@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper" Version="8.1.0" />
+      <PackageReference Include="AutoMapper" Version="8.1.1" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.2.0" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="2.2.4" />

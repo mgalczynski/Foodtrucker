@@ -69,8 +69,8 @@ namespace Persistency
 
         internal static void InitializeMapper(IMapperConfigurationExpression mapper)
         {
-            Func<Dtos.Coordinate, Point> func = ExtensionMethods.ToDbPoint;
             mapper.CreateMap<Dtos.CreateModifyFoodtruck, Entities.Foodtruck>();
+            mapper.CreateMap<Entities.FoodtruckerUser, Dtos.User>();
             mapper.CreateMap<Entities.Foodtruck, Dtos.Foodtruck>();
             mapper.CreateMap<Entities.PresenceOrUnavailability, Dtos.PresenceOrUnavailability>();
             mapper.CreateMap<Dtos.CreateModifyPresenceOrUnavailability, Entities.PresenceOrUnavailability>();
