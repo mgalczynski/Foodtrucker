@@ -21,7 +21,7 @@ namespace Persistency.Services.Implementations
         }
 
         protected override DbSet<Entity> DbSet => PersistencyContext.PresencesOrUnavailabilities;
-        private IQueryable<Entity> Queryable => DbSet.Include(p => p.Foodtruck.Slug);
+        private IQueryable<Entity> Queryable => DbSet.Include(p => p.Foodtruck);
 
         private async Task<Guid> FindFoodtruckId(string foodtruckSlug) =>
             await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug) ?? throw new ArgumentException("Foodtruck not found");
@@ -101,13 +101,16 @@ namespace Persistency.Services.Implementations
             {
                 return ex.MapToResponse();
             }
-            
-            return RuntimeMapper.Map<PresenceOrUnavailability>(createModifyPresenceOrUnavailability).MapToResponse();
-        } 
+
+            return new ResponseWithStatus<PresenceOrUnavailability>
+            {
+                Successful = true
+            };
+        }
 
         public async Task<ResponseWithStatus<PresenceOrUnavailability>> ValidatePresenceOrUnavailability(Guid presenceId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
-            var entity = await DbSet.FirstOrDefaultAsync(p => p.Id == presenceId);
+            var entity = await Queryable.FirstOrDefaultAsync(p => p.Id == presenceId);
             if (entity == null)
                 return new ResponseWithStatus<PresenceOrUnavailability>
                 {
@@ -124,15 +127,20 @@ namespace Persistency.Services.Implementations
             {
                 return ex.MapToResponse();
             }
-            
-            return RuntimeMapper.Map<PresenceOrUnavailability>(entity).MapToResponse();
-        } 
+
+            return new ResponseWithStatus<PresenceOrUnavailability>
+            {
+                Successful = true
+            };
+        }
 
         private async Task PrivateValidatePresenceOrUnavailability(Guid foodtruckId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability, Guid? presenceId = null)
         {
             var startTime = createModifyPresenceOrUnavailability.StartTime;
+            if (createModifyPresenceOrUnavailability.EndTime != null && createModifyPresenceOrUnavailability.EndTime <= createModifyPresenceOrUnavailability.StartTime)
+                throw new ValidationException<PresenceOrUnavailability>("End time cannot be earlier rather than start time");
             var endTime = createModifyPresenceOrUnavailability.EndTime ?? DateTime.MaxValue.AddDays(-1);
-            var collidingPresenceOrUnavailability = await DbSet
+            var collidingPresenceOrUnavailability = await Queryable
                 .FirstOrDefaultAsync(p =>
                     p.FoodtruckId == foodtruckId &&
                     p.Id != presenceId &&

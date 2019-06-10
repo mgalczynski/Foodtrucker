@@ -1,7 +1,6 @@
-import classNames from 'classnames';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {dateFormat, timeFormat} from '../../components/Helpers';
+import {dateFormat, format, timeFormat} from '../../components/Helpers';
 import * as Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
 import './PresenceOrUnavailabilityForm.css';
@@ -16,7 +15,7 @@ import {
     FormControl,
     ControlLabel,
     Checkbox,
-    Radio
+    Radio, Alert
 } from 'react-bootstrap';
 import {prefix} from 'react-bootstrap/es/utils/bootstrapUtils';
 import {bindActionCreators} from 'redux';
@@ -25,6 +24,7 @@ import Select from 'react-select';
 import {REPORTER} from '../Permisions';
 import CloseButton from '../../components/CloseButton';
 import LocationPicker from './LocationPicker';
+import moment from 'moment';
 
 class PresenceForm extends Component {
     onSubmit = (e) => {
@@ -33,19 +33,24 @@ class PresenceForm extends Component {
     };
 
     render() {
-        const radioClassNames = classNames(null, {[prefix({bsClass: 'radio'}, 'inline')]: true});
         return this.props.isOpen ? <Modal show dialogClassName='presence-or-unavailability-form' bsSize='large'>
             <Modal.Header>
                 <CloseButton onClick={this.props.close}/>
                 {this.props.id === null ? 'Add new presence' : `Modify ${this.props.presenceOrUnavailability.title}`}
             </Modal.Header>
             <Modal.Body>
+                {this.props.reasonWhyNotValid &&
+                <Alert bsStyle="warning"><strong>{this.props.reasonWhyNotValid}</strong>
+                    {this.props.dtoWhyNotValid && ` ${this.props.dtoWhyNotValid.title} from: ${moment(this.props.dtoWhyNotValid.startTime).format(format)}${this.props.dtoWhyNotValid.endsWith === null ? '' : ' to: ' + moment(this.props.dtoWhyNotValid.endTime).format(format)}`}
+                </Alert>}
                 <Form onSubmit={this.onSubmit}>
                     <FormGroup controlId='isUnavailability'>
-                        <Radio inline title='Unavailability' checked={this.props.isUnavailability} onChange={e=>this.props.isUnavailabilityChanged(e.target.value)}>
+                        <Radio inline title='Unavailability' checked={this.props.isUnavailability}
+                               onChange={e => this.props.isUnavailabilityChanged(e.target.value)}>
                             Unavailability
                         </Radio>
-                        <Radio inline title='Unavailability' checked={!this.props.isUnavailability} onChange={e=>this.props.isUnavailabilityChanged(!e.target.value)}>
+                        <Radio inline title='Unavailability' checked={!this.props.isUnavailability}
+                               onChange={e => this.props.isUnavailabilityChanged(!e.target.value)}>
                             Presence
                         </Radio>
                     </FormGroup>
@@ -69,7 +74,7 @@ class PresenceForm extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Datetime
-                            value={this.props.presenceOrUnavailability.startTime}
+                            value={moment(this.props.presenceOrUnavailability.startTime)}
                             onChange={this.props.changeStartTime}
                             dateFormat={dateFormat}
                             timeFormat={timeFormat}
@@ -89,7 +94,7 @@ class PresenceForm extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Datetime
-                            value={this.props.presenceOrUnavailability.endTime}
+                            value={moment(this.props.presenceOrUnavailability.endTime)}
                             onChange={this.props.changeEndTime}
                             dateFormat={dateFormat}
                             timeFormat={timeFormat}
@@ -110,6 +115,7 @@ class PresenceForm extends Component {
                         <Button
                             type='submit'
                             className='presence-form-submit'
+                            active={this.props.canBeSend}
                         >
                             Save
                         </Button>

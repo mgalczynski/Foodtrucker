@@ -9,14 +9,7 @@ namespace Persistency.Services
             {
                 Dto = ex.Dto,
                 Successful = false,
-                Description = "Conflict with"
-            };
-
-        public static ResponseWithStatus<PresenceOrUnavailability> MapToResponse(this PresenceOrUnavailability result) =>
-            new ResponseWithStatus<PresenceOrUnavailability>
-            {
-                Dto = result,
-                Successful = true
+                Description = ex.Message
             };
     }
 }

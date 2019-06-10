@@ -17,7 +17,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
     [Route("api/foodtruckStaff/[controller]")]
     public class PresenceOrUnavailabilityController : BaseController
     {
-        private static readonly IImmutableSet<OwnershipType?> _canManipulateOwnerships =
+        private static readonly IImmutableSet<OwnershipType?> CanManipulateOwnerships =
             ImmutableHashSet.Create<OwnershipType?>(OwnershipType.ADMIN, OwnershipType.OWNER, OwnershipType.REPORTER);
 
         private readonly IFoodtruckOwnershipService _foodtruckOwnershipService;
@@ -37,7 +37,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
             createModifyPresenceOrUnavailability.Description == null;
 
         [HttpPost("{foodtruckSlug}")]
-        public async Task<ActionResult<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>>> CreatePresenceOrUnavailability([FromRoute] string foodtruckSlug, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        public async Task<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>> CreatePresenceOrUnavailability([FromRoute] string foodtruckSlug, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
             if (ValidateCreateModifyPresenceOrUnavailability(createModifyPresenceOrUnavailability))
                 return BadRequest();
@@ -48,7 +48,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 try
                 {
                     var user = await CurrentUser();
-                    if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, foodtruckSlug)))
+                    if (!CanManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, foodtruckSlug)))
                         return Forbid();
                     result = await _presenceService.CreatePresenceOrUnavailability(foodtruckSlug, createModifyPresenceOrUnavailability);
                     transaction.Commit();
@@ -69,11 +69,15 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 }
             }
 
-            return Ok(result.MapToResponse());
+            return Ok(new ResponseWithStatus<PresenceOrUnavailability>
+            {
+                Successful = true,
+                Dto = result
+            });
         }
 
-        [HttpPost("{foodtruckSlug}")]
-        public async Task<ActionResult<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>>> ValidatePresenceOrUnavailability([FromRoute] string foodtruckSlug, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        [HttpPost("{foodtruckSlug}/validate")]
+        public async Task<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>> ValidatePresenceOrUnavailability([FromRoute] string foodtruckSlug, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
             if (ValidateCreateModifyPresenceOrUnavailability(createModifyPresenceOrUnavailability))
                 return BadRequest();
@@ -84,7 +88,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 try
                 {
                     var user = await CurrentUser();
-                    if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, foodtruckSlug)))
+                    if (!CanManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndFoodtruck(user.Id, foodtruckSlug)))
                         return Forbid();
                     result = await _presenceService.ValidatePresenceOrUnavailability(foodtruckSlug, createModifyPresenceOrUnavailability);
                 }
@@ -97,8 +101,8 @@ namespace WebApplication.Controllers.FoodtruckStaff
             return result.Successful ? Ok(result) : UnprocessableEntity(result);
         }
 
-        [HttpPost("{foodtruckSlug}/{presenceId}")]
-        public async Task<ActionResult<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>>> ValidatePresenceOrUnavailability([FromRoute] Guid presenceId, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        [HttpPost("validate/{presenceId}")]
+        public async Task<ActionResult<ResponseWithStatus<PresenceOrUnavailability>>> ValidatePresenceOrUnavailability([FromRoute] Guid presenceId, [FromBody] CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
             if (ValidateCreateModifyPresenceOrUnavailability(createModifyPresenceOrUnavailability))
                 return BadRequest();
@@ -109,7 +113,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 try
                 {
                     var user = await CurrentUser();
-                    if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresenceOrUnavailability(user.Id, presenceId)))
+                    if (!CanManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresenceOrUnavailability(user.Id, presenceId)))
                         return Forbid();
                     result = await _presenceService.ValidatePresenceOrUnavailability(presenceId, createModifyPresenceOrUnavailability);
                     transaction.Commit();
@@ -136,7 +140,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
                 try
                 {
                     var user = await CurrentUser();
-                    if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresenceOrUnavailability(user.Id, presenceId)))
+                    if (!CanManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresenceOrUnavailability(user.Id, presenceId)))
                         return Forbid();
                     result = await _presenceService.ModifyPresenceOrUnavailability(presenceId, createModifyPresenceOrUnavailability);
                     transaction.Commit();
@@ -150,7 +154,6 @@ namespace WebApplication.Controllers.FoodtruckStaff
 
             return Ok(new ResponseWithStatus<PresenceOrUnavailability>
             {
-                Dto = result,
                 Successful = true
             });
         }
@@ -161,7 +164,7 @@ namespace WebApplication.Controllers.FoodtruckStaff
             using (var transaction = await Transaction())
             {
                 var user = await CurrentUser();
-                if (!_canManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresenceOrUnavailability(user.Id, presenceId)))
+                if (!CanManipulateOwnerships.Contains(await _foodtruckOwnershipService.FindTypeByUserAndPresenceOrUnavailability(user.Id, presenceId)))
                     return Forbid();
                 await _presenceService.RemoveById(presenceId);
                 transaction.Commit();

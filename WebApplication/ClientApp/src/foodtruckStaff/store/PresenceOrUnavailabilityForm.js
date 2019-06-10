@@ -12,6 +12,8 @@ const endTimeChanged = 'staff/presenceOrUnavailabilityForm/END_TIME_CHANGED';
 const shouldHasEndTimeChanged = 'staff/presenceOrUnavailabilityForm/SHOULD_HAS_END_TIME_CHANGED';
 const requestSent = 'staff/presenceOrUnavailabilityForm/REQUEST_SENT';
 const isUnavailabilityChanged = 'staff/presenceOrUnavailabilityForm/IS_UNAVAILABILITY_CHANGED';
+const canBeSendChanged = 'staff/presenceOrUnavailabilityForm/CAN_BE_SEND_CHANGED';
+const validationChanged = 'staff/presenceOrUnavailabilityForm/VALIDATION_CHANGED';
 
 const initialState = {
     foodtruckSlug: null,
@@ -20,33 +22,74 @@ const initialState = {
     isOpen: false,
     shouldHasEndTime: false,
     isUnavailability: false,
+    canBeSend: false,
+    reasonWhyNotValid: null,
+    dtoWhyNotValid: null,
     presenceOrUnavailability: {
         title: '',
         description: '',
         startTime: null,
         endTime: null,
         location: null,
-    }
+    },
 };
 
+const serializePresence = state =>
+    JSON.stringify({
+        ...state.presenceOrUnavailability,
+        endTime: state.shouldHasEndTime ? state.presenceOrUnavailability.endTime : null
+    });
+
+const preCheck = state =>
+    state.presenceOrUnavailability.title.length === 0 ||
+    state.presenceOrUnavailability.description.length === 0 ||
+    state.presenceOrUnavailability.startTime === null ||
+    state.presenceOrUnavailability.location === null ||
+    (state.shouldHasEndTime && state.presenceOrUnavailability.endTime == null);
+
 export const actionCreators = {
-    isUnavailabilityChanged: (value) => async (dispatch) => {
+    validate: async (dispatch, getState) => {
+        const state = getState().presenceOrUnavailabilityForm;
+        const shouldUpdate = state.id !== null;
+        console.log(state);
+        if (preCheck(state)) {
+            dispatch({type: canBeSendChanged, value: false});
+            return;
+        }
+        const result = await (await fetch(shouldUpdate ? `api${staffPrefix}/presenceOrUnavailability/validate/${state.id}` : `api${staffPrefix}/presenceOrUnavailability/${state.foodtruckSlug}/validate`,
+            {
+                credentials: 'same-origin',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: serializePresence(state),
+            })).json();
+        dispatch({type: validationChanged, result});
+    },
+    isUnavailabilityChanged: (value) => async (dispatch, getState) => {
         dispatch({type: isUnavailabilityChanged, value});
+        await actionCreators.validate(dispatch, getState);
     },
-    changeTitle: (title) => async (dispatch) => {
+    changeTitle: (title) => async (dispatch, getState) => {
         dispatch({type: titleChanged, title});
+        await actionCreators.validate(dispatch, getState);
     },
-    changeDescription: (description) => async (dispatch) => {
+    changeDescription: (description) => async (dispatch, getState) => {
         dispatch({type: descriptionChanged, description});
+        await actionCreators.validate(dispatch, getState);
     },
-    changeStartTime: (startTime) => async (dispatch) => {
+    changeStartTime: (startTime) => async (dispatch, getState) => {
         dispatch({type: startTimeChanged, startTime});
+        await actionCreators.validate(dispatch, getState);
     },
-    changeEndTime: (endTime) => async (dispatch) => {
+    changeEndTime: (endTime) => async (dispatch, getState) => {
         dispatch({type: endTimeChanged, endTime});
+        await actionCreators.validate(dispatch, getState);
     },
-    changeLocation: (location) => async (dispatch) => {
+    changeLocation: (location) => async (dispatch, getState) => {
         dispatch({...location, type: locationChanged});
+        await actionCreators.validate(dispatch, getState);
     },
     open: (foodtruckSlug) => async (dispatch) => {
         dispatch({type: open, foodtruckSlug});
@@ -62,30 +105,24 @@ export const actionCreators = {
     close: () => async (dispatch) => {
         dispatch({type: close});
     },
-    changeShouldHasEndTime: (value) => async (dispatch) => {
+    changeShouldHasEndTime: (value) => async (dispatch, getState) => {
         dispatch({type: shouldHasEndTimeChanged, value});
+        await actionCreators.validate(dispatch, getState);
     },
     save: () => async (dispatch, getState) => {
         const state = getState().presenceOrUnavailabilityForm;
         const shouldUpdate = state.id !== null;
-        if (state.presence.title.length === 0 ||
-            state.presence.description.length === 0 ||
-            state.presence.startTime === null ||
-            state.presence.location === null ||
-            (state.shouldHasEndTime && state.presence.endTime == null))
+        if (preCheck(state))
             return;
         dispatch({type: requestSent});
-        const response = await fetch(shouldUpdate ? `api${staffPrefix}/presence/${state.id}` : `api${staffPrefix}/presence/${state.foodtruckSlug}`,
+        const response = await fetch(shouldUpdate ? `api${staffPrefix}/presenceOrUnavailability/${state.id}` : `api${staffPrefix}/presenceOrUnavailability/${state.foodtruckSlug}`,
             {
                 credentials: 'same-origin',
                 method: shouldUpdate ? 'PUT' : 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    ...state.presence,
-                    endTime: state.shouldHasEndTime ? state.presence.endTime : null
-                })
+                body: serializePresence(state),
             });
         await Foodtruck.loadFoodtruck(state.foodtruckSlug, true)(dispatch, getState);
         dispatch({type: close});
@@ -96,6 +133,10 @@ export const reducer = (state, action) => {
     state = state || initialState;
 
     switch (action.type) {
+        case canBeSendChanged:
+            return {...state, canBeSend: action.value};
+        case validationChanged:
+            return {...state, dtoWhyNotValid: action.result.dto, reasonWhyNotValid: action.result.description};
         case open:
             return {...state, isOpen: true, foodtruckSlug: action.foodtruckSlug};
         case openWithPresenceOrUnavailability:
