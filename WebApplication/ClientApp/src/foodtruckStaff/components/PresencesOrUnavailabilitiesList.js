@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Button} from 'react-bootstrap';
 import {format} from '../../components/Helpers';
-import {Table} from 'react-bootstrap';
+import {Table, Checkbox} from 'react-bootstrap';
 import moment from 'moment';
 
 const PresencesOrUnavailabilitiesList = props => (
@@ -13,6 +13,7 @@ const PresencesOrUnavailabilitiesList = props => (
             <td>End time</td>
             <td>Title</td>
             <td>Description</td>
+            <td>Is unavailability</td>
             <td>Modify</td>
             <td>Remove</td>
         </tr>
@@ -24,6 +25,7 @@ const PresencesOrUnavailabilitiesList = props => (
                 <td>{p.endTime == null ? '----' : moment(p.endTime).format(format)}</td>
                 <td>{p.title}</td>
                 <td>{p.description}</td>
+                <td><Checkbox checked={p.location===null} disabled /></td>
                 <td>
                     <Button
                         variant='primary'

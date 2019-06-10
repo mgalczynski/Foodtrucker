@@ -11,6 +11,7 @@ const startTimeChanged = 'staff/presenceOrUnavailabilityForm/START_TIME_CHANGED'
 const endTimeChanged = 'staff/presenceOrUnavailabilityForm/END_TIME_CHANGED';
 const shouldHasEndTimeChanged = 'staff/presenceOrUnavailabilityForm/SHOULD_HAS_END_TIME_CHANGED';
 const requestSent = 'staff/presenceOrUnavailabilityForm/REQUEST_SENT';
+const isUnavailabilityChanged = 'staff/presenceOrUnavailabilityForm/IS_UNAVAILABILITY_CHANGED';
 
 const initialState = {
     foodtruckSlug: null,
@@ -18,6 +19,7 @@ const initialState = {
     requestSent: false,
     isOpen: false,
     shouldHasEndTime: false,
+    isUnavailability: false,
     presenceOrUnavailability: {
         title: '',
         description: '',
@@ -28,6 +30,9 @@ const initialState = {
 };
 
 export const actionCreators = {
+    isUnavailabilityChanged: (value) => async (dispatch) => {
+        dispatch({type: isUnavailabilityChanged, value});
+    },
     changeTitle: (title) => async (dispatch) => {
         dispatch({type: titleChanged, title});
     },
@@ -47,7 +52,12 @@ export const actionCreators = {
         dispatch({type: open, foodtruckSlug});
     },
     openWithPresenceOrUnavailability: (presenceOrUnavailability) => async (dispatch) => {
-        dispatch({type: openWithPresenceOrUnavailability, presenceOrUnavailability, id: presenceOrUnavailability.id, foodtruckSlug: presenceOrUnavailability.foodtruckSlug});
+        dispatch({
+            type: openWithPresenceOrUnavailability,
+            presenceOrUnavailability,
+            id: presenceOrUnavailability.id,
+            foodtruckSlug: presenceOrUnavailability.foodtruckSlug
+        });
     },
     close: () => async (dispatch) => {
         dispatch({type: close});
@@ -95,12 +105,13 @@ export const reducer = (state, action) => {
                 foodtruckSlug: action.foodtruckSlug,
                 id: action.id,
                 shouldHasEndTime: action.presenceOrUnavailability.endTime !== null,
+                isUnavailability: action.presenceOrUnavailability.location === null,
                 presenceOrUnavailability: {
                     title: action.presenceOrUnavailability.title,
                     description: action.presenceOrUnavailability.description,
                     startTime: action.presenceOrUnavailability.startTime,
                     endTime: action.presenceOrUnavailability.endTime,
-                    location: {
+                    location: action.presenceOrUnavailability.location === null ? null : {
                         latitude: action.presenceOrUnavailability.location.latitude,
                         longitude: action.presenceOrUnavailability.location.longitude
                     }
@@ -111,9 +122,15 @@ export const reducer = (state, action) => {
         case titleChanged:
             return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, title: action.title}};
         case descriptionChanged:
-            return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, description: action.description}};
+            return {
+                ...state,
+                presenceOrUnavailability: {...state.presenceOrUnavailability, description: action.description}
+            };
         case startTimeChanged:
-            return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, startTime: action.startTime}};
+            return {
+                ...state,
+                presenceOrUnavailability: {...state.presenceOrUnavailability, startTime: action.startTime}
+            };
         case endTimeChanged:
             return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, endTime: action.endTime}};
         case shouldHasEndTimeChanged:
@@ -125,6 +142,11 @@ export const reducer = (state, action) => {
                     ...state.presenceOrUnavailability,
                     location: {latitude: action.latitude, longitude: action.longitude}
                 }
+            };
+        case isUnavailabilityChanged:
+            return {
+                ...state,
+                isUnavailability: action.value,
             };
         case requestSent:
             return {...state, requestSent: true};

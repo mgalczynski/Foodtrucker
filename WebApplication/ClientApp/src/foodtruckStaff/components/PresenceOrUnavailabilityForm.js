@@ -1,10 +1,24 @@
+import classNames from 'classnames';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {dateFormat, timeFormat} from '../../components/Helpers';
 import * as Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
 import './PresenceOrUnavailabilityForm.css';
-import {Modal, Grid, Row, Col, Button, Form, FormGroup, FormControl, ControlLabel, Checkbox} from 'react-bootstrap';
+import {
+    Modal,
+    Grid,
+    Row,
+    Col,
+    Button,
+    Form,
+    FormGroup,
+    FormControl,
+    ControlLabel,
+    Checkbox,
+    Radio
+} from 'react-bootstrap';
+import {prefix} from 'react-bootstrap/es/utils/bootstrapUtils';
 import {bindActionCreators} from 'redux';
 import {actionCreators} from '../store/PresenceOrUnavailabilityForm';
 import Select from 'react-select';
@@ -19,13 +33,22 @@ class PresenceForm extends Component {
     };
 
     render() {
-        return this.props.isOpen ? <Modal show dialogClassName='presence-form' bsSize='large'>
+        const radioClassNames = classNames(null, {[prefix({bsClass: 'radio'}, 'inline')]: true});
+        return this.props.isOpen ? <Modal show dialogClassName='presence-or-unavailability-form' bsSize='large'>
             <Modal.Header>
                 <CloseButton onClick={this.props.close}/>
                 {this.props.id === null ? 'Add new presence' : `Modify ${this.props.presenceOrUnavailability.title}`}
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={this.onSubmit}>
+                    <FormGroup controlId='isUnavailability'>
+                        <Radio inline title='Unavailability' checked={this.props.isUnavailability} onChange={e=>this.props.isUnavailabilityChanged(e.target.value)}>
+                            Unavailability
+                        </Radio>
+                        <Radio inline title='Unavailability' checked={!this.props.isUnavailability} onChange={e=>this.props.isUnavailabilityChanged(!e.target.value)}>
+                            Presence
+                        </Radio>
+                    </FormGroup>
                     <FormGroup controlId='title'>
                         <ControlLabel>Short name</ControlLabel>
                         <FormControl
@@ -77,7 +100,7 @@ class PresenceForm extends Component {
                         />
                     </FormGroup>
                     <LocationPicker
-                        disabled={this.props.requestSent}
+                        disabled={this.props.requestSent || this.props.isUnavailability}
                         position={this.props.position}
                         mapId='presence-form-map'
                         selection={this.props.presenceOrUnavailability.location}

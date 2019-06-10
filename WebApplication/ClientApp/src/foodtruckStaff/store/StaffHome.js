@@ -7,15 +7,17 @@ const foodtrucksChanged = 'staff/home/FOODTRUCKS_CHANGED';
 const initialState = {
     foodtrucks: [],
     query: '',
-    filteredFoodtrucks: []
+    filteredFoodtrucks: [],
+    allAreVisible: true,
 };
 
 const mapQueryToArgs = (query) =>
     query.split(' ').filter(v => v.length > 0).map(v => v.toLowerCase());
 
-const filter = (foodtrucks, args) =>
-    (args.length === 0 ? foodtrucks : foodtrucks.filter(f => args.some(a => f.foodtruck.name.toLowerCase().includes(a) || f.foodtruck.displayName.toLowerCase().includes(a))))
-        .slice(0, 10);
+const filter = (foodtrucks, args) => {
+    const visibleFoodtrucks = (args.length === 0 ? foodtrucks : foodtrucks.filter(f => args.some(a => f.foodtruck.name.toLowerCase().includes(a) || f.foodtruck.displayName.toLowerCase().includes(a))));
+    return {filteredFoodtrucks: visibleFoodtrucks.slice(0, 10), allAreVisible: visibleFoodtrucks.length <= 10};
+};
 
 const getQuery = (search) =>
     decodeURIComponent(new URLSearchParams(search).get('q') || '');
@@ -53,14 +55,14 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 foodtrucks: action.foodtrucks,
-                filteredFoodtrucks: filter(action.foodtrucks, mapQueryToArgs(state.query))
+                ...filter(action.foodtrucks, mapQueryToArgs(state.query)),
             };
         case urlChanged: {
             const query = getQuery(action.payload.search);
             return {
                 ...state,
                 query,
-                filteredFoodtrucks: filter(state.foodtrucks, mapQueryToArgs(query))
+                ...filter(state.foodtrucks, mapQueryToArgs(query)),
             };
         }
         default:
