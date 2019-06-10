@@ -5,6 +5,7 @@ import Loader from 'react-loader'
 import SmallMap from './SmallMap';
 import CloseButton from './CloseButton';
 import { format } from './Helpers';
+import moment from 'moment';
 
 export default class PresenceOrUnavailability extends Component {
     render() {
@@ -26,8 +27,8 @@ export default class PresenceOrUnavailability extends Component {
                 <Modal.Body>
                     <div className='presence-or-unavailability-details'>
                         <h5>{this.props.presenceOrUnavailability.description}</h5>
-                        Start time: {this.props.presenceOrUnavailability.startTime.format(format)}<br/>
-                        End time: {this.props.presenceOrUnavailability.endTime === null ? '-----' : this.props.presenceOrUnavailability.startTime.format(format)}
+                        Start time: {moment(this.props.presenceOrUnavailability.startTime).format(format)}<br/>
+                        End time: {this.props.presenceOrUnavailability.endTime === null ? '-----' : moment(this.props.presenceOrUnavailability.startTime).format(format)}
                     </div>
                     <SmallMap
                         position={this.props.position}

@@ -1,5 +1,4 @@
-﻿import {mapPresenceOrUnavailability} from '../../store/Helpers';
-import {positionWatch, staffPrefix} from '../../Helpers';
+﻿import {positionWatch, staffPrefix} from '../../Helpers';
 import {actionCreators as StaffHome} from './StaffHome';
 import {actionCreators as PresenceOrUnavailabilityForm} from './PresenceOrUnavailabilityForm';
 import {open} from './AddNewOwnership';
@@ -101,7 +100,7 @@ export const reducer = (state, action) => {
 
     switch (action.type) {
         case foodtruckChanged:
-            return {...state, foodtruck: {...action.foodtruck, presencesOrUnavailabilities: action.foodtruck.presencesOrUnavailabilities.map(mapPresenceOrUnavailability())}};
+            return {...state, foodtruck: {...action.foodtruck, presencesOrUnavailabilities: action.foodtruck.presencesOrUnavailabilities}};
         case resetState:
             return initialState;
         case positionChanged:

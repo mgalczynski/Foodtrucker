@@ -1,5 +1,4 @@
-﻿import { mapPresenceOrUnavailability } from './Helpers';
-const foodtruckChanged = 'foodtruck/FOODTRUCK_CHANGED';
+﻿const foodtruckChanged = 'foodtruck/FOODTRUCK_CHANGED';
 const resetState = 'foodtruck/RESET_STATE';
 
 const initialState = {
@@ -26,7 +25,7 @@ export const reducer = (state, action) => {
 
     switch (action.type) {
         case foodtruckChanged:
-            return { ...state, foodtruck: action.foodtruck, presencesOrUnavailabilities: action.presencesOrUnavailabilities.map(mapPresenceOrUnavailability) };
+            return { ...state, foodtruck: action.foodtruck, presencesOrUnavailabilities: action.presencesOrUnavailabilities };
         case resetState:
             return initialState;
         default:

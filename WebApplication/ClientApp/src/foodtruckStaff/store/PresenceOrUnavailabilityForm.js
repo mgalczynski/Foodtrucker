@@ -94,35 +94,35 @@ export const reducer = (state, action) => {
                 isOpen: true,
                 foodtruckSlug: action.foodtruckSlug,
                 id: action.id,
-                shouldHasEndTime: action.presence.endTime !== null,
-                presence: {
-                    title: action.presence.title,
-                    description: action.presence.description,
-                    startTime: action.presence.startTime,
-                    endTime: action.presence.endTime,
+                shouldHasEndTime: action.presenceOrUnavailability.endTime !== null,
+                presenceOrUnavailability: {
+                    title: action.presenceOrUnavailability.title,
+                    description: action.presenceOrUnavailability.description,
+                    startTime: action.presenceOrUnavailability.startTime,
+                    endTime: action.presenceOrUnavailability.endTime,
                     location: {
-                        latitude: action.presence.location.latitude,
-                        longitude: action.presence.location.longitude
+                        latitude: action.presenceOrUnavailability.location.latitude,
+                        longitude: action.presenceOrUnavailability.location.longitude
                     }
                 }
             };
         case close:
             return initialState;
         case titleChanged:
-            return {...state, presence: {...state.presence, title: action.title}};
+            return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, title: action.title}};
         case descriptionChanged:
-            return {...state, presence: {...state.presence, description: action.description}};
+            return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, description: action.description}};
         case startTimeChanged:
-            return {...state, presence: {...state.presenceOrUnavailability, startTime: action.startTime}};
+            return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, startTime: action.startTime}};
         case endTimeChanged:
-            return {...state, presence: {...state.presence, endTime: action.endTime}};
+            return {...state, presenceOrUnavailability: {...state.presenceOrUnavailability, endTime: action.endTime}};
         case shouldHasEndTimeChanged:
             return {...state, shouldHasEndTime: action.value};
         case locationChanged:
             return {
                 ...state,
-                presence: {
-                    ...state.presence,
+                presenceOrUnavailability: {
+                    ...state.presenceOrUnavailability,
                     location: {latitude: action.latitude, longitude: action.longitude}
                 }
             };

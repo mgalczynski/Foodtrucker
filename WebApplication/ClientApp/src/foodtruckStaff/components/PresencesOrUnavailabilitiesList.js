@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {Button} from 'react-bootstrap';
 import {format} from '../../components/Helpers';
 import {Table} from 'react-bootstrap';
+import moment from 'moment';
 
 const PresencesOrUnavailabilitiesList = props => (
     <Table striped bordered hover>
@@ -19,14 +20,14 @@ const PresencesOrUnavailabilitiesList = props => (
         <tbody>
         {props.presencesOrUnavailabilities.map(p =>
             <tr key={p.id}>
-                <td>{p.startTime.format(format)}</td>
-                <td>{p.endTime == null ? '----' : p.endTime.format(format)}</td>
+                <td>{moment(p.startTime).format(format)}</td>
+                <td>{p.endTime == null ? '----' : moment(p.endTime).format(format)}</td>
                 <td>{p.title}</td>
                 <td>{p.description}</td>
                 <td>
                     <Button
                         variant='primary'
-                        onClick={() => props.modifyPresence(p)}
+                        onClick={() => props.modifyPresenceOrUnavailability(p)}
                     >
                         Modify
                     </Button>
@@ -34,7 +35,7 @@ const PresencesOrUnavailabilitiesList = props => (
                 <td>
                     <Button
                         variant='primary'
-                        onClick={() => props.removePresence(p.id)}
+                        onClick={() => props.removePresenceOrUnavailability(p.id)}
                     >
                         Remove
                     </Button>

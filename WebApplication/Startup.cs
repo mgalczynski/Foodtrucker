@@ -41,12 +41,20 @@ namespace WebApplication
             Persistency.Persistency.RegisterPersistency(services);
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
             services.ConfigureApplicationCookie(o =>
+            {
+                o.ExpireTimeSpan = TimeSpan.FromDays(3);
+                o.SlidingExpiration = true;
                 o.Events.OnRedirectToLogin = e =>
                 {
                     e.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
                     return Task.CompletedTask;
-                }
-            );
+                };
+                o.Events.OnRedirectToAccessDenied = e =>
+                {
+                    e.Response.StatusCode = (int) HttpStatusCode.Forbidden;
+                    return Task.CompletedTask;
+                };
+            });
             return services.BuildServiceProvider();
         }
 

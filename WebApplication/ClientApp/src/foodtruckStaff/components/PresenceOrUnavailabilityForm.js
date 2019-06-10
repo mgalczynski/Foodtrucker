@@ -19,10 +19,10 @@ class PresenceForm extends Component {
     };
 
     render() {
-        return <Modal show={this.props.isOpen} dialogClassName='presence-form' bsSize='large'>
+        return this.props.isOpen ? <Modal show dialogClassName='presence-form' bsSize='large'>
             <Modal.Header>
                 <CloseButton onClick={this.props.close}/>
-                {this.props.id === null ? 'Add new presence' : `Modify ${this.props.presence.title}`}
+                {this.props.id === null ? 'Add new presence' : `Modify ${this.props.presenceOrUnavailability.title}`}
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={this.onSubmit}>
@@ -31,7 +31,7 @@ class PresenceForm extends Component {
                         <FormControl
                             disabled={this.props.requestSent}
                             placeholder='Title'
-                            value={this.props.presence.title}
+                            value={this.props.presenceOrUnavailability.title}
                             onChange={e => this.props.changeTitle(e.target.value)}
                         />
                     </FormGroup>
@@ -40,13 +40,13 @@ class PresenceForm extends Component {
                         <FormControl
                             disabled={this.props.requestSent}
                             placeholder='Description'
-                            value={this.props.presence.description}
+                            value={this.props.presenceOrUnavailability.description}
                             onChange={e => this.props.changeDescription(e.target.value)}
                         />
                     </FormGroup>
                     <FormGroup>
                         <Datetime
-                            value={this.props.presence.startTime}
+                            value={this.props.presenceOrUnavailability.startTime}
                             onChange={this.props.changeStartTime}
                             dateFormat={dateFormat}
                             timeFormat={timeFormat}
@@ -66,7 +66,7 @@ class PresenceForm extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Datetime
-                            value={this.props.presence.endTime}
+                            value={this.props.presenceOrUnavailability.endTime}
                             onChange={this.props.changeEndTime}
                             dateFormat={dateFormat}
                             timeFormat={timeFormat}
@@ -80,7 +80,7 @@ class PresenceForm extends Component {
                         disabled={this.props.requestSent}
                         position={this.props.position}
                         mapId='presence-form-map'
-                        selection={this.props.presence.location}
+                        selection={this.props.presenceOrUnavailability.location}
                         onSelectionChanged={this.props.changeLocation}
                     />
                     <FormGroup className='presence-form-submit-form-group'>
@@ -93,11 +93,11 @@ class PresenceForm extends Component {
                     </FormGroup>
                 </Form>
             </Modal.Body>
-        </Modal>;
+        </Modal> : null;
     }
 }
 
 export default connect(
-    (state, ownProps) => ({...state.presenceForm, position: ownProps.position || null}),
+    (state, ownProps) => ({...state.presenceOrUnavailabilityForm, position: ownProps.position || null}),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(PresenceForm);

@@ -10,6 +10,7 @@ import Loader from 'react-loader';
 import SmallMap from './SmallMap';
 import CloseButton from './CloseButton';
 import PresenceOrUnavailability from './PresenceOrUnavailability';
+import moment from 'moment';
 
 class Foodtruck extends Component {
     componentDidMount = () => {
@@ -60,7 +61,7 @@ class Foodtruck extends Component {
                                         to={`/foodtruck/${this.props.foodtruck.slug}/${p.id}`}
                                     >
                                         {p.title} Starts
-                                        on: {p.startTime.format(format)}{p.endTime !== null && `, ends on: ${p.endTime.format(format)}`}
+                                        on: {moment(p.startTime).format(format)}{p.endTime !== null && `, ends on: ${moment(p.endTime).format(format)}`}
                                     </Link>
                                 )}
                             </div>

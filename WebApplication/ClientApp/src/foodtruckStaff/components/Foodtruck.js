@@ -11,7 +11,7 @@ import SmallMap from '../../components/SmallMap';
 import PresencesOrUnavailabilitiesList from './PresencesOrUnavailabilitiesList';
 import './Foodtruck.css';
 import AddNewOwnership from './AddNewOwnership';
-import PresenceForm from './PresenceOrUnavailabilityForm';
+import PresenceOrUnavailabilityForm from './PresenceOrUnavailabilityForm';
 
 
 class Foodtruck extends Component {
@@ -57,12 +57,12 @@ class Foodtruck extends Component {
                 ownershipsList={ownershipsList}
                 foodtruckSlug={this.props.foodtruck.slug}
             />
-            <PresenceForm
+            <PresenceOrUnavailabilityForm
                 position={this.props.position}
             />
             {/*<Button onClick={this.props.openNewPresenceModal}>Modify foodtruck</Button>*/}
             <Button onClick={this.props.openNewOwnershipModal}>Add new ownership</Button>
-            <Button onClick={this.props.openNewPresenceModal}>Add new presence</Button>
+            <Button onClick={this.props.openNewPresenceOrUnavailabilityModal}>Add new presence</Button>
             <Table striped bordered hover>
                 <thead>
                 <tr>
@@ -115,8 +115,8 @@ class Foodtruck extends Component {
             </Table>
             <PresencesOrUnavailabilitiesList
                 presencesOrUnavailabilities={this.props.foodtruck.presencesOrUnavailabilities}
-                modifyPresence={this.props.openModifyPresenceModal}
-                removePresence={this.props.removePresence}
+                modifyPresenceOrUnavailability={this.props.openModifyPresenceOrUnavailabilityModal}
+                removePresenceOrUnavailability={this.props.removePresenceOrUnavailability}
             />
         </div>;
     }
