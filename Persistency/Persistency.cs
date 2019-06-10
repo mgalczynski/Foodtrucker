@@ -74,7 +74,11 @@ namespace Persistency
         {
             mapper.CreateMap<Entities.FoodtruckOwnership, Dtos.FoodtruckWithOwnership>();
             mapper.CreateMap<Entities.FoodtruckOwnership, Dtos.Ownership>();
-            mapper.CreateMap<Entities.Foodtruck, Dtos.FoodtruckDetailed>();
+            mapper.CreateMap<Entities.Foodtruck, Dtos.FoodtruckDetailed>()
+                .ForMember(dest => dest.PresencesOrUnavailabilities,
+                    opt => opt.MapFrom(source => source.PresencesOrUnavailabilities.OrderBy(p=>p.StartTime)))
+                .ForMember(dest => dest.Ownerships,
+                    opt => opt.MapFrom(source => source.Ownerships.OrderBy(p=>Tuple.Create(p.Type, p.User.LastName))));
             mapper.CreateMap<Dtos.CreateModifyFoodtruck, Entities.Foodtruck>();
             mapper.CreateMap<Entities.FoodtruckerUser, Dtos.User>();
             mapper.CreateMap<Entities.Foodtruck, Dtos.Foodtruck>();
