@@ -72,6 +72,7 @@ namespace Persistency
 
         private static void InitializeMapper(IMapperConfigurationExpression mapper)
         {
+            mapper.CreateMap<Entities.FoodtruckOwnership, Dtos.FoodtruckWithOwnership>();
             mapper.CreateMap<Dtos.CreateModifyFoodtruck, Entities.Foodtruck>();
             mapper.CreateMap<Entities.FoodtruckerUser, Dtos.User>();
             mapper.CreateMap<Entities.Foodtruck, Dtos.Foodtruck>();

@@ -16,7 +16,7 @@ class Register extends Component {
             <div>
                 <form onSubmit={this.submit}>
                     <FormGroup
-                        controlId='formBasicText'
+                        controlId='given-name'
                     >
                         <ControlLabel>First name</ControlLabel>
                         <FormControl
@@ -30,7 +30,7 @@ class Register extends Component {
                         <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
-                        controlId='formBasicText'
+                        controlId='family-name'
                     >
                         <ControlLabel>Last name</ControlLabel>
                         <FormControl
@@ -44,7 +44,7 @@ class Register extends Component {
                         <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
-                        controlId='formBasicText'
+                        controlId='email'
                     >
                         <ControlLabel>Email</ControlLabel>
                         <FormControl
@@ -58,7 +58,7 @@ class Register extends Component {
                         <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
-                        controlId='formBasicText'
+                        controlId='password'
                     >
                         <ControlLabel>Password</ControlLabel>
                         <FormControl

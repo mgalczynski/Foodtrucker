@@ -16,7 +16,7 @@ class Login extends Component {
                 <form onSubmit={this.submit}>
                     {this.props.failed && <Alert bsStyle='danger'>Wrong user or password</Alert>}
                     <FormGroup
-                        controlId='formBasicText'
+                        controlId='email'
                     >
                         <ControlLabel>Email</ControlLabel>
                         <FormControl
@@ -30,7 +30,7 @@ class Login extends Component {
                         <FormControl.Feedback />
                     </FormGroup>
                     <FormGroup
-                        controlId='formBasicText'
+                        controlId='password'
                     >
                         <ControlLabel>Password</ControlLabel>
                         <FormControl
