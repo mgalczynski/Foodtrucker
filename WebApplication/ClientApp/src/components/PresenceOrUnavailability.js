@@ -27,15 +27,17 @@ export default class PresenceOrUnavailability extends Component {
                 <Modal.Body>
                     <div className='presence-or-unavailability-details'>
                         <h5>{this.props.presenceOrUnavailability.description}</h5>
-                        Start time: {moment(this.props.presenceOrUnavailability.startTime).format(format)}<br/>
-                        End time: {this.props.presenceOrUnavailability.endTime === null ? '-----' : moment(this.props.presenceOrUnavailability.startTime).format(format)}
+                        Start time: {moment.utc(this.props.presenceOrUnavailability.startTime).local().format(format)}<br/>
+                        End time: {this.props.presenceOrUnavailability.endTime === null ? '-----' : moment.utc(this.props.presenceOrUnavailability.startTime).local().format(format)}
                     </div>
-                    <SmallMap
-                        position={this.props.position}
-                        latitude={this.props.presenceOrUnavailability.location.latitude}
-                        longitude={this.props.presenceOrUnavailability.location.longitude}
-                        mapId='presence-or-unavailability-map'
-                    />
+                    {this.props.presenceOrUnavailability.location &&
+                        <SmallMap
+                            position={this.props.position}
+                            latitude={this.props.presenceOrUnavailability.location.latitude}
+                            longitude={this.props.presenceOrUnavailability.location.longitude}
+                            mapId='presence-or-unavailability-map'
+                        />
+                    }
                 </Modal.Body>
             </Modal>;
     }

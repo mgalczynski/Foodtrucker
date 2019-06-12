@@ -2,8 +2,10 @@
 import {actionCreators as StaffHome} from './StaffHome';
 import {actionCreators as PresenceOrUnavailabilityForm} from './PresenceOrUnavailabilityForm';
 import {open} from './AddNewOwnership';
+import {actionCreators as FoodtruckForm} from "./FoodtruckForm";
 
 const foodtruckChanged = 'staff/foodtruck/FOODTRUCK_CHANGED';
+const foodtruckWithOwnershipsChanged = 'staff/foodtruck/FOODTRUCK_WITH_OWNERSHIPS_CHANGED';
 const positionChanged = 'staff/foodtruck/POSITION_CHANGED';
 const resetState = 'staff/foodtruck/RESET_STATE';
 const locationWatchCreated = 'staff/foodtruck/LOCATION_WATCH_CREATED';
@@ -14,7 +16,7 @@ const initialState = {
     loadedSlug: null,
     foodtruck: null,
     watchId: null,
-    position: null
+    position: null,
 };
 
 export const actionCreators = {
@@ -24,7 +26,7 @@ export const actionCreators = {
         dispatch({type: updateSlug, slug: foodtruckSlug});
         const response = await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}`);
         const foodtruck = await response.json();
-        dispatch({type: foodtruckChanged, foodtruck});
+        dispatch({type: foodtruckWithOwnershipsChanged, foodtruck});
     },
     openNewOwnershipModal: () => async (dispatch, getState) => {
         const state = getState();
@@ -41,6 +43,9 @@ export const actionCreators = {
         () => dispatch({type: locationWatchDeleted}),
         (watchId) => dispatch({type: locationWatchCreated, watchId})
     ),
+    updateFoodtruck: (foodtruck) => async (dispatch) => {
+        dispatch({type: foodtruckChanged, foodtruck});
+    },
     removeOwnership: (email) => async (dispatch, getState) => {
         const foodtruckSlug = getState().foodtruckForStaff.loadedSlug;
         await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}/deleteOwnership`,
@@ -92,6 +97,9 @@ export const actionCreators = {
     },
     openModifyPresenceOrUnavailabilityModal: (presenceOrUnavailability) => async (dispatch, getState) => {
         await PresenceOrUnavailabilityForm.openWithPresenceOrUnavailability(presenceOrUnavailability)(dispatch, getState);
+    },
+    modifyFoodtruck: (foodtruck) => async (dispatch) => {
+        await FoodtruckForm.openWithFoodtruck(foodtruck)(dispatch);
     }
 };
 
@@ -99,8 +107,21 @@ export const reducer = (state, action) => {
     state = state || initialState;
 
     switch (action.type) {
+        case foodtruckWithOwnershipsChanged:
+            return {
+                ...state,
+                foodtruck: {
+                    ...action.foodtruck,
+                }
+            };
         case foodtruckChanged:
-            return {...state, foodtruck: {...action.foodtruck, presencesOrUnavailabilities: action.foodtruck.presencesOrUnavailabilities}};
+            return {
+                ...state,
+                foodtruck: {
+                    ...action.foodtruck,
+                    ownerships: state.foodtruck.ownerships
+                }
+            };
         case resetState:
             return initialState;
         case positionChanged:

@@ -107,8 +107,28 @@ namespace Persistency.Test.Services.Implementations
         {
             const double distance = 2d;
             var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
-            var result = await _presenceService.FindPresencesOrUnavailabilitiesWithin(coordinate, distance);
+            var result = await _presenceService.FindPresencesOrUnavailabilitiesWithin(coordinate, distance, new DateTime(2019, 1, 4));
             Assert.Equal(new HashSet<string> {"PresenceOrUnavailability within location"},
+                result.Select(presence => presence.Title).ToHashSet());
+        }
+
+        [Fact]
+        public async void ShouldNotReturnFirstPresenceOrUnavailability()
+        {
+            const double distance = 2d;
+            var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
+            var result = await _presenceService.FindPresencesOrUnavailabilitiesWithin(coordinate, distance, new DateTime(2019, 1, 4, 2, 0, 0));
+            Assert.Equal(new HashSet<string> {"PresenceOrUnavailability within location"},
+                result.Select(presence => presence.Title).ToHashSet());
+        }
+
+        [Fact]
+        public async void ShouldNotReturnAllButLastPresenceOrUnavailability()
+        {
+            const double distance = 2d;
+            var coordinate = new Coordinate {Latitude = 51.107261, Longitude = 17.059999};
+            var result = await _presenceService.FindPresencesOrUnavailabilitiesWithin(coordinate, distance, new DateTime(2019, 1, 7));
+            Assert.Equal(new HashSet<string> {"Last presence"},
                 result.Select(presence => presence.Title).ToHashSet());
         }
 
@@ -124,8 +144,8 @@ namespace Persistency.Test.Services.Implementations
                     Title = title,
                     Description = "PresenceOrUnavailability for whole January",
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,1),
-                    EndTime = new DateTime(2019,2,1)
+                    StartTime = new DateTime(2019, 1, 1),
+                    EndTime = new DateTime(2019, 2, 1)
                 }
             ));
             await Assert.ThrowsAsync<ValidationException<Dtos.PresenceOrUnavailability>>(() => _presenceService.CreatePresenceOrUnavailability(
@@ -135,8 +155,8 @@ namespace Persistency.Test.Services.Implementations
                     Title = title,
                     Description = "PresenceOrUnavailability for whole January",
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,1),
-                    EndTime = new DateTime(2019,2,1)
+                    StartTime = new DateTime(2019, 1, 1),
+                    EndTime = new DateTime(2019, 2, 1)
                 }
             ));
 
@@ -155,12 +175,12 @@ namespace Persistency.Test.Services.Implementations
                     Title = title,
                     Description = title,
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,5,12,0,0),
-                    EndTime = new DateTime(2019,2,1)
+                    StartTime = new DateTime(2019, 1, 5, 12, 0, 0),
+                    EndTime = new DateTime(2019, 2, 1)
                 }
             ));
 
-            Assert.Equal("Last presence", exception.Dto.Title);
+            Assert.Contains(exception.Dto.Title, new List<string> {"Last presence", "PresenceOrUnavailability within location"});
             Assert.DoesNotContain(title, await Context.PresencesOrUnavailabilities.Select(p => p.Title).ToListAsync());
 
             exception = await Assert.ThrowsAsync<ValidationException<Dtos.PresenceOrUnavailability>>(() => _presenceService.CreatePresenceOrUnavailability(
@@ -170,8 +190,8 @@ namespace Persistency.Test.Services.Implementations
                     Title = title,
                     Description = title,
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,5,12,0,0),
-                    EndTime = new DateTime(2019,2,1)
+                    StartTime = new DateTime(2019, 1, 6, 12, 0, 0),
+                    EndTime = new DateTime(2019, 2, 1)
                 }
             ));
 
@@ -191,10 +211,10 @@ namespace Persistency.Test.Services.Implementations
                     Title = title,
                     Description = title,
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,5,12,0,0)
+                    StartTime = new DateTime(2019, 1, 7, 12, 0, 0)
                 }
             ));
-            
+
             Assert.Equal("Last presence", exception.Dto.Title);
             Assert.DoesNotContain(title, await Context.PresencesOrUnavailabilities.Select(p => p.Title).ToListAsync());
 
@@ -205,11 +225,11 @@ namespace Persistency.Test.Services.Implementations
                     Title = title,
                     Description = title,
                     Location = new Coordinate {Latitude = 51.107261, Longitude = 17.059999},
-                    StartTime = new DateTime(2019,1,5,12,0,0)
+                    StartTime = new DateTime(2019, 1, 5, 12, 0, 0)
                 }
             ));
-            
-            Assert.Equal("Last presence", exception.Dto.Title);
+
+            Assert.Equal("PresenceOrUnavailability within location", exception.Dto.Title);
             Assert.DoesNotContain(title, await Context.PresencesOrUnavailabilities.Select(p => p.Title).ToListAsync());
         }
     }

@@ -35,7 +35,7 @@ namespace WebApplication.Controllers
                 return Ok(new FoodtrucksWithinResult
                 {
                     Foodtrucks = await _foodtruckService.FindFoodTrucksWithin(foodtrucksQuery.TopLeft, foodtrucksQuery.BottomRight),
-                    PresencesOrUnavailabilities = await _presenceService.FindPresencesOrUnavailabilitiesWithin(foodtrucksQuery.TopLeft, foodtrucksQuery.BottomRight)
+                    PresencesOrUnavailabilities = await _presenceService.FindPresencesOrUnavailabilitiesWithin(foodtrucksQuery.TopLeft, foodtrucksQuery.BottomRight, foodtrucksQuery.StartEndTime)
                 });
         }
 

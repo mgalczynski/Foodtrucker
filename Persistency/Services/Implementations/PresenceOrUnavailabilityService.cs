@@ -26,7 +26,7 @@ namespace Persistency.Services.Implementations
         private async Task<Guid> FindFoodtruckId(string foodtruckSlug) =>
             await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug) ?? throw new ArgumentException("Foodtruck not found");
 
-        public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate coordinate, double distance)
+        public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate coordinate, double distance, DateTime startEndTime)
         {
             return await PersistencyContext.PresencesOrUnavailabilities.FromSql(
                     $@"SELECT p.*
@@ -37,14 +37,14 @@ namespace Persistency.Services.Implementations
                                FROM ""{nameof(PersistencyContext.PresencesOrUnavailabilities)}""
                                WHERE ST_DWithin(""{nameof(Entity.Location)}"", ST_SetSRID(ST_MakePoint(@p0, @p1), 4326), @p2)
                            ) AS p ON f.""{nameof(Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
-                       WHERE NOT f.""{nameof(Foodtruck.Deleted)}""
+                       WHERE NOT f.""{nameof(Foodtruck.Deleted)}"" AND (p.""{nameof(Entity.EndTime)}"" IS NULL OR p.""{nameof(Entity.EndTime)}"" > @p3)
                     "
-                    , coordinate.Longitude, coordinate.Latitude, distance
+                    , coordinate.Longitude, coordinate.Latitude, distance, startEndTime
                 )
                 .ProjectToListAsync<PresenceOrUnavailability>(ConfigurationProvider);
         }
 
-        public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate topLeft, Coordinate bottomRight)
+        public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate topLeft, Coordinate bottomRight, DateTime startEndTime)
         {
             return await PersistencyContext.PresencesOrUnavailabilities.FromSql(
                     $@"SELECT p.*
@@ -55,9 +55,9 @@ namespace Persistency.Services.Implementations
                                FROM ""{nameof(PersistencyContext.PresencesOrUnavailabilities)}""
                                WHERE ""{nameof(Entity.Location)}"" && ST_MakeEnvelope(@p0, @p1, @p2, @p3, 4326)
                            ) AS p ON f.""{nameof(Entity.Foodtruck.Id)}"" = p.""{nameof(Entity.FoodtruckId)}""
-                       WHERE NOT f.""{nameof(Foodtruck.Deleted)}""
+                       WHERE NOT f.""{nameof(Foodtruck.Deleted)}"" AND (p.""{nameof(Entity.EndTime)}"" IS NULL OR p.""{nameof(Entity.EndTime)}"" > @p4)
                     "
-                    , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude
+                    , topLeft.Longitude, topLeft.Latitude, bottomRight.Longitude, bottomRight.Latitude, startEndTime
                 )
                 .ProjectToListAsync<PresenceOrUnavailability>(ConfigurationProvider);
         }
@@ -71,14 +71,14 @@ namespace Persistency.Services.Implementations
                 .Aggregate(new SortedDictionary<string, IList<PresenceOrUnavailability>>(), (acc, pres) =>
                 {
                     IList<PresenceOrUnavailability> list;
-                    Debug.Assert(pres.Id != null, "pres.Id != null");
+                    Debug.Assert(pres.Id != null, $"{nameof(pres)}.{nameof(pres.Id)} != null");
                     if (acc.TryGetValue(pres.Foodtruck.Slug, out list))
                     {
                         list = new List<PresenceOrUnavailability>();
                         acc[pres.Foodtruck.Slug] = list;
                     }
 
-                    Debug.Assert(list != null, nameof(list) + " != null");
+                    Debug.Assert(list != null, $"{nameof(list)} != null");
                     list.Add(RuntimeMapper.Map<PresenceOrUnavailability>(pres));
                     return acc;
                 });
@@ -145,20 +145,20 @@ namespace Persistency.Services.Implementations
                     p.FoodtruckId == foodtruckId &&
                     p.Id != presenceId &&
                     (
+                        p.EndTime == null &&
+                        endTime > p.StartTime
+                        ||
                         p.StartTime <= startTime &&
                         p.EndTime >= endTime
                         ||
                         p.StartTime >= startTime &&
-                        p.StartTime <= endTime
+                        p.StartTime < endTime
                         ||
                         p.StartTime >= startTime &&
                         p.EndTime <= endTime
                         ||
-                        p.EndTime <= startTime &&
-                        p.EndTime >= endTime
-                        ||
-                        p.StartTime <= startTime &&
-                        p.EndTime == null
+                        p.EndTime > startTime &&
+                        p.EndTime <= endTime
                     )
                 );
             if (collidingPresenceOrUnavailability != null)

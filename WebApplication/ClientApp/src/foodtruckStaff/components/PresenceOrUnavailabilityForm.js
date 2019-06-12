@@ -41,7 +41,7 @@ class PresenceForm extends Component {
             <Modal.Body>
                 {this.props.reasonWhyNotValid &&
                 <Alert bsStyle="warning"><strong>{this.props.reasonWhyNotValid}</strong>
-                    {this.props.dtoWhyNotValid && ` ${this.props.dtoWhyNotValid.title} from: ${moment(this.props.dtoWhyNotValid.startTime).format(format)}${this.props.dtoWhyNotValid.endsWith === null ? '' : ' to: ' + moment(this.props.dtoWhyNotValid.endTime).format(format)}`}
+                    {this.props.dtoWhyNotValid && ` ${this.props.dtoWhyNotValid.title} from: ${moment(this.props.dtoWhyNotValid.startTime).local().format(format)}${this.props.dtoWhyNotValid.endsWith === null ? '' : ' to: ' + moment(this.props.dtoWhyNotValid.endTime).local().format(format)}`}
                 </Alert>}
                 <Form onSubmit={this.onSubmit}>
                     <FormGroup controlId='isUnavailability'>
@@ -74,7 +74,7 @@ class PresenceForm extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Datetime
-                            value={moment(this.props.presenceOrUnavailability.startTime)}
+                            value={moment.utc(this.props.presenceOrUnavailability.startTime).local()}
                             onChange={this.props.changeStartTime}
                             dateFormat={dateFormat}
                             timeFormat={timeFormat}
@@ -94,7 +94,7 @@ class PresenceForm extends Component {
                     </FormGroup>
                     <FormGroup>
                         <Datetime
-                            value={moment(this.props.presenceOrUnavailability.endTime)}
+                            value={moment.utc(this.props.presenceOrUnavailability.endTime).local()}
                             onChange={this.props.changeEndTime}
                             dateFormat={dateFormat}
                             timeFormat={timeFormat}

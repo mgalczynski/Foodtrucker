@@ -21,8 +21,8 @@ const PresencesOrUnavailabilitiesList = props => (
         <tbody>
         {props.presencesOrUnavailabilities.map(p =>
             <tr key={p.id}>
-                <td>{moment(p.startTime).format(format)}</td>
-                <td>{p.endTime == null ? '----' : moment(p.endTime).format(format)}</td>
+                <td>{moment.utc(p.startTime).local().format(format)}</td>
+                <td>{p.endTime == null ? '----' : moment.utc(p.endTime).local().format(format)}</td>
                 <td>{p.title}</td>
                 <td>{p.description}</td>
                 <td><Checkbox checked={p.location===null} disabled /></td>

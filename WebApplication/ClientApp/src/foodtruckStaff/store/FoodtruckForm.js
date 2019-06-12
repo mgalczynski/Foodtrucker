@@ -44,12 +44,11 @@ export const actionCreators = {
     changeShouldHasDefaultLocation: (value) => async (dispatch) => {
         dispatch({type: shouldHasDefaultLocationChanged, value});
     },
-    save: () => async (dispatch, getState) => {
+    save: (reload) => async (dispatch, getState) => {
         const state = getState().foodtruckForm;
         const foodtruckSlug = state.slug;
         if (state.foodtruck.name.length === 0 ||
-            state.foodtruck.displayName.length === 0 ||
-            (state.shouldHasDefaultLocation && state.foodtruck.defaultLocation === null))
+            state.foodtruck.displayName.length === 0)
             return;
         dispatch({type: requestSent});
         const response = await fetch(foodtruckSlug === null ? `api${staffPrefix}/foodtruck/` : `api${staffPrefix}/foodtruck/${foodtruckSlug}`,
@@ -66,7 +65,10 @@ export const actionCreators = {
             });
         const result = await response.json();
         dispatch({type: close});
-        dispatch(push(`${staffPrefix}/foodtruck/${result.slug}`));
+        if(reload)
+            reload(result);
+        else
+            dispatch(push(`${staffPrefix}/foodtruck/${result.slug}`));
     }
 };
 
@@ -95,7 +97,14 @@ export const reducer = (state, action) => {
         case displayNameChanged:
             return {...state, foodtruck: {...state.foodtruck, displayName: action.displayName}};
         case shouldHasDefaultLocationChanged:
-            return {...state, shouldHasDefaultLocation: action.value};
+            return {
+                ...state,
+                shouldHasDefaultLocation: action.value,
+                foodtruck: {
+                    ...state.foodtruck,
+                    defaultLocation: (action.value && state.foodtruck.defaultLocation) || {latitude: 0, longitude: 0}
+                }
+            };
         case requestSent:
             return {...state, requestSent: true};
         case locationChanged:

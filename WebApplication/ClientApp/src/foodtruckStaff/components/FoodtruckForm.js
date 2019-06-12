@@ -13,7 +13,7 @@ import LocationPicker from './LocationPicker';
 class FoodtruckForm extends Component {
     onSubmit = (e) => {
         e.preventDefault();
-        this.props.save(this.props.foodtruckSlug);
+        this.props.save(this.props.reload);
     };
 
     render() {

@@ -56,13 +56,15 @@ class Foodtruck extends Component {
                             {this.props.presencesOrUnavailabilities.length !== 0 &&
                             <div className='foodtruck-presencesOrUnavailabilities-container'>
                                 {this.props.presencesOrUnavailabilities.map(p =>
-                                    <Link
-                                        key={p.id}
-                                        to={`/foodtruck/${this.props.foodtruck.slug}/${p.id}`}
-                                    >
-                                        {p.title} Starts
-                                        on: {moment(p.startTime).format(format)}{p.endTime !== null && `, ends on: ${moment(p.endTime).format(format)}`}
-                                    </Link>
+                                    <React.Fragment>
+                                        <Link
+                                            key={p.id}
+                                            to={`/foodtruck/${this.props.foodtruck.slug}/${p.id}`}
+                                        >
+                                            {p.title} Starts
+                                            on: {moment.utc(p.startTime).local().format(format)}{p.endTime !== null && `, ends on: ${moment.utc(p.endTime).local().format(format)}`}
+                                        </Link>< br/>
+                                    </React.Fragment>
                                 )}
                             </div>
                             }
@@ -70,7 +72,8 @@ class Foodtruck extends Component {
                     </Modal>
                 }
                 {shouldRenderPresenceOrUnavailabilityModal &&
-                <PresenceOrUnavailability presenceOrUnavailability={presenceOrUnavailability} position={this.props.position}/>
+                <PresenceOrUnavailability presenceOrUnavailability={presenceOrUnavailability}
+                                          position={this.props.position}/>
                 }
             </div>
         );

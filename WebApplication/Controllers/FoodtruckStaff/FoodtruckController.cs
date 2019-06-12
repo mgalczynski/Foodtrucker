@@ -31,11 +31,11 @@ namespace WebApplication.Controllers.FoodtruckStaff
             createModifyFoodtruck?.Name == null || createModifyFoodtruck.DisplayName == null;
 
         [HttpPost]
-        public async Task<ActionResult<Foodtruck>> CreateNewFoodtruck([FromBody] CreateModifyFoodtruck createNewFoodtruck)
+        public async Task<ActionResult<FoodtruckDetailed>> CreateNewFoodtruck([FromBody] CreateModifyFoodtruck createNewFoodtruck)
         {
             if (ValidateCreateModifyFoodtruck(createNewFoodtruck))
                 return BadRequest();
-            Foodtruck foodtruck;
+            FoodtruckDetailed foodtruck;
             using (var transaction = await Transaction())
             {
                 var user = await CurrentUser();
@@ -50,14 +50,14 @@ namespace WebApplication.Controllers.FoodtruckStaff
 
 
         [HttpPut("{foodtruckSlug}")]
-        public async Task<ActionResult<Foodtruck>> ModifyFoodtruck(
+        public async Task<ActionResult<FoodtruckDetailed>> ModifyFoodtruck(
             [FromRoute] string foodtruckSlug,
             [FromBody] CreateModifyFoodtruck modifyFoodtruck
         )
         {
             if (ValidateCreateModifyFoodtruck(modifyFoodtruck))
                 return BadRequest();
-            Foodtruck foodtruck;
+            FoodtruckDetailed foodtruck;
             using (var transaction = await Transaction())
             {
                 var currentUser = await CurrentUser();

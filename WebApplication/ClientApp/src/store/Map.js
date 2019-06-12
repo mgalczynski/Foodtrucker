@@ -1,6 +1,6 @@
-﻿import {foodtruckPath} from '../App';
-import {LOCATION_CHANGE as urlChanged} from 'react-router-redux';
+﻿import {LOCATION_CHANGE as urlChanged} from 'react-router-redux';
 import {positionWatch} from '../Helpers';
+import moment from 'moment';
 
 const locationChanged = 'map/LOCATION_CHANGED';
 const zoomChanged = 'map/ZOOM_CHANGED';
@@ -78,7 +78,8 @@ export const actionCreators = {
                     bottomRight: {
                         longitude: state.bounds.getEast(),
                         latitude: state.bounds.getSouth()
-                    }
+                    },
+                    startEndTime: moment().startOf('day').utc(),
                 })
             });
         const foodtruckContent = await foodtrucksResponse.json();

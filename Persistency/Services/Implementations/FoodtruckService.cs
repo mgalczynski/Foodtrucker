@@ -42,21 +42,21 @@ namespace Persistency.Services.Implementations
                 )
                 .ProjectToListAsync<Foodtruck>(ConfigurationProvider);
 
-        public async Task<Foodtruck> CreateNewFoodtruck(CreateModifyFoodtruck createNewFoodtruck)
+        public async Task<FoodtruckDetailed> CreateNewFoodtruck(CreateModifyFoodtruck createNewFoodtruck)
         {
             var entity = RuntimeMapper.Map<Entity>(createNewFoodtruck);
             entity.Slug = await GenerateSlug(createNewFoodtruck.Name);
-            return RuntimeMapper.Map<Foodtruck>(await CreateNewEntity(entity));
+            return RuntimeMapper.Map<FoodtruckDetailed>(await CreateNewEntity(entity));
         }
 
-        public async Task<Foodtruck> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck)
+        public async Task<FoodtruckDetailed> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck)
         {
             var entity = await DbSet.FirstAsync(f => f.Slug == slug);
             if (entity == null)
                 return null;
             RuntimeMapper.Map(changeFoodtruck, entity);
             await PersistencyContext.SaveChangesAsync();
-            return RuntimeMapper.Map<Foodtruck>(entity);
+            return RuntimeMapper.Map<FoodtruckDetailed>(entity);
         }
 
         public async Task MarkAsDeleted(string slug)

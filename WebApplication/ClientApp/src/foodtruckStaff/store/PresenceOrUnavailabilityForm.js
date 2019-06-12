@@ -44,14 +44,12 @@ const preCheck = state =>
     state.presenceOrUnavailability.title.length === 0 ||
     state.presenceOrUnavailability.description.length === 0 ||
     state.presenceOrUnavailability.startTime === null ||
-    state.presenceOrUnavailability.location === null ||
     (state.shouldHasEndTime && state.presenceOrUnavailability.endTime == null);
 
 export const actionCreators = {
     validate: async (dispatch, getState) => {
         const state = getState().presenceOrUnavailabilityForm;
         const shouldUpdate = state.id !== null;
-        console.log(state);
         if (preCheck(state)) {
             dispatch({type: canBeSendChanged, value: false});
             return;

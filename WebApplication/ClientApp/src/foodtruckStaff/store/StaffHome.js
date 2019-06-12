@@ -12,10 +12,10 @@ const initialState = {
 };
 
 const mapQueryToArgs = (query) =>
-    query.split(' ').filter(v => v.length > 0).map(v => v.toLowerCase());
+    query.split(' ').filter(v => v.length > 2).map(v => v.toLowerCase());
 
 const filter = (foodtrucks, args) => {
-    const visibleFoodtrucks = (args.length === 0 ? foodtrucks : foodtrucks.filter(f => args.some(a => f.foodtruck.name.toLowerCase().includes(a) || f.foodtruck.displayName.toLowerCase().includes(a))));
+    const visibleFoodtrucks = (args.length === 0 ? foodtrucks : foodtrucks.filter(f => args.every(a => f.foodtruck.name.toLowerCase().includes(a) || f.foodtruck.displayName.toLowerCase().includes(a))));
     return {filteredFoodtrucks: visibleFoodtrucks.slice(0, 10), allAreVisible: visibleFoodtrucks.length <= 10};
 };
 

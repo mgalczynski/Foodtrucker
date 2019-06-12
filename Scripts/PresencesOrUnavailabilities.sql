@@ -1,6 +1,6 @@
 BEGIN TRANSACTION;
 
-UPDATE "PresencesOrUnavailabilities" SET "EndTime" = "EndTime" + INTERVAL '1 day' WHERE "EndTime" IS NOT NULL;
+UPDATE "PresencesOrUnavailabilities" SET "StartTime" = DATE_TRUNC('day', NOW()), "EndTime" = DATE_TRUNC('day', NOW()) + INTERVAL '1' DAY WHERE "EndTime" IS NOT NULL;
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
