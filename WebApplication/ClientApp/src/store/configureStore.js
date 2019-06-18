@@ -2,6 +2,7 @@
 import thunk from 'redux-thunk';
 import { routerReducer, routerMiddleware } from 'react-router-redux';
 import * as Login from './Login';
+import * as ChangePassword from './ChangePassword';
 import * as MapStore from './Map';
 import * as Register from './Register';
 import * as Foodtruck from './Foodtruck';
@@ -12,6 +13,7 @@ export default function configureStore(history, initialState) {
     const reducers = {
         register: Register.reducer,
         login: Login.reducer,
+        changePassword: ChangePassword.reducer,
         app: App.reducer,
         map: MapStore.reducer,
         foodtruckModal: Foodtruck.reducer,

@@ -24,6 +24,11 @@ class NavMenu extends Component {
               <Navbar.Text>
                 Welcome {this.props.app.user.firstName}&nbsp;{this.props.app.user.lastName}!
                                 </Navbar.Text>
+              <LinkContainer to={`${staffPrefix}/changePassword`}>
+                <NavItem>
+                  <Glyphicon glyph='th-list' /> Change password
+                </NavItem>
+              </LinkContainer>
               <NavItem onClick={this.props.logOut}>
                 <Glyphicon glyph='th-list' /> Log out
                                 </NavItem>

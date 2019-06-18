@@ -1,14 +1,15 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Route } from 'react-router';
+import React, {Component} from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {Route} from 'react-router';
 import Layout from './components/Layout';
 import Home from './components/StaffHome';
 import Login from '../components/Login';
 import Register from '../components/Register';
-import { staffPrefix } from '../Helpers'
-import { actionCreators } from '../store/App';
+import {staffPrefix} from '../Helpers'
+import {actionCreators} from '../store/App';
 import Foodtruck from './components/Foodtruck';
+import ChangePassword from '../components/ChangePassword';
 
 class App extends Component {
     componentDidMount = () => {
@@ -25,6 +26,7 @@ class App extends Component {
             <Layout>
                 <Route exact path={`${staffPrefix}`} component={Home}/>
                 <Route exact path={`${staffPrefix}/foodtruck/:foodtruckSlug`} component={Foodtruck}/>
+                <Route exact path={`${staffPrefix}/changePassword`} render={(props) => <ChangePassword {...props} staff/>}/>
             </Layout>;
     }
 }

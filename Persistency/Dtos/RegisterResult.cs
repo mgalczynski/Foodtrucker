@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Persistency.Dtos
 {
-    public class RegisterResult
+    public sealed class RegisterResult
     {
         public IList<string> Errors;
         public bool Successful { get; set; }

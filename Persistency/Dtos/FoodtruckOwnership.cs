@@ -3,7 +3,7 @@ using Persistency.Entities;
 
 namespace Persistency.Dtos
 {
-    public class FoodtruckOwnership
+    public sealed class FoodtruckOwnership
     {
         public Guid FoodtruckId { get; set; }
         public string UserEmail { get; set; }

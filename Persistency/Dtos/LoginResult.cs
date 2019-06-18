@@ -1,6 +1,6 @@
 namespace Persistency.Dtos
 {
-    public class LoginResult
+    public sealed class LoginResult
     {
         public bool Successful { get; set; }
         public bool IsLockedOut { get; set; }

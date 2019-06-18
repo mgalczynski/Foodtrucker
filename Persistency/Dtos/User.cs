@@ -1,6 +1,6 @@
 namespace Persistency.Dtos
 {
-    public class User
+    public sealed class User
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

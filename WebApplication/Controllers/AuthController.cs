@@ -50,8 +50,9 @@ namespace WebApplication.Controllers
                 if (role != FoodtruckerRole.ServiceStaff)
                     await _signInManager.SignInAsync(user, isPersistent: true);
                 transaction.Commit();
-                return new RegisterResult {Successful = true, User = _runtimeMapper.Map<User>(user)};
             }
+
+            return new RegisterResult {Successful = true, User = _runtimeMapper.Map<User>(user)};
         }
 
         [AllowAnonymous]
@@ -129,15 +130,34 @@ namespace WebApplication.Controllers
             };
         }
 
+        private async Task<FoodtruckerUser> FoodtruckerUser()
+        {
+            var username = User.Identity.Name;
+            return username == null ? null : await _userManager.FindByNameAsync(username);
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> ChangePassword([FromBody] ChangePassword changePassword)
+        {
+            IdentityResult result;
+            using (var transaction = await _persistencyContext.Database.BeginTransactionAsync())
+            {
+                result = await _userManager.ChangePasswordAsync(await FoodtruckerUser(), changePassword.CurrentPassword, changePassword.NewPassword);
+
+                transaction.Commit();
+            }
+
+            return result.Succeeded ? (ActionResult) Ok() : BadRequest();
+        }
+
         [AllowAnonymous]
         [HttpGet("[action]")]
         public async Task<CheckResult> Check()
         {
-            var username = User.Identity.Name;
-            if (username == null)
-                return new CheckResult {IsSignedIn = false};
-            var user = await _userManager.FindByNameAsync(username);
-            return new CheckResult {IsSignedIn = true, User = _runtimeMapper.Map<User>(user)};
+            var user = await FoodtruckerUser();
+            return user == null
+                ? new CheckResult {IsSignedIn = false}
+                : new CheckResult {IsSignedIn = true, User = _runtimeMapper.Map<User>(user)};
         }
 
         [HttpGet("[action]")]

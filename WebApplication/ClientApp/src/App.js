@@ -7,11 +7,13 @@ import Map from './components/Map';
 import Login from './components/Login';
 import Register from './components/Register';
 import {actionCreators} from './store/App';
+import ChangePassword from './components/ChangePassword';
 
 const WithMargin = () => (
     <Layout>
         <Route path='/login' component={Login} />
         <Route path='/register' component={Register} />
+        <Route path='/changePassword' component={ChangePassword} />
     </Layout>
 );
 
