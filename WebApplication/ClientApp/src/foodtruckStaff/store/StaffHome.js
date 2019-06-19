@@ -3,6 +3,7 @@ import {staffPrefix} from '../../Helpers';
 import {actionCreators as FoodtruckForm} from './FoodtruckForm';
 
 const foodtrucksChanged = 'staff/home/FOODTRUCKS_CHANGED';
+const foodtruckDeleted = 'staff/home/FOODTRUCK_DELETED';
 
 const initialState = {
     foodtrucks: [],
@@ -24,7 +25,9 @@ const getQuery = (search) =>
 
 export const actionCreators = {
     updateFoodtrucks: () => async (dispatch, getState) => {
-        const response = await fetch(`api${staffPrefix}/foodtruck`);
+        const response = await fetch(`api${staffPrefix}/foodtruck`, {
+            credentials: 'same-origin',
+        });
         const result = (await response.json()).result;
         result.sort((f1, f2) => f1.foodtruck.name.localeCompare(f2.foodtruck.name));
         dispatch({
@@ -32,6 +35,17 @@ export const actionCreators = {
             foodtrucks: result,
             search: getState()
         });
+    },
+    deleteFoodtruck: (foodtruck) => async (dispatch, getState) => {
+        dispatch({type: foodtruckDeleted, slug: foodtruck});
+        const response = await fetch(`api${staffPrefix}/foodtruck/${foodtruck}`,
+            {
+                credentials: 'same-origin',
+                method: 'DELETE',
+            }
+        );
+        if (response.status !== 200)
+            await actionCreators.updateFoodtrucks()(dispatch, getState);
     },
     changeQuery: (query) => async (dispatch) => {
         const q = encodeURIComponent(query);
@@ -51,6 +65,13 @@ export const reducer = (state, action) => {
     state = state || initialState;
 
     switch (action.type) {
+        case foodtruckDeleted:
+            const foodtrucks = state.foodtrucks.filter(f => f.foodtruck.slug !== action.slug);
+            return {
+                ...state,
+                foodtrucks,
+                ...filter(foodtrucks, mapQueryToArgs(state.query)),
+            };
         case foodtrucksChanged:
             return {
                 ...state,

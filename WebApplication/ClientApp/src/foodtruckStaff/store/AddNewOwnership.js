@@ -70,7 +70,7 @@ export const actionCreators = {
                 },
                 body: JSON.stringify({
                     email: state.user.email,
-                    type: state.type
+                    type: state.type.value
                 })
             });
         await Foodtruck.loadFoodtruck(foodtruckSlug, true)(dispatch, getState);

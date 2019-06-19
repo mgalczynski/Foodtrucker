@@ -32,6 +32,7 @@ class StaffHome extends Component {
                     <td>Has default location</td>
                     <td>Your permissions</td>
                     <td>Edit</td>
+                    <td>Delete</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -46,6 +47,11 @@ class StaffHome extends Component {
                         <td>
                             {[ADMIN, OWNER].includes(f.type) &&
                             <Button onClick={() => this.props.modifyFoodtruck(f.foodtruck)}>Modify</Button>
+                            }
+                        </td>
+                        <td>
+                            {f.type === OWNER &&
+                            <Button onClick={() => this.props.deleteFoodtruck(f.foodtruck.slug)}>Delete</Button>
                             }
                         </td>
                     </tr>

@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import {Link} from 'react-router-dom';
-import {Glyphicon, Table, Button, FormControl, Modal} from 'react-bootstrap';
+import {Glyphicon, Table, Button, FormControl, Modal, Alert} from 'react-bootstrap';
 import {staffPrefix} from '../../Helpers';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -38,12 +38,14 @@ class Foodtruck extends Component {
         this.ownershipsList().includes(ownership.type);
 
     render() {
-        return this.props.foodtruck === null ?
-            <Loader loaded={false} lines={13} length={20} width={10} radius={30}
-                    corners={1} rotate={0} direction={1} color='#000' speed={1}
-                    trail={60} shadow={false} hwaccel={false}
-                    zIndex={2e9} top='50%' left='50%' scale={1.00}/>
-            : this.renderFoodtruckDetails();
+        if (this.props.notFound)
+            return <Alert bsStyle='danger'>Not found</Alert>;
+        else if (this.props.foodtruck === null)
+            return <Loader loaded={false} lines={13} length={20} width={10} radius={30}
+                           corners={1} rotate={0} direction={1} color='#000' speed={1}
+                           trail={60} shadow={false} hwaccel={false}
+                           zIndex={2e9} top='50%' left='50%' scale={1.00}/>
+        else return this.renderFoodtruckDetails();
     }
 
     renderFoodtruckDetails() {

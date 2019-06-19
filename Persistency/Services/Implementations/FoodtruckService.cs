@@ -20,6 +20,9 @@ namespace Persistency.Services.Implementations
         }
 
         protected override DbSet<Entity> DbSet => PersistencyContext.Foodtrucks;
+        
+        private IQueryable<Entity> Queryable => DbSet
+            .Where(f => !f.Deleted);
 
 
         public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance) =>
@@ -51,7 +54,7 @@ namespace Persistency.Services.Implementations
 
         public async Task<FoodtruckDetailed> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck)
         {
-            var entity = await DbSet.FirstAsync(f => f.Slug == slug);
+            var entity = await Queryable.FirstAsync(f => f.Slug == slug);
             if (entity == null)
                 return null;
             RuntimeMapper.Map(changeFoodtruck, entity);
@@ -61,7 +64,7 @@ namespace Persistency.Services.Implementations
 
         public async Task MarkAsDeleted(string slug)
         {
-            var foodtruck = await DbSet.FirstOrDefaultAsync(e => e.Slug == slug);
+            var foodtruck = await Queryable.FirstOrDefaultAsync(e => e.Slug == slug);
             if (foodtruck == null)
                 throw new ArgumentException();
             foodtruck.Deleted = true;
@@ -69,14 +72,14 @@ namespace Persistency.Services.Implementations
         }
 
         public async Task<Foodtruck> FindBySlug(string slug) =>
-            RuntimeMapper.Map<Foodtruck>(await DbSet.FirstOrDefaultAsync(f => f.Slug == slug));
+            RuntimeMapper.Map<Foodtruck>(await Queryable.FirstOrDefaultAsync(f => f.Slug == slug));
 
         public async Task<IList<Foodtruck>> FindBySlugs(IEnumerable<string> slugs) =>
-            await DbSet.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>(ConfigurationProvider);
+            await Queryable.Where(f => slugs.Contains(f.Slug)).ProjectToListAsync<Foodtruck>(ConfigurationProvider);
 
         public async Task<FoodtruckDetailed> FindBySlugDetailed(string slug) =>
             RuntimeMapper.Map<FoodtruckDetailed>(
-                await DbSet
+                await Queryable
                     .Include(f => f.Ownerships)
                     .ThenInclude(o => o.User)
                     .Include(f => f.PresencesOrUnavailabilities)
@@ -84,12 +87,12 @@ namespace Persistency.Services.Implementations
             );
 
         public async Task<Guid?> FindFoodtruckIdBySlug(string slug) =>
-            (await DbSet.FirstOrDefaultAsync(f => f.Slug == slug))?.Id;
+            (await Queryable.FirstOrDefaultAsync(f => f.Slug == slug))?.Id;
 
         private async Task<string> GenerateSlug(string name, Guid? id = null)
         {
             var slug = _slugHelper.GenerateSlug(name);
-            var slugs = (await DbSet
+            var slugs = (await Queryable
                     .Where(f => f.Slug.StartsWith(slug) && f.Id != id)
                     .Select(f => f.Slug)
                     .ToListAsync())

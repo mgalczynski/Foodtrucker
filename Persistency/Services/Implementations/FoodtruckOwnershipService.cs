@@ -53,6 +53,9 @@ namespace Persistency.Services.Implementations
         private DbSet<Entity> DbSet =>
             _persistencyContext.FoodtruckOwnerships;
 
+        private IQueryable<Entity> Queryable => DbSet
+            .Where(e => !e.Foodtruck.Deleted);
+
         public async Task CreateOwnership(Guid userId, string foodtruckSlug, OwnershipType type)
         {
             await DbSet.AddAsync(new Entity {UserId = userId, FoodtruckId = await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug), Type = type});
@@ -73,19 +76,19 @@ namespace Persistency.Services.Implementations
             _revesedAccessDict[type].Contains((await FindEntityByUserAndFoodtruck(userId, foodtruckSlug)).Type);
 
         public async Task<IList<FoodtruckOwnership>> FindFoodtruckOwnershipsByFoodtruck(string foodtruckSlug) =>
-            await DbSet
+            await Queryable
                 .Where(e => e.Foodtruck.Slug == foodtruckSlug)
                 .ProjectToListAsync<FoodtruckOwnership>(_runtimeMapper.ConfigurationProvider);
 
         public async Task<IList<FoodtruckWithOwnership>> FindFoodtruckOwnershipsByUser(Guid userId) =>
-            await DbSet
+            await Queryable
                 .Where(e => e.UserId == userId)
                 .OrderBy(e => e.Foodtruck.Name)
                 .ProjectToListAsync<FoodtruckWithOwnership>(_runtimeMapper.ConfigurationProvider);
 
         public async Task ChangeOwnership(string foodtruckSlug, string userEmail, OwnershipType type)
         {
-            (await DbSet.FirstOrDefaultAsync(o => o.Foodtruck.Slug == foodtruckSlug && o.User.Email == userEmail)).Type = type;
+            (await Queryable.FirstOrDefaultAsync(o => o.Foodtruck.Slug == foodtruckSlug && o.User.Email == userEmail)).Type = type;
             await _persistencyContext.SaveChangesAsync();
         }
 
@@ -96,12 +99,12 @@ namespace Persistency.Services.Implementations
         }
 
         private async Task<Entity> FindEntityByUserAndFoodtruck(Guid userId, string foodtruckSlug) =>
-            await DbSet.FirstOrDefaultAsync(e => e.UserId == userId && e.Foodtruck.Slug == foodtruckSlug);
+            await Queryable.FirstOrDefaultAsync(e => e.UserId == userId && e.Foodtruck.Slug == foodtruckSlug);
 
         private async Task<Entity> FindEntityByUserEmailAndFoodtruck(string email, string foodtruckSlug) =>
-            await DbSet.FirstOrDefaultAsync(e => e.User.Email == email && e.Foodtruck.Slug == foodtruckSlug);
+            await Queryable.FirstOrDefaultAsync(e => e.User.Email == email && e.Foodtruck.Slug == foodtruckSlug);
 
         private async Task<Entity> FindEntityByUserAndPresenceOrUnavailability(Guid userId, Guid presenceId) =>
-            await DbSet.FirstOrDefaultAsync(e => e.UserId == userId && e.Foodtruck.PresencesOrUnavailabilities.Any(p => p.Id == presenceId));
+            await Queryable.FirstOrDefaultAsync(e => e.UserId == userId && e.Foodtruck.PresencesOrUnavailabilities.Any(p => p.Id == presenceId));
     }
 }

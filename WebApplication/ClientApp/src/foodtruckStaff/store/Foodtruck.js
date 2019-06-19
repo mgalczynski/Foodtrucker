@@ -5,6 +5,7 @@ import {open} from './AddNewOwnership';
 import {actionCreators as FoodtruckForm} from "./FoodtruckForm";
 
 const foodtruckChanged = 'staff/foodtruck/FOODTRUCK_CHANGED';
+const notFound = 'staff/foodtruck/NOT_FOUND';
 const foodtruckWithOwnershipsChanged = 'staff/foodtruck/FOODTRUCK_WITH_OWNERSHIPS_CHANGED';
 const positionChanged = 'staff/foodtruck/POSITION_CHANGED';
 const resetState = 'staff/foodtruck/RESET_STATE';
@@ -17,6 +18,7 @@ const initialState = {
     foodtruck: null,
     watchId: null,
     position: null,
+    notFound: false,
 };
 
 export const actionCreators = {
@@ -25,6 +27,10 @@ export const actionCreators = {
             return;
         dispatch({type: updateSlug, slug: foodtruckSlug});
         const response = await fetch(`api${staffPrefix}/foodtruck/${foodtruckSlug}`);
+        if (response.status === 404) {
+            dispatch({type: notFound});
+            return;
+        }
         const foodtruck = await response.json();
         dispatch({type: foodtruckWithOwnershipsChanged, foodtruck});
     },
@@ -110,17 +116,24 @@ export const reducer = (state, action) => {
         case foodtruckWithOwnershipsChanged:
             return {
                 ...state,
+                notFound: false,
                 foodtruck: {
                     ...action.foodtruck,
-                }
+                },
+            };
+        case notFound:
+            return {
+                ...state,
+                notFound: true,
             };
         case foodtruckChanged:
             return {
                 ...state,
+                notFound: false,
                 foodtruck: {
                     ...action.foodtruck,
                     ownerships: state.foodtruck.ownerships
-                }
+                },
             };
         case resetState:
             return initialState;

@@ -21,7 +21,10 @@ namespace Persistency.Services.Implementations
         }
 
         protected override DbSet<Entity> DbSet => PersistencyContext.PresencesOrUnavailabilities;
-        private IQueryable<Entity> Queryable => DbSet.Include(p => p.Foodtruck);
+
+        private IQueryable<Entity> Queryable => DbSet
+            .Where(p => !p.Foodtruck.Deleted)
+            .Include(p => p.Foodtruck);
 
         private async Task<Guid> FindFoodtruckId(string foodtruckSlug) =>
             await _foodtruckService.FindFoodtruckIdBySlug(foodtruckSlug) ?? throw new ArgumentException("Foodtruck not found");
