@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert } from 'react-bootstrap';
-import { actionCreators } from '../store/ChangePassword';
+import React, {Component} from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
+import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
+import {actionCreators} from '../store/ChangePassword';
 
 class ChangePassword extends Component {
     submit = event => {
@@ -14,7 +14,8 @@ class ChangePassword extends Component {
         return (
             <div>
                 <form onSubmit={this.submit}>
-                    {this.props.failed && <Alert bsStyle='danger'>Try again</Alert>}
+                    {this.props.failed && <Alert bsStyle='danger'>Try
+                        again{this.props.reason === null ? '' : `: ${this.props.reason}`}</Alert>}
                     <FormGroup
                         controlId='current-password'
                     >
@@ -27,7 +28,7 @@ class ChangePassword extends Component {
                             placeholder='Current password'
                             onChange={e => this.props.currentPasswordChanged(e.target.value)}
                         />
-                        <FormControl.Feedback />
+                        <FormControl.Feedback/>
                     </FormGroup>
                     <FormGroup
                         controlId='new-password'
@@ -41,7 +42,7 @@ class ChangePassword extends Component {
                             placeholder='New password'
                             onChange={e => this.props.newPasswordChanged(e.target.value)}
                         />
-                        <FormControl.Feedback />
+                        <FormControl.Feedback/>
                     </FormGroup>
                     <Button type='submit'>Change password</Button>
                 </form>
@@ -51,6 +52,6 @@ class ChangePassword extends Component {
 }
 
 export default connect(
-    (state, ownProps) => ({ ...state.changePassword, staff: ownProps.staff === undefined ? false : ownProps.staff }),
+    (state, ownProps) => ({...state.changePassword, staff: ownProps.staff === undefined ? false : ownProps.staff}),
     dispatch => bindActionCreators(actionCreators, dispatch)
 )(ChangePassword);

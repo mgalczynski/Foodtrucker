@@ -1,5 +1,5 @@
 ﻿import {push} from 'react-router-redux';
-import {userChanged} from './App';
+import {actionCreators as App, userChanged} from './App';
 import {staffPrefix} from '../Helpers';
 
 const emailChanged = 'login/EMAIL_CHANGED';
@@ -39,7 +39,7 @@ export const actionCreators = {
             });
         const result = await response.json();
         if (result.successful) {
-            dispatch({type: userChanged, user: result.user});
+            await App.changeUser(result.user, result.roles)(dispatch, getState);
             dispatch(push(staff ? staffPrefix : '/'));
         } else
             dispatch({type: failedAttempt});

@@ -1,12 +1,12 @@
 ﻿import {push} from 'react-router-redux';
-import {userChanged} from './App';
 import {staffPrefix} from '../Helpers';
 
 const currentPasswordChanged = 'changePassword/CURRENT_PASSWORD_CHANGED';
 const newPasswordChanged = 'changePassword/NEW_PASSWORD_CHANGED';
 const failedAttempt = 'changePassword/FAILED_ATTEMPT';
 const requestStarted = 'changePassword/REQUEST_STARTED';
-const initialState = {failed: false, currentPassword: '', newPassword: '', ongoingRequest: false};
+const reset = 'changePassword/RESET';
+const initialState = {failed: false, currentPassword: '', newPassword: '', ongoingRequest: false, reason: null};
 
 export const actionCreators = {
     currentPasswordChanged: value => async (dispatch) => {
@@ -33,9 +33,12 @@ export const actionCreators = {
                 })
             });
         if (response.status === 200) {
+            dispatch({type: reset});
             dispatch(push(staff ? staffPrefix : '/'));
-        } else
-            dispatch({type: failedAttempt});
+        } else if (response.status === 400)
+            dispatch({type: failedAttempt, reason: (await response.json()).reason});
+        else
+            dispatch({type: failedAttempt, reason: null});
     }
 };
 
@@ -50,8 +53,8 @@ export const reducer = (state, action) => {
         case requestStarted:
             return {...state, ongoingRequest: true, currentPassword: '', newPassword: ''};
         case failedAttempt:
-            return {...state, ongoingRequest: false, failed: true};
-        case userChanged:
+            return {...state, ongoingRequest: false, failed: true, reason: action.reason};
+        case reset:
             return initialState;
         default:
             return state;

@@ -6,6 +6,7 @@ namespace Persistency.Dtos
     {
         public IList<string> Errors;
         public bool Successful { get; set; }
+        public IList<string> Roles { get; set; }
         public User User { get; set; }
     }
 }
