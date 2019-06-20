@@ -1,4 +1,6 @@
-﻿const foodtruckChanged = 'foodtruck/FOODTRUCK_CHANGED';
+﻿import {push} from 'react-router-redux';
+
+const foodtruckChanged = 'foodtruck/FOODTRUCK_CHANGED';
 const resetState = 'foodtruck/RESET_STATE';
 
 const initialState = {
@@ -12,6 +14,10 @@ export const actionCreators = {
             getState().foodtruckModal.foodtruck.slug === foodtruckSlug)
             return;
         const response = await fetch(`api/foodtruck/${foodtruckSlug}`);
+        if(response.status===404){
+            dispatch(push('/'));
+            return;
+        }
         const result = await response.json();
         dispatch({ type: foodtruckChanged, foodtruck: result.foodtruck, presencesOrUnavailabilities: result.presencesOrUnavailabilities });
     },

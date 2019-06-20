@@ -21,7 +21,7 @@ export const actionCreators = {
         dispatch({type: userChanged, user: user, roles: roles});
         if (history.location.pathname.startsWith(staffPrefix) && roles.every(r => r !== 'FOODTRUCK_STAFF'))
             dispatch(push('/'));
-        else if (roles.every(r => r !== 'CUSTOMER'))
+        else if (!history.location.pathname.startsWith(staffPrefix) && roles.every(r => r !== 'CUSTOMER'))
             dispatch(push(staffPrefix));
     },
     logOut: () => async (dispatch) => {
