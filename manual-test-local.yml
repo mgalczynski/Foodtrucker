@@ -1,0 +1,39 @@
+version: "3.4"
+services:
+  app:
+    build: 
+      context: .
+      args:
+        ASPNETCORE_ENVIRONMENT: Development
+        GENERATE_SOURCEMAP: 'true'
+        CONFIGURATION: Debug
+    image: docker.miroslawgalczynski.com/foodtrucker
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    restart: always
+    ports:
+      - 127.0.0.1:8080:80
+    networks:
+      - internal
+      - public
+
+  db:
+    image: mdillon/postgis:11
+    restart: always
+    volumes:
+      - db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: Foodtrucker
+      POSTGRES_DB: Foodtrucker
+      POSTGRES_USER: Foodtrucker
+    networks:
+      - internal
+
+networks:
+  internal:
+    internal: true
+  public:
+    internal: false
+
+volumes:
+  db:

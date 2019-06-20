@@ -109,7 +109,7 @@ namespace WebApplication
                 spa.Options.SourcePath = "ClientApp";
 
 #if DEBUG
-                if (env.IsDevelopment())
+                if (env.IsDevelopment() && Configuration.GetValue("UseReactDevelopmentServer", false))
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
