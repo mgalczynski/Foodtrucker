@@ -1,5 +1,4 @@
-FILES=*.md
-for f in $FILES
+for f in $(find -name '*.md' -not -path "./WebApplication/ClientApp/*")
 do
   # extension="${f##*.}"
   filename="${f%.*}"

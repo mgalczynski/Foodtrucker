@@ -8,6 +8,14 @@ output:
 
 # Foodtrucker - Dokumentacja powykonawcza
 
+## Instrukcja odpalenia serwera testowego
+
+Aby uruchomić serwer testowy należy wykonać skrypt [./manual-test-local.sh](./manual-test-local.sh) na systemie wyposażonym w docker, docker-compose i curl. Po wykonaniu tego skryptu serwer testowy będzie dostępny na porcie [8080](http://localhost:8080) oraz ostaną utworzone konta użytkowników o adresach email `contact@miroslawgalczynski.com`, `2.user@miroslawgalczynski.com`, `3.user@miroslawgalczynski.com` i haśle `P@ssw0rd1` w rodzaju [Pracownicy foodtrucków](SLOWNIK.md).
+
+**Uwaga: Każdy rodzaj użytkownika ma osobny widok logowania.**
+
+Dane testowe które zostaną załadowane do serwera testowego pochodza z [OpenStreetMap](https://wiki.openstreetmap.org/wiki/Planet.osm#Country_and_area_extracts), zawierają informacje na temat polskich POI.
+
 ## Zakres applikacji wykonany podczas realizacji projektu
 
 Podczas realizacji kursu został zrealizowany mniejszy niż zostało to przewidziane. Zrealizowane przypadki użycia można podzielić na przypadki użycia dla klientów foodtrucków i dla pracowników foodtrucków. Jest on dostępny na [foodtrucker.miroslawgalczynski.com](https://foodtrucker.miroslawgalczynski.com/)
@@ -26,7 +34,7 @@ Zrealizowane zostały wszystkie przypadki użycia z wyjątkiem zarządzania ulub
 
 ![Diagram](Diagrams/Diagram_przejsc_pracownicy_foodtruckow.jpg?raw=true "Zaplanowane przypadki użycia klientów foodtrucków")
 
-Zrealizowane zostały wszystkie przypadki użycia z wyjątkiem przypadków dotycących zarządania nieobecnościami. Nie zrealizowano natomiast w pełnym zakresie zarządzania obecnościami, obecna wersja nie waliduje zakresów czasu.
+Zrealizowane zostały wszystkie przypadki użycia z powyższego diagramu.
 
 ![Widok dla pracowników foodtrucków](Screenshots/WidokGlownyPracownikowFoodtruckow.png?raw=true "Widok dla pracowników foodtrucków")
 
@@ -257,3 +265,7 @@ class MapComponent extends Component {
     }
 }
 ```
+
+### Dodatkowe informacje na temat dostarczonego rozwiązania
+
+Dostarczone rozwiązanie jest może zostać łatwo przygotowane do pracy w architekturze wieloserwerowej - [dokumentacja](https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/web-farm?view=aspnetcore-2.2).
