@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {FormGroup, ControlLabel, FormControl, Checkbox, Button, Alert} from 'react-bootstrap';
+import {useTranslation} from 'react-i18next';
 import {actionCreators} from '../store/ChangePassword';
 
 class ChangePassword extends Component {
@@ -11,6 +12,7 @@ class ChangePassword extends Component {
     };
 
     render() {
+        const {t} = useTranslation();
         return (
             <div>
                 <form onSubmit={this.submit}>
@@ -25,7 +27,7 @@ class ChangePassword extends Component {
                             autoComplete='current-password'
                             type='password'
                             value={this.props.currentPassword}
-                            placeholder='Current password'
+                            placeholder={t('Current password')}
                             onChange={e => this.props.currentPasswordChanged(e.target.value)}
                         />
                         <FormControl.Feedback/>
@@ -39,12 +41,12 @@ class ChangePassword extends Component {
                             autoComplete='new-password'
                             type='password'
                             value={this.props.newPassword}
-                            placeholder='New password'
+                            placeholder={t('New password')}
                             onChange={e => this.props.newPasswordChanged(e.target.value)}
                         />
                         <FormControl.Feedback/>
                     </FormGroup>
-                    <Button type='submit'>Change password</Button>
+                    <Button type='submit'>{t('Change password')}</Button>
                 </form>
             </div>
         );
