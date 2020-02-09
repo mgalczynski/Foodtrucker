@@ -13,8 +13,8 @@ export default class SmallMap extends Component {
             center: [this.props.latitude, this.props.longitude],
             zoom: 15,
             layers: [
-                L.tileLayer('//{s}.tile.osm.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="//osm.org/copyright">OpenStreetMap</a> contributors',
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
                     detectRetina: true
                 })
             ],
