@@ -2,7 +2,7 @@ using System;
 
 namespace Persistency.Services
 {
-    public class ValidationException<TDto> : Exception
+    public class ValidationException<TDto> : Exception where TDto : class
     {
         internal ValidationException(TDto dto) : base("Conflicts with:")
         {
@@ -13,6 +13,6 @@ namespace Persistency.Services
         {
         }
 
-        public TDto Dto { get; }
+        public TDto? Dto { get; }
     }
 }

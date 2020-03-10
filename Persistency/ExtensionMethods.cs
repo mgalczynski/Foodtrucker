@@ -11,11 +11,11 @@ namespace Persistency
 {
     internal static class ExtensionMethods
     {
-        internal static Point ToDbPoint(this Coordinate coordinate) =>
-            coordinate == null ? null : CreatePointWithSrid(coordinate.Latitude, coordinate.Longitude);
+        internal static Point ToDbPoint(this Dtos.Coordinate coordinate) =>
+            CreatePointWithSrid(coordinate.Latitude, coordinate.Longitude);
 
-        internal static Coordinate ToCoordinate(this Point point) =>
-            point == null ? null : new Coordinate {Latitude = point.Y, Longitude = point.X};
+        internal static Dtos.Coordinate ToCoordinate(this Point point) =>
+            new Dtos.Coordinate {Latitude = point.Y, Longitude = point.X};
 
         internal static Point CreatePointWithSrid(double latitude, double longitude) =>
             new Point(longitude, latitude) {SRID = 4326};
@@ -25,10 +25,7 @@ namespace Persistency
 
 
         internal static async Task<TDestination> MapAsync<TDestination, TSource>(this Task<TSource> task, IRuntimeMapper runtimeMapper)
-            where TDestination : class
-        {
-            var obj = await task;
-            return obj == null ? null : runtimeMapper.Map<TDestination>(obj);
-        }
+            where TDestination : class =>
+            runtimeMapper.Map<TDestination>(await task);
     }
 }

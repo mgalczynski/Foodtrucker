@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 namespace Persistency
 {
     public interface IPersistencyContext : IDisposable, IInfrastructure<IServiceProvider>, IDbContextDependencies,
-        IDbSetCache, IDbQueryCache, IDbContextPoolable
+        IDbSetCache, IDbContextPoolable
     {
         DatabaseFacade Database { get; }
     }

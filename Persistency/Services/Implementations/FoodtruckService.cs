@@ -26,7 +26,7 @@ namespace Persistency.Services.Implementations
 
 
         public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance) =>
-            await PersistencyContext.Foodtrucks.FromSql(
+            await PersistencyContext.Foodtrucks.FromSqlRaw(
                     $@"SELECT *
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}""
                        WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
@@ -36,7 +36,7 @@ namespace Persistency.Services.Implementations
                 .ProjectToListAsync<Foodtruck>(ConfigurationProvider);
 
         public async Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight) =>
-            await PersistencyContext.Foodtrucks.FromSql(
+            await PersistencyContext.Foodtrucks.FromSqlRaw(
                     $@"SELECT *
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}""
                        WHERE ""{nameof(Entity.DefaultLocation)}"" IS NOT NULL AND NOT ""{nameof(Entity.Deleted)}""
@@ -52,7 +52,7 @@ namespace Persistency.Services.Implementations
             return RuntimeMapper.Map<FoodtruckDetailed>(await CreateNewEntity(entity));
         }
 
-        public async Task<FoodtruckDetailed> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck)
+        public async Task<FoodtruckDetailed?> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck)
         {
             var entity = await Queryable.FirstAsync(f => f.Slug == slug);
             if (entity == null)

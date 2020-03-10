@@ -4,7 +4,7 @@ namespace Persistency.Dtos
 {
     public sealed class FindUserArg
     {
-        public string Query { get; set; }
-        public IList<string> Except { get; set; }
-    }
+        public string Query { get; set; } = null!;
+		public IList<string> Except { get; set; } = new List<string>();
+	}
 }

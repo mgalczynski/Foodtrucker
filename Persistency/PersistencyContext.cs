@@ -11,11 +11,12 @@ namespace Persistency
     public abstract class AbstractPersistencyContext : IdentityDbContext<FoodtruckerUser, FoodtruckerRole, Guid>,
         IInternalPersistencyContext
     {
-        public DbSet<Foodtruck> Foodtrucks { get; set; }
-        public DbSet<PresenceOrUnavailability> PresencesOrUnavailabilities { get; set; }
-        public DbSet<FoodtruckOwnership> FoodtruckOwnerships { get; set; }
+		public DbSet<Foodtruck> Foodtrucks { get; set; } = null!;
+		public DbSet<PresenceOrUnavailability> PresencesOrUnavailabilities { get; set; } = null!;
+        public DbSet<FoodtruckOwnership> FoodtruckOwnerships { get; set; } = null!;
+        public IServiceProvider Instance { get; } = null!;
 
-        protected override void OnModelCreating(ModelBuilder builder)
+		protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             builder.Entity<Foodtruck>()

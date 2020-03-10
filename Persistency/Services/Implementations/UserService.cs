@@ -27,7 +27,7 @@ namespace Persistency.Services.Implementations
         {
             var argsList = args.Select(a => a.ToLower()).ToList();
             var exceptList = (await FindUserByMails(emails.Distinct().ToList())).Select(u => u.Id);
-            return await _persistencyContext.Users.FromSql(
+            return await _persistencyContext.Users.FromSqlRaw(
                     $@"SELECT u.*
                        FROM ""AspNetUserRoles"" ur
                             INNER JOIN ""AspNetUsers"" u ON ur.""UserId"" = u.""Id""

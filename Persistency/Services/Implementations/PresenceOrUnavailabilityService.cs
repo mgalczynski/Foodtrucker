@@ -31,7 +31,7 @@ namespace Persistency.Services.Implementations
 
         public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate coordinate, double distance, DateTime startEndTime)
         {
-            return await PersistencyContext.PresencesOrUnavailabilities.FromSql(
+            return await PersistencyContext.PresencesOrUnavailabilities.FromSqlRaw(
                     $@"SELECT p.*
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}"" f
                            INNER JOIN
@@ -49,7 +49,7 @@ namespace Persistency.Services.Implementations
 
         public async Task<IList<PresenceOrUnavailability>> FindPresencesOrUnavailabilitiesWithin(Coordinate topLeft, Coordinate bottomRight, DateTime startEndTime)
         {
-            return await PersistencyContext.PresencesOrUnavailabilities.FromSql(
+            return await PersistencyContext.PresencesOrUnavailabilities.FromSqlRaw(
                     $@"SELECT p.*
                        FROM ""{nameof(PersistencyContext.Foodtrucks)}"" f
                            INNER JOIN
@@ -73,9 +73,8 @@ namespace Persistency.Services.Implementations
                     .ToListAsync())
                 .Aggregate(new SortedDictionary<string, IList<PresenceOrUnavailability>>(), (acc, pres) =>
                 {
-                    IList<PresenceOrUnavailability> list;
                     Debug.Assert(pres.Id != null, $"{nameof(pres)}.{nameof(pres.Id)} != null");
-                    if (acc.TryGetValue(pres.Foodtruck.Slug, out list))
+                    if (acc.TryGetValue(pres.Foodtruck.Slug, out IList<PresenceOrUnavailability>? list))
                     {
                         list = new List<PresenceOrUnavailability>();
                         acc[pres.Foodtruck.Slug] = list;
@@ -177,7 +176,7 @@ namespace Persistency.Services.Implementations
             return RuntimeMapper.Map<PresenceOrUnavailability>(await CreateNewEntity(entity));
         }
 
-        public async Task<PresenceOrUnavailability> ModifyPresenceOrUnavailability(Guid presenceId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
+        public async Task<PresenceOrUnavailability?> ModifyPresenceOrUnavailability(Guid presenceId, CreateModifyPresenceOrUnavailability createModifyPresenceOrUnavailability)
         {
             var entity = await DbSet.FirstOrDefaultAsync(p => p.Id == presenceId);
             if (entity == null)

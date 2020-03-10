@@ -2,6 +2,6 @@ namespace Persistency.Dtos
 {
     public sealed class DeleteOwnership
     {
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
     }
 }

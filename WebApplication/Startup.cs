@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Persistency;
@@ -30,7 +31,7 @@ namespace WebApplication
         {
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddJsonOptions(o =>
                 {
                     o.SerializerSettings.Converters.Add(new StringEnumConverter());
@@ -62,7 +63,7 @@ namespace WebApplication
         public void Configure(
             IApplicationBuilder app,
 #if DEBUG
-            IHostingEnvironment env,
+            IWebHostEnvironment env,
 #endif
             IServiceProvider serviceProvider,
             RoleManager<FoodtruckerRole> roleManager

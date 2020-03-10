@@ -14,8 +14,8 @@ namespace Persistency.Entities
     {
         public OwnershipType Type { get; set; }
         [Required] public Guid? UserId { get; set; }
-        public FoodtruckerUser User { get; set; }
+        public FoodtruckerUser User { get; set; } = null!;
         [Required] public Guid? FoodtruckId { get; set; }
-        public Foodtruck Foodtruck { get; set; }
+        public Foodtruck Foodtruck { get; set; } = null!;
     }
 }

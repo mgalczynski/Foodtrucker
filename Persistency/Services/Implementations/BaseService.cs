@@ -25,7 +25,7 @@ namespace Persistency.Services.Implementations
         public async Task<IList<TDto>> FindById(IEnumerable<Guid> ids) =>
             await DbSet.Where(e => ids.Contains(e.Id)).ProjectToListAsync<TDto>(ConfigurationProvider);
 
-        public async Task<TDto> FindById(Guid id) =>
+        public async Task<TDto?> FindById(Guid id) =>
             await DbSet.Where(e => e.Id == id).SingleOrDefaultAsync().MapAsync<TDto, TEntity>(RuntimeMapper);
 
         public async Task RemoveById(Guid id)

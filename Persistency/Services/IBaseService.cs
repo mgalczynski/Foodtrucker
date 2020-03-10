@@ -7,7 +7,7 @@ namespace Persistency.Services
     public interface IBaseService<TDto> where TDto : class
     {
         Task<IList<TDto>> FindById(IEnumerable<Guid> ids);
-        Task<TDto> FindById(Guid id);
+        Task<TDto?> FindById(Guid id);
         Task RemoveById(Guid id);
     }
 }

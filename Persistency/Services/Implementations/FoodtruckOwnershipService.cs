@@ -30,8 +30,8 @@ namespace Persistency.Services.Implementations
                 {
                     foreach (var ownershipType in pair.Value)
                     {
-                        IList<OwnershipType> list = null;
-                        if (!acc.TryGetValue(ownershipType, out list)) list = acc[ownershipType] = new List<OwnershipType>();
+                        if (!acc.TryGetValue(ownershipType, out IList<OwnershipType>? list))
+                            list = acc[ownershipType] = new List<OwnershipType>();
 
                         list.Add(pair.Key);
                     }

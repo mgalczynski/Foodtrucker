@@ -4,6 +4,6 @@ namespace Persistency.Dtos
 {
     public sealed class PresencesOrUnavailabilitiesQuery
     {
-        public ISet<string> Slugs { get; set; }
-    }
+		public ISet<string> Slugs { get; set; } = new HashSet<string>();
+	}
 }

@@ -27,9 +27,9 @@ namespace Persistency
 #if DEBUG
             services.AddScoped<DevelopmentPresencesOrUnavailabilitiesFactory>();
 #endif
-            services.AddIdentity<Entities.FoodtruckerUser, Entities.FoodtruckerRole>()
-                .AddEntityFrameworkStores<PersistencyContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentityCore<Entities.FoodtruckerUser>()
+                .AddRoles<Entities.FoodtruckerRole>()
+                .AddEntityFrameworkStores<PersistencyContext>();
             services.Configure<IdentityOptions>(options =>
             {
                 // Password settings.
@@ -51,16 +51,6 @@ namespace Persistency
                 options.User.RequireUniqueEmail = true;
             });
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings
-                options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-
-                options.LoginPath = "/Identity/Account/Login";
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-                options.SlidingExpiration = true;
-            });
             services.AddSingleton(CreateMapper());
         }
 

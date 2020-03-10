@@ -9,7 +9,7 @@ namespace Persistency.Services
     {
         Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate coordinate, double distance);
         Task<FoodtruckDetailed> CreateNewFoodtruck(CreateModifyFoodtruck createNewFoodtruck);
-        Task<FoodtruckDetailed> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck);
+        Task<FoodtruckDetailed?> ModifyFoodtruck(string slug, CreateModifyFoodtruck changeFoodtruck);
         Task MarkAsDeleted(string slug);
         Task<IList<Foodtruck>> FindFoodTrucksWithin(Coordinate topLeft, Coordinate bottomRight);
         Task<Foodtruck> FindBySlug(string slug);

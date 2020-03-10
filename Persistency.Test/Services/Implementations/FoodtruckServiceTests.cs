@@ -67,7 +67,7 @@ namespace Persistency.Test.Services.Implementations
         public async void FindFoodtrucksTest()
         {
             double distance = 2;
-            var coordinate = new Coordinate {Latitude = 51.125975, Longitude = 16.978056};
+            var coordinate = new Dtos.Coordinate {Latitude = 51.125975, Longitude = 16.978056};
             var result = await _foodtruckService.FindFoodTrucksWithin(coordinate, distance);
             Assert.Equal(new HashSet<string> {"Foodtruck within location"},
                 result.Select(foodtruck => foodtruck.Name).ToHashSet());
